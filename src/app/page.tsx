@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { Metadata } from 'next'
 import MainNav from '@/components/layout/MainNav'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
 export const metadata: Metadata = {
   title: 'HypeAmplify - Hyper-Contextual X Growth and Engagement',
@@ -26,33 +28,38 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Link
-                    href="/auth/register"
-                    className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-white shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-primary dark:text-gray-50 dark:hover:bg-primary/90 dark:focus-visible:ring-gray-300"
-                  >
-                    Get Started
-                  </Link>
-                  <Link
-                    href="/auth/login"
-                    className="inline-flex h-10 items-center justify-center rounded-md border border-gray-200 bg-white px-8 text-sm font-medium shadow-sm transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus-visible:ring-gray-300"
-                  >
-                    Sign In
-                  </Link>
+                  <Button asChild size="lg">
+                    <Link href="/auth/register">Get Started</Link>
+                  </Button>
+                  <Button asChild variant="outline" size="lg">
+                    <Link href="/auth/login">Sign In</Link>
+                  </Button>
                 </div>
               </div>
               <div className="flex items-center justify-center">
-                <div className="relative h-[450px] w-[450px]">
-                  {/* Placeholder for a custom image or animation */}
-                  <div className="absolute inset-0 flex items-center justify-center rounded-full bg-gradient-to-r from-accent to-accent-light opacity-80 blur-2xl">
-                    <div className="h-64 w-64 rounded-full bg-white dark:bg-black"></div>
-                  </div>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4 p-4 text-center">
-                    <div className="text-lg font-bold">Analytics-Driven Tweet Generation</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
-                      Our AI analyzes your Twitter presence and audience engagement to generate tweets that boost your growth
+                <Card className="w-full max-w-md border-0 bg-background/50 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="text-xl">Analytics-Driven Tweet Generation</CardTitle>
+                    <CardDescription>
+                      Our AI analyzes your Twitter presence and audience engagement
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="relative h-56 w-full overflow-hidden rounded-lg">
+                      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-r from-accent to-accent-light opacity-80 blur-2xl">
+                        <div className="h-32 w-32 rounded-full bg-white dark:bg-black"></div>
+                      </div>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="text-2xl font-bold">HypeAmplify</div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  </CardContent>
+                  <CardFooter>
+                    <p className="text-sm text-muted-foreground">
+                      Generate tweets that boost your growth and engagement
+                    </p>
+                  </CardFooter>
+                </Card>
               </div>
             </div>
           </div>
