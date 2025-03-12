@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { Metadata } from 'next'
-import MainNav from '@/components/layout/MainNav'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
@@ -12,7 +11,6 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
-      <MainNav />
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
           <div className="container px-4 md:px-6">
@@ -65,15 +63,6 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <footer className="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
-        <div className="container flex flex-col items-center justify-between gap-4 py-10 md:h-24 md:flex-row md:py-0">
-          <div className="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-2 md:px-0">
-            <p className="text-center text-sm leading-loose text-gray-500 dark:text-gray-400 md:text-left">
-              © 2023 HypeAmplify. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }
