@@ -57,11 +57,11 @@ void main() {
 export function WebGLBackground() {
   const { resolvedTheme } = useTheme()
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const requestRef = useRef<number>()
-  const sceneRef = useRef<THREE.Scene>()
-  const cameraRef = useRef<THREE.OrthographicCamera>()
-  const rendererRef = useRef<THREE.WebGLRenderer>()
-  const materialRef = useRef<THREE.RawShaderMaterial>()
+  const requestRef = useRef<number>(0)
+  const sceneRef = useRef<THREE.Scene>(null as unknown as THREE.Scene)
+  const cameraRef = useRef<THREE.OrthographicCamera>(null as unknown as THREE.OrthographicCamera)
+  const rendererRef = useRef<THREE.WebGLRenderer>(null as unknown as THREE.WebGLRenderer)
+  const materialRef = useRef<THREE.RawShaderMaterial>(null as unknown as THREE.RawShaderMaterial)
   const uniformsRef = useRef({
     resolution: { value: new THREE.Vector2(1, 1) },
     time: { value: 0.0 },
