@@ -35,14 +35,14 @@ void main() {
   
   if (isDarkTheme) {
     // Original colors for dark theme
-    r = 0.05 / abs(p.y + sin((rx + time) * xScale) * yScale);
-    g = 0.05 / abs(p.y + sin((gx + time) * xScale) * yScale);
-    b = 0.05 / abs(p.y + sin((bx + time) * xScale) * yScale);
+    r = 0.025 / abs(p.y + sin((rx + time) * xScale) * yScale);
+    g = 0.025 / abs(p.y + sin((gx + time) * xScale) * yScale);
+    b = 0.025 / abs(p.y + sin((bx + time) * xScale) * yScale);
   } else {
     // Inverted colors for light theme - dark waves on light background
-    r = 1.0 - (0.05 / abs(p.y + sin((rx + time) * xScale) * yScale));
-    g = 1.0 - (0.05 / abs(p.y + sin((gx + time) * xScale) * yScale));
-    b = 1.0 - (0.05 / abs(p.y + sin((bx + time) * xScale) * yScale));
+    r = 1.0 - (0.025 / abs(p.y + sin((rx + time) * xScale) * yScale));
+    g = 1.0 - (0.025 / abs(p.y + sin((gx + time) * xScale) * yScale));
+    b = 1.0 - (0.025 / abs(p.y + sin((bx + time) * xScale) * yScale));
     
     // Make it more subtle for light theme
     r = mix(1.0, r, 0.7);
