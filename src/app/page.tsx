@@ -1,16 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
 import { Logo } from "@/components/ui/Logo"
-
-// export const metadata: Metadata = {
-//   title: 'HypeAmplify - Hyper-Contextual X Growth and Engagement',
-//   description: 'Generate high-performing X suggestions for growth',
-// }
 
 // Step indicator component
 const StepIndicator = ({ step }: { step: number }) => (
@@ -273,7 +267,7 @@ export default function Home() {
         animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
         transition={{ delay: 0.5 }}
       >
-        <Logo width={150} height={40} />
+        <Logo width={200} height={60} />
       </motion.div>
     </div>
   )
