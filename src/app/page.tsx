@@ -1,68 +1,279 @@
-import Link from 'next/link'
-import { Metadata } from 'next'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+'use client'
 
-export const metadata: Metadata = {
-  title: 'HypeAmplify - Hyper-Contextual X Growth and Engagement',
-  description: 'Generate high-performing X suggestions for growth',
+import Link from 'next/link'
+import Image from 'next/image'
+import { useState, useEffect } from 'react'
+import { Button } from "@/components/ui/button"
+import { motion, AnimatePresence } from "framer-motion"
+
+// export const metadata: Metadata = {
+//   title: 'HypeAmplify - Hyper-Contextual X Growth and Engagement',
+//   description: 'Generate high-performing X suggestions for growth',
+// }
+
+// Step indicator component
+const StepIndicator = ({ step }: { step: number }) => (
+  <div className="text-right">
+    <p className="text-xl font-medium">
+      {step === 1 && "Select X Profile | 1"}
+      {step === 2 && "Generating... | 2"}
+      {step === 3 && "Profit. | 3"}
+    </p>
+  </div>
+)
+
+// X Profile Button component
+const ProfileButton = ({ 
+  name, 
+  onClick 
+}: { 
+  name: string,
+  onClick: () => void
+}) => (
+  <Button
+    variant="outline" 
+    onClick={onClick}
+    className="w-full text-base"
+  >
+    {name}
+  </Button>
+)
+
+// Loading animation component
+const LoadingAnimation = ({ messages }: { messages: string[] }) => {
+  const [currentIndex, setCurrentIndex] = useState(0)
+  
+  useEffect(() => {
+    if (currentIndex < messages.length - 1) {
+      const timer = setTimeout(() => {
+        setCurrentIndex(index => index + 1)
+      }, 1200)
+      return () => clearTimeout(timer)
+    }
+  }, [currentIndex, messages.length])
+  
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
+        <motion.div 
+          animate={{ rotate: 360 }} 
+          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+          className="w-5 h-5 border-t-2 border-accent rounded-full"
+        />
+        <p>AI is thinking...</p>
+      </div>
+      <AnimatePresence>
+        {messages.map((message, index) => (
+          index <= currentIndex && (
+            <motion.p
+              key={index}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-sm text-muted-foreground"
+            >
+              {message}
+            </motion.p>
+          )
+        ))}
+      </AnimatePresence>
+    </div>
+  )
 }
 
 export default function Home() {
+  const [step, setStep] = useState(1)
+  const [hoverSide, setHoverSide] = useState<'left' | 'right' | null>(null)
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [selectedProfile, setSelectedProfile] = useState('')
+  const [isComplete, setIsComplete] = useState(false)
+  
+  // Mock loading messages
+  const loadingMessages = [
+    "Fetching competition history...",
+    "Analyzing engagement patterns...",
+    "Fetching profile history...",
+  ]
+
+  // Mock tweet suggestions
+  const tweetSuggestions = [
+    "Just learned a fascinating fact about machine learning: 90% of the work is data preparation. #MachineLearning #DataScience",
+    "Hot take: TypeScript isn't just for large projects. Even small apps benefit from better tooling. #TypeScript #WebDev",
+    "Thinking about how the best products focus on solving one problem extremely well. What's your favorite single-purpose tool? #ProductDesign"
+  ]
+
+  // Initial page load animation
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoaded(true)
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [])
+
+  // Handle profile selection
+  const handleProfileSelect = (profile: string) => {
+    setSelectedProfile(profile)
+    setStep(2)
+    
+    // Simulate AI processing
+    setTimeout(() => {
+      setIsComplete(true)
+      setTimeout(() => {
+        setStep(3)
+      }, 1000)
+    }, 6000)
+  }
+
   return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
-          <div className="container px-4 md:px-6">
-            <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 xl:grid-cols-2">
-              <div className="flex flex-col justify-center space-y-4">
-                <div className="space-y-2">
-                  <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                    Supercharge Your Twitter Presence
-                  </h1>
-                  <p className="max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400">
-                    Get AI-powered tweet suggestions based on your Twitter profile and audience. 
-                    HypeAmplify analyzes your content and generates high-performing tweets.
-                  </p>
-                </div>
-                <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Button asChild size="lg">
-                    <Link href="/auth/register">Get Started</Link>
-                  </Button>
-                  <Button asChild variant="outline" size="lg">
-                    <Link href="/auth/login">Sign In</Link>
-                  </Button>
-                </div>
-              </div>
-              <div className="flex items-center justify-center">
-                <Card className="w-full max-w-md border-0 bg-background/50 shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="text-xl">Analytics-Driven Tweet Generation</CardTitle>
-                    <CardDescription>
-                      Our AI analyzes your Twitter presence and audience engagement
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="relative h-56 w-full overflow-hidden rounded-lg">
-                      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-r from-accent to-accent-light opacity-80 blur-2xl">
-                        <div className="h-32 w-32 rounded-full bg-white dark:bg-black"></div>
-                      </div>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="text-2xl font-bold">HypeAmplify</div>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <p className="text-sm text-muted-foreground">
-                      Generate tweets that boost your growth and engagement
-                    </p>
-                  </CardFooter>
-                </Card>
-              </div>
+    <div 
+      className="flex flex-col min-h-screen relative"
+      onMouseMove={(e) => {
+        // Determine which side of the screen the mouse is on
+        if (e.clientX < window.innerWidth / 2) {
+          setHoverSide('left')
+        } else {
+          setHoverSide('right')
+        }
+      }}
+    >
+      {/* Sign In Button */}
+      <motion.div 
+        className="absolute top-4 right-4"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : -20 }}
+        transition={{ delay: 0.2 }}
+      >
+        <Button asChild variant="ghost">
+          <Link href="/auth/login">Sign In</Link>
+        </Button>
+      </motion.div>
+      
+      {/* Main Content */}
+      <main className="flex-1 flex overflow-hidden">
+        {/* Left Half - Intro */}
+        <motion.div
+          className={`w-1/2 flex items-center justify-center p-8 ${hoverSide === 'right' ? 'blur-sm' : ''} transition-all duration-300`}
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: isLoaded ? 1 : 0, x: isLoaded ? 0 : -50 }}
+          transition={{ delay: 0.3 }}
+        >
+          <div className="max-w-md space-y-6">
+            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl/none">
+              Supercharge Your Presence on X
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400">
+              Get AI-powered tweet suggestions based on your profile and audience. 
+              HypeAmplify analyzes your content and generates high-performing tweets.
+            </p>
+            <div>
+              <Button asChild size="lg">
+                <Link href="/auth/register">Get Started</Link>
+              </Button>
             </div>
           </div>
-        </section>
+        </motion.div>
+        
+        {/* Right Half - Profile Selection / Generation */}
+        <motion.div
+          className={`w-1/2 flex items-center justify-center p-8 ${hoverSide === 'left' ? 'blur-sm' : ''} transition-all duration-300`}
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: isLoaded ? 1 : 0, x: isLoaded ? 0 : 50 }}
+          transition={{ delay: 0.4 }}
+        >
+          <div className="max-w-md w-full space-y-6">
+            <AnimatePresence mode="wait">
+              {step === 1 && (
+                <motion.div
+                  key="step1"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="space-y-6"
+                >
+                  <StepIndicator step={1} />
+                  <div className="grid grid-cols-2 gap-4">
+                    <ProfileButton name="elonmusk" onClick={() => handleProfileSelect('elonmusk')} />
+                    <ProfileButton name="realDonaldTrump" onClick={() => handleProfileSelect('realDonaldTrump')} />
+                    <ProfileButton name="taylorswift13" onClick={() => handleProfileSelect('taylorswift13')} />
+                    <ProfileButton name="kanyewest" onClick={() => handleProfileSelect('kanyewest')} />
+                  </div>
+                </motion.div>
+              )}
+              
+              {step === 2 && (
+                <motion.div
+                  key="step2"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="space-y-6"
+                >
+                  <StepIndicator step={2} />
+                  <AnimatePresence mode="wait">
+                    {!isComplete ? (
+                      <motion.div
+                        key="loading"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                      >
+                        <LoadingAnimation messages={loadingMessages} />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="complete"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                      >
+                        <div className="flex items-center gap-2 text-green-500">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                          <p>All set! Ready!</p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              )}
+              
+              {step === 3 && (
+                <motion.div
+                  key="step3"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="space-y-6"
+                >
+                  <StepIndicator step={3} />
+                  <div className="space-y-4">
+                    {tweetSuggestions.map((tweet, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ 
+                          opacity: 1, 
+                          y: 0,
+                          transition: { delay: index * 0.2 }
+                        }}
+                        className="p-3 bg-gray-100 dark:bg-gray-800 rounded-md"
+                      >
+                        {tweet}
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
       </main>
+      
+      {/* HypeAmplify Logo */}
+      <motion.div 
+        className="absolute bottom-6 left-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
+        transition={{ delay: 0.5 }}
+      >
+        <Image src="/images/logo.png" alt="HypeAmplify" width={150} height={40} />
+      </motion.div>
     </div>
   )
 }
