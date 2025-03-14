@@ -6,33 +6,85 @@ import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
 import { Logo } from "@/components/ui/Logo"
 
-// Step indicator component
-const StepIndicator = ({ step }: { step: number }) => (
-  <div className="text-right">
-    <p className="text-xl font-medium">
-      {step === 1 && "Select X Profile | 1"}
-      {step === 2 && "Generating... | 2"}
-      {step === 3 && "Profit. | 3"}
-    </p>
-  </div>
-)
+// Step indicator component with independent animations for number and title
+const StepIndicator = ({ step }: { step: number }) => {
+  const titles = {
+    1: "Select X Profile",
+    2: "Generating...",
+    3: "Profit."
+  };
+  
+  return (
+    <div className="flex items-center justify-between mb-6">
+      <motion.div 
+        className="text-xl font-medium flex items-center gap-2"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <motion.span 
+          className="font-bold"
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2, duration: 0.3 }}
+        >
+          {step}
+        </motion.span>
+        <motion.span
+          className="text-muted-foreground"
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3, duration: 0.3 }}
+        >
+          |
+        </motion.span>
+        <motion.span
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.4, duration: 0.3 }}
+        >
+          {titles[step as keyof typeof titles]}
+        </motion.span>
+      </motion.div>
+    </div>
+  )
+}
 
-// X Profile Button component
+// X Profile Button component with profile image
 const ProfileButton = ({ 
   name, 
   onClick 
 }: { 
   name: string,
   onClick: () => void
-}) => (
-  <Button
-    variant="outline" 
-    onClick={onClick}
-    className="w-full text-base"
-  >
-    {name}
-  </Button>
-)
+}) => {
+  // Clean name for image path (removing @ if present)
+  const imageName = name.replace('@', '').toLowerCase() + '.png';
+  
+  return (
+    <Button
+      variant="outline" 
+      onClick={onClick}
+      className="w-full text-base relative overflow-hidden group transition-all duration-200 hover:bg-accent/50 hover:border-primary/30 hover:shadow-md"
+    >
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 border border-border">
+          <img 
+            src={`/images/${imageName}`} 
+            alt={name} 
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <span className="flex-grow text-left">@{name.replace('@', '')}</span>
+      </div>
+      <motion.div 
+        className="absolute inset-0 bg-primary/5 pointer-events-none opacity-0 group-hover:opacity-100" 
+        layoutId="profileButtonHighlight"
+        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+      />
+    </Button>
+  )
+}
 
 // Loading animation component
 const LoadingAnimation = ({ messages }: { messages: string[] }) => {
