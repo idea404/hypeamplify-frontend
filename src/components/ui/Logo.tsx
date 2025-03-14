@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
 
@@ -12,9 +12,19 @@ interface LogoProps {
 
 export function Logo({ className, width = 150, height = 40 }: LogoProps) {
   const { resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  // Ensure client-side only rendering for theme-dependent parts
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    // Optionally render a fallback or nothing on the first render.
+    return null
+  }
+
   const isDarkMode = resolvedTheme === 'dark'
-  
-  // Colors for light and dark themes
   const fillColor = isDarkMode ? 'oklch(0.985 0 0)' : 'oklch(0.145 0 0)' // white in dark mode, black in light mode
   
   return (
