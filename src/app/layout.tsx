@@ -27,7 +27,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>
             <WebGLBackground />
-            <div className="absolute inset-0 bg-white/40 dark:bg-black/30 backdrop-blur-[2px] -z-5" />
+            <div className="absolute inset-0 bg-white/50 dark:bg-black/40 backdrop-blur-[3px] -z-5" />
             <div className="absolute top-4 left-4 z-50">
               <ThemeToggle />
             </div>
