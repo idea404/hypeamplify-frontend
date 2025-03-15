@@ -16,14 +16,13 @@ const StepIndicator = ({ step }: { step: number }) => {
   
   return (
     <div className="flex items-center justify-between mb-6">
-      <motion.div 
-        className="text-xl font-medium flex items-center gap-2"
+      <motion.h2 
+        className="text-4xl font-bold tracking-tighter flex items-center gap-3"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
         <motion.span 
-          className="font-bold"
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.3 }}
@@ -45,7 +44,7 @@ const StepIndicator = ({ step }: { step: number }) => {
         >
           {titles[step as keyof typeof titles]}
         </motion.span>
-      </motion.div>
+      </motion.h2>
     </div>
   )
 }
@@ -65,17 +64,17 @@ const ProfileButton = ({
     <Button
       variant="outline" 
       onClick={onClick}
-      className="w-full text-base relative overflow-hidden group transition-all duration-200 hover:bg-accent/50 hover:border-primary/30 hover:shadow-md"
+      className="w-full text-base relative overflow-hidden group transition-all duration-200 hover:bg-accent/50 hover:border-primary/30 hover:shadow-md px-2 py-5"
     >
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 border border-border">
+      <div className="flex items-center w-full justify-start gap-3">
+        <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 border border-border">
           <img 
             src={`/images/${imageName}`} 
             alt={name} 
             className="w-full h-full object-cover"
           />
         </div>
-        <span className="flex-grow text-left">@{name.replace('@', '')}</span>
+        <span>@{name.replace('@', '')}</span>
       </div>
       <motion.div 
         className="absolute inset-0 bg-primary/5 pointer-events-none opacity-0 group-hover:opacity-100" 
@@ -227,87 +226,91 @@ export default function Home() {
           transition={{ delay: 0.4 }}
         >
           <div className="max-w-md w-full space-y-6">
-            <AnimatePresence mode="wait">
-              {step === 1 && (
-                <motion.div
-                  key="step1"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className="space-y-6"
-                >
-                  <StepIndicator step={1} />
-                  <div className="grid grid-cols-2 gap-4">
-                    <ProfileButton name="elonmusk" onClick={() => handleProfileSelect('elonmusk')} />
-                    <ProfileButton name="realDonaldTrump" onClick={() => handleProfileSelect('realDonaldTrump')} />
-                    <ProfileButton name="taylorswift13" onClick={() => handleProfileSelect('taylorswift13')} />
-                    <ProfileButton name="kanyewest" onClick={() => handleProfileSelect('kanyewest')} />
-                  </div>
-                </motion.div>
-              )}
-              
-              {step === 2 && (
-                <motion.div
-                  key="step2"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className="space-y-6"
-                >
-                  <StepIndicator step={2} />
-                  <AnimatePresence mode="wait">
-                    {!isComplete ? (
-                      <motion.div
-                        key="loading"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                      >
-                        <LoadingAnimation messages={loadingMessages} />
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="complete"
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                      >
-                        <div className="flex items-center gap-2 text-green-500">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                          <p>All set! Ready!</p>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              )}
-              
-              {step === 3 && (
-                <motion.div
-                  key="step3"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="space-y-6"
-                >
-                  <StepIndicator step={3} />
-                  <div className="space-y-4">
-                    {tweetSuggestions.map((tweet, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ 
-                          opacity: 1, 
-                          y: 0,
-                          transition: { delay: index * 0.2 }
-                        }}
-                        className="p-3 bg-gray-100 dark:bg-gray-800 rounded-md"
-                      >
-                        {tweet}
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {/* Fixed header */}
+            <div className="mb-6">
+              <StepIndicator step={step} />
+            </div>
+            
+            {/* Content container with fixed height to prevent movement */}
+            <div className="min-h-[300px]">
+              <AnimatePresence mode="wait">
+                {step === 1 && (
+                  <motion.div
+                    key="step1"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="space-y-6"
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <ProfileButton name="elonmusk" onClick={() => handleProfileSelect('elonmusk')} />
+                      <ProfileButton name="realDonaldTrump" onClick={() => handleProfileSelect('realDonaldTrump')} />
+                      <ProfileButton name="taylorswift13" onClick={() => handleProfileSelect('taylorswift13')} />
+                      <ProfileButton name="kanyewest" onClick={() => handleProfileSelect('kanyewest')} />
+                    </div>
+                  </motion.div>
+                )}
+                
+                {step === 2 && (
+                  <motion.div
+                    key="step2"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                  >
+                    <AnimatePresence mode="wait">
+                      {!isComplete ? (
+                        <motion.div
+                          key="loading"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                        >
+                          <LoadingAnimation messages={loadingMessages} />
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="complete"
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                        >
+                          <div className="flex items-center gap-2 text-green-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            <p>All set! Ready!</p>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                )}
+                
+                {step === 3 && (
+                  <motion.div
+                    key="step3"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-6"
+                  >
+                    <div className="space-y-4">
+                      {tweetSuggestions.map((tweet, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ 
+                            opacity: 1, 
+                            y: 0,
+                            transition: { delay: index * 0.2 }
+                          }}
+                          className="p-3 bg-gray-100 dark:bg-gray-800 rounded-md"
+                        >
+                          {tweet}
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </motion.div>
       </main>
