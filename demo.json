@@ -1,0 +1,34 @@
+{
+    "elonmusk": {
+        "name": "Elon Musk",
+        "suggestions": [
+            "Announcing Twitter Red: pay me and get a one-way ticket to Mars",
+            "Cybertruck production update: Now comes pre-dented and with a rock inside",
+            "Just discovered ChatGPT - firing all my engineers tomorrow"
+        ]
+    },
+    "realDonaldTrump": {
+        "name": "Donald J. Trump",
+        "suggestions": [
+            "The border is a disaster, and we need to build another wall",
+        "How many favors has anybody done for the USA lately? Not many, and that's why they're coming here illegally",
+            "Do you even know who you are? You're a loser, and I'm the president"
+        ]
+    },
+    "taylorswift13": {
+        "name": "Taylor Swift",
+        "suggestions": [
+            "Found out getting another cat won't stop a whole stadium from booing me",
+            "I'll understand one day why people are so obsessed with my love life",
+            "New album dropping soon: all songs will be about my latest breakup and the economy"
+        ]
+    },
+    "kanyewest": {
+        "name": "Ye",
+        "suggestions": [
+            "Just bought Wyoming again. No one else deserves it",
+            "Running for President again. Vote for me and get free fish sticks. Make Ye Great Again",
+            "I've been president in my mind since birth and Trump is just catching up"
+        ]
+    }
+}

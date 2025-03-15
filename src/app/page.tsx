@@ -150,12 +150,55 @@ export default function Home() {
     "Simulating human authenticity..."
   ]
 
-  // Mock tweet suggestions
-  const tweetSuggestions = [
-    "Just learned a fascinating fact about machine learning: 90% of the work is data preparation. #MachineLearning #DataScience",
-    "Hot take: TypeScript isn't just for large projects. Even small apps benefit from better tooling. #TypeScript #WebDev",
-    "Thinking about how the best products focus on solving one problem extremely well. What's your favorite single-purpose tool? #ProductDesign"
-  ]
+  // Profile-specific tweet suggestions from demo data
+  const profileSuggestions = {
+    "elonmusk": {
+        "name": "Elon Musk",
+        "suggestions": [
+            "Sew one button, doesn't make u a tailor; cook one meal, doesn't make u a chef; but f* one horse and u r a horsef*er for all of history...",
+            "Cybertruck production update: Now comes pre-dented and with a rock inside",
+            "Funding secured."
+        ]
+    },
+    "realDonaldTrump": {
+        "name": "Donald J. Trump",
+        "suggestions": [
+            "I'm much more humble than you would understand.",
+            "How many favors has anybody done for the USA lately? Not many, and that's why they're coming here illegally",
+            "Do you even know who you are? You're a loser, and I'm the president"
+        ]
+    },
+    "taylorswift13": {
+        "name": "Taylor Swift",
+        "suggestions": [
+            "Let your heart remain breakable, but never by the same hands twice",
+            "Be good to people. Being good to people is a wonderful legacy to leave behind.",
+            "Learn to live alongside cringe. No matter how hard you try to avoid being cringe, you will look back on your life and cringe retrospectively."
+        ]
+    },
+    "kanyewest": {
+        "name": "Ye",
+        "suggestions": [
+            "Sometimes I'm wishin that my dick had go pro",
+            "Mayonnaise colored Benz, I push miracle whips",
+            "You left your fridge open somebody just took a sandwich"
+        ]
+    }
+  };
+
+  // Get current tweet suggestions based on selected profile
+  const getTweetSuggestions = () => {
+    return selectedProfile && profileSuggestions[selectedProfile as keyof typeof profileSuggestions]
+      ? profileSuggestions[selectedProfile as keyof typeof profileSuggestions].suggestions
+      : [];
+  };
+
+  // Display name for the selected profile
+  const getProfileDisplayName = () => {
+    return selectedProfile && profileSuggestions[selectedProfile as keyof typeof profileSuggestions]
+      ? profileSuggestions[selectedProfile as keyof typeof profileSuggestions].name
+      : selectedProfile;
+  };
 
   // Initial page load animation
   useEffect(() => {
@@ -322,11 +365,11 @@ export default function Home() {
                     className="space-y-6"
                   >
                     <div className="space-y-4">
-                      {tweetSuggestions.map((tweet, index) => (
+                      {getTweetSuggestions().map((tweet, index) => (
                         <motion.div
                           key={index}
                           initial={{ opacity: 0, y: 10 }}
-                          animate={{ 
+                          animate={{
                             opacity: 1, 
                             y: 0,
                             transition: { delay: index * 0.2 }
@@ -348,10 +391,7 @@ export default function Home() {
                               {/* Account Info */}
                               <div className="flex items-center gap-2 mb-1">
                                 <span className="font-bold text-sm">
-                                  {selectedProfile === 'elonmusk' ? 'Elon Musk' : 
-                                   selectedProfile === 'realDonaldTrump' ? 'Donald J. Trump' :
-                                   selectedProfile === 'taylorswift13' ? 'Taylor Swift' :
-                                   selectedProfile === 'kanyewest' ? 'Ye' : selectedProfile}
+                                  {getProfileDisplayName()}
                                 </span>
                                 <span className="text-gray-500 dark:text-gray-400 text-sm">@{selectedProfile}</span>
                                 <span className="text-gray-500 dark:text-gray-400 text-xs">· now</span>
@@ -361,7 +401,7 @@ export default function Home() {
                               <p className="text-sm">{tweet}</p>
                             </div>
                             
-                            {/* Copy Button - Centered vertically */}
+                            {/* Copy Button */}
                             <button 
                               onClick={() => copyToClipboard(tweet, index)}
                               className="self-center ml-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors focus:outline-none cursor-pointer"
