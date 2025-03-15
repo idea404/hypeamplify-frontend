@@ -136,6 +136,7 @@ export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false)
   const [selectedProfile, setSelectedProfile] = useState('')
   const [isComplete, setIsComplete] = useState(false)
+  const [copiedTweets, setCopiedTweets] = useState<{[key: number]: boolean}>({})
   
   // Mock loading messages
   const loadingMessages = [
@@ -176,6 +177,19 @@ export default function Home() {
         setStep(3)
       }, 1000)
     }, 6000)
+  }
+
+  // Add function to copy text to clipboard
+  const copyToClipboard = (text: string, index: number) => {
+    navigator.clipboard.writeText(text).then(() => {
+      // Set this tweet as copied
+      setCopiedTweets(prev => ({ ...prev, [index]: true }))
+      
+      // Reset the copied state after 2 seconds
+      setTimeout(() => {
+        setCopiedTweets(prev => ({ ...prev, [index]: false }))
+      }, 2000)
+    })
   }
 
   return (
@@ -310,9 +324,51 @@ export default function Home() {
                             y: 0,
                             transition: { delay: index * 0.2 }
                           }}
-                          className="p-3 bg-gray-100 dark:bg-gray-800 rounded-md"
+                          className="p-3 bg-gray-100 dark:bg-gray-800 rounded-md relative group"
                         >
-                          {tweet}
+                          <div className="flex justify-between items-start">
+                            <p className="text-sm mr-8">{tweet}</p>
+                            <button 
+                              onClick={() => copyToClipboard(tweet, index)}
+                              className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors focus:outline-none cursor-pointer"
+                              aria-label="Copy to clipboard"
+                            >
+                              {copiedTweets[index] ? (
+                                <motion.svg 
+                                  initial={{ scale: 0.8 }} 
+                                  animate={{ scale: 1 }}
+                                  xmlns="http://www.w3.org/2000/svg" 
+                                  width="16" 
+                                  height="16" 
+                                  viewBox="0 0 24 24" 
+                                  fill="none" 
+                                  stroke="currentColor" 
+                                  strokeWidth="2" 
+                                  strokeLinecap="round" 
+                                  strokeLinejoin="round" 
+                                  className="text-green-500"
+                                >
+                                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                  <polyline points="22 4 12 14.01 9 11.01"/>
+                                </motion.svg>
+                              ) : (
+                                <svg 
+                                  xmlns="http://www.w3.org/2000/svg" 
+                                  width="16" 
+                                  height="16" 
+                                  viewBox="0 0 24 24" 
+                                  fill="none" 
+                                  stroke="currentColor" 
+                                  strokeWidth="2" 
+                                  strokeLinecap="round" 
+                                  strokeLinejoin="round"
+                                >
+                                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                </svg>
+                              )}
+                            </button>
+                          </div>
                         </motion.div>
                       ))}
                     </div>
