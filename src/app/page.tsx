@@ -198,7 +198,7 @@ export default function Home() {
       <main className="flex-1 flex overflow-hidden">
         {/* Left Half - Intro */}
         <motion.div
-          className={`w-1/2 flex items-center justify-center p-8 ${hoverSide === 'right' ? 'blur-sm' : ''} transition-all duration-300`}
+          className={`w-1/2 flex items-center justify-end pr-12 p-8 ${hoverSide === 'right' ? 'blur-sm' : ''} transition-all duration-300`}
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: isLoaded ? 1 : 0, x: isLoaded ? 0 : -50 }}
           transition={{ delay: 0.3 }}
@@ -221,7 +221,7 @@ export default function Home() {
         
         {/* Right Half - Profile Selection / Generation */}
         <motion.div
-          className={`w-1/2 flex items-center justify-center p-8 ${hoverSide === 'left' ? 'blur-sm' : ''} transition-all duration-300`}
+          className={`w-1/2 flex items-center justify-start pl-12 p-8 ${hoverSide === 'left' ? 'blur-sm' : ''} transition-all duration-300`}
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: isLoaded ? 1 : 0, x: isLoaded ? 0 : 50 }}
           transition={{ delay: 0.4 }}
