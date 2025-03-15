@@ -6,23 +6,19 @@ import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
 import { Logo } from "@/components/ui/Logo"
 
-// Step indicator component with independent animations for number and title
+// Step indicator component with independent alignment and animations for number and title
 const StepIndicator = ({ step }: { step: number }) => {
   const titles = {
     1: "Select X Profile",
     2: "Generating...",
-    3: "Profit."
+    3: "Profit 💰"
   };
   
   return (
-    <div className="flex items-center justify-between mb-6">
-      <motion.h2 
-        className="text-4xl font-bold tracking-tighter flex items-center gap-3"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
+    <div className="flex items-center mb-6 relative">
+      <div className="flex items-center absolute" style={{ left: "-3rem" }}>
         <motion.span 
+          className="text-4xl font-bold tracking-tighter"
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.3 }}
@@ -30,13 +26,21 @@ const StepIndicator = ({ step }: { step: number }) => {
           {step}
         </motion.span>
         <motion.span
-          className="text-muted-foreground"
+          className="text-4xl font-bold tracking-tighter text-muted-foreground mx-1"
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3, duration: 0.3 }}
         >
-          |
+          .
         </motion.span>
+      </div>
+      
+      <motion.h2 
+        className="text-4xl font-bold tracking-tighter"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
         <motion.span
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
