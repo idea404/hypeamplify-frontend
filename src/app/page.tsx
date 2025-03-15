@@ -137,6 +137,7 @@ export default function Home() {
   const [selectedProfile, setSelectedProfile] = useState('')
   const [isComplete, setIsComplete] = useState(false)
   const [copiedTweets, setCopiedTweets] = useState<{[key: number]: boolean}>({})
+  const [shuffledMessages, setShuffledMessages] = useState<string[]>([])
   
   // Mock loading messages
   const loadingMessages = [
@@ -145,7 +146,6 @@ export default function Home() {
     "Analyzing what's trending before it trends...",
     "Brewing viral tweet potential...",
     "Convincing algorithms you're interesting...",
-    "Measuring engagement per exclamation mark!!!",
     "Stalking your competition (legally)...",
     "Simulating human authenticity..."
   ]
@@ -164,6 +164,13 @@ export default function Home() {
     }, 500)
     return () => clearTimeout(timer)
   }, [])
+
+  // Effect to shuffle messages once when step changes to 2
+  useEffect(() => {
+    if (step === 2) {
+      setShuffledMessages([...loadingMessages].sort(() => Math.random() - 0.5));
+    }
+  }, [step]);
 
   // Handle profile selection
   const handleProfileSelect = (profile: string) => {
@@ -289,7 +296,7 @@ export default function Home() {
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
                         >
-                          <LoadingAnimation messages={loadingMessages.sort(() => Math.random() - 0.5)} />
+                          <LoadingAnimation messages={shuffledMessages} />
                         </motion.div>
                       ) : (
                         <motion.div
