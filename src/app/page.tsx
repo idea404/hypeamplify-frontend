@@ -139,9 +139,14 @@ export default function Home() {
   
   // Mock loading messages
   const loadingMessages = [
-    "Fetching competition history...",
-    "Analyzing engagement patterns...",
-    "Fetching profile history...",
+    "Inflating follower egos...",
+    "Teaching AI to understand memes...",
+    "Analyzing what's trending before it trends...",
+    "Brewing viral tweet potential...",
+    "Convincing algorithms you're interesting...",
+    "Measuring engagement per exclamation mark!!!",
+    "Stalking your competition (legally)...",
+    "Simulating human authenticity..."
   ]
 
   // Mock tweet suggestions
@@ -270,7 +275,7 @@ export default function Home() {
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
                         >
-                          <LoadingAnimation messages={loadingMessages} />
+                          <LoadingAnimation messages={loadingMessages.sort(() => Math.random() - 0.5)} />
                         </motion.div>
                       ) : (
                         <motion.div
@@ -278,7 +283,7 @@ export default function Home() {
                           initial={{ opacity: 0, scale: 0.95 }}
                           animate={{ opacity: 1, scale: 1 }}
                         >
-                          <div className="flex items-center gap-2 text-green-500">
+                          <div className="flex items-center gap-2 text-green-600">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                             <p>All set! Ready!</p>
                           </div>
