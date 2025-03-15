@@ -331,13 +331,40 @@ export default function Home() {
                             y: 0,
                             transition: { delay: index * 0.2 }
                           }}
-                          className="p-3 bg-gray-100 dark:bg-gray-800 rounded-md relative group"
+                          className="p-4 bg-white dark:bg-black rounded-md relative group border border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors shadow-sm"
                         >
-                          <div className="flex justify-between items-start">
-                            <p className="text-sm mr-8">{tweet}</p>
+                          <div className="flex items-start gap-3">
+                            {/* Profile Image */}
+                            <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border border-gray-100 dark:border-gray-800">
+                              <img 
+                                src={`/images/${selectedProfile.toLowerCase()}.png`} 
+                                alt={selectedProfile} 
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            
+                            {/* Tweet Content */}
+                            <div className="flex-1">
+                              {/* Account Info */}
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-bold text-sm">
+                                  {selectedProfile === 'elonmusk' ? 'Elon Musk' : 
+                                   selectedProfile === 'realDonaldTrump' ? 'Donald J. Trump' :
+                                   selectedProfile === 'taylorswift13' ? 'Taylor Swift' :
+                                   selectedProfile === 'kanyewest' ? 'Ye' : selectedProfile}
+                                </span>
+                                <span className="text-gray-500 dark:text-gray-400 text-sm">@{selectedProfile}</span>
+                                <span className="text-gray-500 dark:text-gray-400 text-xs">· now</span>
+                              </div>
+                              
+                              {/* Tweet Text */}
+                              <p className="text-sm">{tweet}</p>
+                            </div>
+                            
+                            {/* Copy Button - Centered vertically */}
                             <button 
                               onClick={() => copyToClipboard(tweet, index)}
-                              className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors focus:outline-none cursor-pointer"
+                              className="self-center ml-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors focus:outline-none cursor-pointer"
                               aria-label="Copy to clipboard"
                             >
                               {copiedTweets[index] ? (
@@ -345,8 +372,8 @@ export default function Home() {
                                   initial={{ scale: 0.8 }} 
                                   animate={{ scale: 1 }}
                                   xmlns="http://www.w3.org/2000/svg" 
-                                  width="16" 
-                                  height="16" 
+                                  width="18" 
+                                  height="18" 
                                   viewBox="0 0 24 24" 
                                   fill="none" 
                                   stroke="currentColor" 
@@ -361,8 +388,8 @@ export default function Home() {
                               ) : (
                                 <svg 
                                   xmlns="http://www.w3.org/2000/svg" 
-                                  width="16" 
-                                  height="16" 
+                                  width="18" 
+                                  height="18" 
                                   viewBox="0 0 24 24" 
                                   fill="none" 
                                   stroke="currentColor" 
