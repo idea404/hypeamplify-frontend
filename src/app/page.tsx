@@ -261,7 +261,7 @@ export default function Home() {
         animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : -20 }}
         transition={{ delay: 0.2 }}
       >
-        <Button asChild variant="ghost">
+        <Button asChild variant="focus">
           <Link href="/auth/login">Sign In</Link>
         </Button>
       </motion.div>
