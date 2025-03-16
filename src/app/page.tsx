@@ -68,7 +68,7 @@ const ProfileButton = ({
     <Button
       variant="outline" 
       onClick={onClick}
-      className="w-full text-base relative overflow-hidden group transition-all duration-200 hover:bg-accent/50 hover:border-primary/30 hover:shadow-md px-2 py-5"
+      className="w-full text-base relative overflow-hidden group transition-all duration-200 hover:bg-accent/50 hover:border-primary/30 hover:shadow-md px-2 py-5 cursor-pointer"
     >
       <div className="flex items-center w-full justify-start gap-3">
         <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 border border-border">
