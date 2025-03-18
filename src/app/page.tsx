@@ -8,6 +8,8 @@ import { Logo } from "@/components/ui/Logo"
 import ProfileButton from "@/components/ui/ProfileButton"
 import { LoadingAnimation } from "@/components/ui/LoadingAnimation"
 import { TwitterCard } from "@/components/ui/TwitterCard"
+import { useRouter } from 'next/navigation'
+import { api } from '@/lib/api/client'
 
 // Step indicator component with independent alignment and animations for number and title
 const StepIndicator = ({ step }: { step: number }) => {
@@ -57,13 +59,19 @@ const StepIndicator = ({ step }: { step: number }) => {
 }
 
 export default function Home() {
+  const router = useRouter()
   const [step, setStep] = useState(1)
-  const [hoverSide, setHoverSide] = useState<'left' | 'right' | null>(null)
+  const [hoverSide, setHoverSide] = useState<'left' | 'right'>('left')
   const [isLoaded, setIsLoaded] = useState(false)
   const [selectedProfile, setSelectedProfile] = useState('')
   const [isComplete, setIsComplete] = useState(false)
   const [copiedTweets, setCopiedTweets] = useState<{[key: number]: boolean}>({})
   const [shuffledMessages, setShuffledMessages] = useState<string[]>([])
+
+  // Add auth-related state
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [user, setUser] = useState<any>(null)
+  const [credits, setCredits] = useState(0)
 
   // Profile-specific tweet suggestions from demo data
   const profileSuggestions = {
@@ -115,13 +123,50 @@ export default function Home() {
       : selectedProfile;
   };
 
-  // Initial page load animation
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoaded(true)
-    }, 500)
-    return () => clearTimeout(timer)
+    // Initialize
+    setIsLoaded(true)
+    
+    // Check authentication status
+    const checkAuth = async () => {
+      const token = localStorage.getItem('accessToken')
+      if (!token) {
+        setIsLoggedIn(false)
+        return
+      }
+      
+      try {
+        // Fetch user data and credits
+        const userData = await api.auth.me()
+        setUser(userData)
+        setIsLoggedIn(true)
+        
+        // Get user credits
+        const creditsData = await api.payments.getCredits()
+        setCredits(creditsData.credits || 0)
+      } catch (err) {
+        console.error('Auth check error:', err)
+        // If unauthorized, clear token
+        localStorage.removeItem('accessToken')
+        setIsLoggedIn(false)
+      }
+    }
+    
+    checkAuth()
   }, [])
+  
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken')
+    setIsLoggedIn(false)
+    setUser(null)
+    // No need to redirect since we're already on the landing page
+  }
+  
+  // Handle navigation to dashboard
+  const goToDashboard = () => {
+    router.push('/dashboard')
+  }
 
   // Handle profile selection
   const handleProfileSelect = (profile: string) => {
@@ -162,17 +207,46 @@ export default function Home() {
         }
       }}
     >
-      {/* Sign In Button */}
+      {/* Authentication Button(s) */}
       <motion.div 
         className="absolute top-4 right-4"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : -20 }}
         transition={{ delay: 0.2 }}
       >
-        <Button asChild variant="outline">
-          <Link href="/auth/login">Sign In</Link>
-        </Button>
+        {isLoggedIn ? (
+          <div className="flex items-center gap-4">
+            <div className="text-sm px-4 py-1 bg-background rounded-full border border-input text-primary">
+              {credits} credits available
+            </div>
+            <Button variant="default">
+              Buy Credits
+            </Button>
+            <Button variant="outline" onClick={handleLogout}>
+              Sign Out
+            </Button>
+          </div>
+        ) : (
+          <Button asChild variant="outline">
+            <Link href="/auth/login">Sign In</Link>
+          </Button>
+        )}
       </motion.div>
+      
+      {/* User Email (if logged in) */}
+      {isLoggedIn && (
+        <motion.div 
+          className="absolute top-5 left-16 cursor-pointer"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : -20 }}
+          transition={{ delay: 0.2 }}
+          onClick={goToDashboard}
+        >
+          <div className="text-sm px-4 py-1 bg-background rounded-full border border-input text-primary hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+            {user?.email || 'username not found'}
+          </div>
+        </motion.div>
+      )}
       
       {/* Main Content */}
       <main className="flex-1 flex overflow-hidden">
