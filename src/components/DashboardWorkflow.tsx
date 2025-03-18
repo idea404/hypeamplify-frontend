@@ -33,6 +33,7 @@ export function DashboardWorkflow({
   const [suggestions, setSuggestions] = useState<string[]>([])
   const [profileUrl, setProfileUrl] = useState('')
   const [animationComplete, setAnimationComplete] = useState(false)
+  const [isLoadingHistoricalTweets, setIsLoadingHistoricalTweets] = useState(false)
   
   // Profile management functions
   const handleAddProfile = () => {
@@ -67,23 +68,18 @@ export function DashboardWorkflow({
     setCurrentStep(5) // Show generating state
     
     try {
-      // Simulate API call for generating suggestions
-      await new Promise(resolve => setTimeout(resolve, 3000))
+      // Use real API call instead of setTimeout
+      const result = await api.tweets.suggest(selectedProfile)
       
-      // Sample suggestions - in production this would come from your API
-      const generatedSuggestions = [
-        "Just tried the new AI-powered feature from @HypeAmplify - my tweet engagement is up 43%! #AITwitter #ContentCreation",
-        "Breaking: Our latest product launch exceeded all expectations with 2x the projected sales! The team delivered something truly exceptional.",
-        "The secret to consistent growth? Test, learn, iterate. Rinse and repeat. #GrowthStrategy #BusinessTips"
-      ]
-      
-      setSuggestions(generatedSuggestions)
+      // Prepend new suggestions to existing ones
+      const newSuggestions = result.suggestions || []
+      setSuggestions(prevSuggestions => [...newSuggestions, ...prevSuggestions])
       
       // We'll move to step 6 after animation completes via onComplete callback
       
       // Notify parent component if callback provided
       if (onSuggestionGenerated) {
-        onSuggestionGenerated(generatedSuggestions)
+        onSuggestionGenerated(newSuggestions)
       }
     } catch (error) {
       console.error('Error generating suggestions:', error)
@@ -122,6 +118,25 @@ export function DashboardWorkflow({
       console.error('Error deleting profile:', error);
     }
   };
+  
+  // Add this useEffect to fetch historical tweets when a profile is selected
+  useEffect(() => {
+    const fetchHistoricalTweets = async () => {
+      if (selectedProfile && currentStep === 4) {
+        setIsLoadingHistoricalTweets(true)
+        try {
+          const data = await api.tweets.getSuggestions(selectedProfile)
+          setSuggestions(data.suggestions || [])
+        } catch (error) {
+          console.error('Error fetching historical tweets:', error)
+        } finally {
+          setIsLoadingHistoricalTweets(false)
+        }
+      }
+    }
+    
+    fetchHistoricalTweets()
+  }, [selectedProfile, currentStep])
   
   return (
     <motion.div
@@ -250,30 +265,70 @@ export function DashboardWorkflow({
         
         {/* Step 4: Generate Suggestions */}
         {currentStep === 4 && (
-          <div className="min-h-[300px] flex flex-col justify-start w-1/2">
-            <motion.div
-              className="space-y-2 text-start mb-5"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <h1 className="text-4xl font-bold tracking-tighter">Generate Suggestions</h1>
-              <p className="text-lg text-gray-500 dark:text-gray-400">
-                Generate suggestions for @{selectedProfile}
-              </p>
-            </motion.div>
-            <motion.div
-              className="flex justify-left gap-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              <div className="w-1/2">
-                <ProfileButton name={selectedProfile || ''} onClick={() => setCurrentStep(3)} />
+          <div key="step4" className="w-full">
+            {/* Flex container with proper 50/50 split */}
+            <div className="flex w-full">
+              {/* Left Side: 50% width */}
+              <div className="w-1/2 pr-8 flex flex-col">
+                <div className="space-y-2 text-start mb-5 flex flex-col justify-start">
+                  <motion.h1 
+                    className="text-4xl font-bold tracking-tighter leading-tight h-12"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    Generate Suggestions
+                  </motion.h1>
+                  <p className="text-lg text-gray-500 dark:text-gray-400">
+                    Generate suggestions for @{selectedProfile}
+                  </p>
+                </div>
+                <motion.div
+                  className="flex justify-left gap-4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  <div className="w-1/2">
+                    <ProfileButton name={selectedProfile || ''} onClick={() => setCurrentStep(3)} />
+                  </div>
+                  <Button 
+                    onClick={handleGenerateSuggestions} 
+                    className="cursor-pointer h-12"
+                    disabled={isLoadingHistoricalTweets}
+                  >
+                    {isLoadingHistoricalTweets ? 'Loading...' : 'Generate'}
+                  </Button>
+                </motion.div>
               </div>
-              <Button onClick={handleGenerateSuggestions} className="cursor-pointer h-12">
-                Generate
-              </Button>
-            </motion.div>
+              
+              {/* Right Side: Tweets column - 50% width */}
+              <div className="w-1/2 pl-8 flex flex-col justify-start overflow-y-auto max-h-[400px]">
+                <motion.div 
+                  className="space-y-3 w-full" 
+                  initial={{ opacity: 0 }} 
+                  animate={{ opacity: 1 }}
+                >
+                  {isLoadingHistoricalTweets ? (
+                    <div className="flex justify-center items-center h-[200px]">
+                      <p className="text-gray-500">Loading historical suggestions...</p>
+                    </div>
+                  ) : suggestions.length > 0 ? (
+                    suggestions.map((suggestion, index) => (
+                      <TwitterCard
+                        key={index}
+                        tweet={suggestion}
+                        username={selectedProfile || ''}
+                        index={index}
+                        animationDelay={0.1}
+                      />
+                    ))
+                  ) : (
+                    <div className="flex justify-center items-center h-[200px]">
+                      <p className="text-gray-500">No historical suggestions found. Generate new ones!</p>
+                    </div>
+                  )}
+                </motion.div>
+              </div>
+            </div>
           </div>
         )}
         
