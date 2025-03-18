@@ -22,21 +22,13 @@ export function DashboardWorkflow({
   onSuggestionGenerated,
 }: DashboardWorkflowProps) {
   // Local state for the workflow
-  const [currentStep, setCurrentStep] = useState(1)
-  const [selectedProfile, setSelectedProfile] = useState<string | null>(null)
   const [profiles, setProfiles] = useState<string[]>(initialProfiles)
+  const [currentStep, setCurrentStep] = useState(initialProfiles.length > 0 ? 3 : 1)
+  const [selectedProfile, setSelectedProfile] = useState<string | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [suggestions, setSuggestions] = useState<string[]>([])
   const [profileUrl, setProfileUrl] = useState('')
   const [animationComplete, setAnimationComplete] = useState(false)
-  
-  // Add this useEffect to check for initial profiles
-  useEffect(() => {
-    // If there are profiles available at initialization, go to the profile selection step
-    if (profiles.length > 0) {
-      setCurrentStep(3) // Move to profile selection step
-    }
-  }, []) // Empty dependency array means this runs once on mount
   
   // Profile management functions
   const handleAddProfile = () => {

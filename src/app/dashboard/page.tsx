@@ -37,6 +37,9 @@ export default function Dashboard() {
         // Fetch the user's profiles using the profiles API
         const profilesData = await api.tweets.profiles.getProfiles()
         console.log(profilesData)
+        console.log(typeof profilesData)
+        console.log(profilesData.profiles)
+        console.log(typeof profilesData.profiles)
         setUserProfiles(profilesData.profiles || [])
       } catch (err) {
         console.error('Error fetching user data:', err)
@@ -65,6 +68,9 @@ export default function Dashboard() {
       // Refresh profiles after adding
       const profilesData = await api.tweets.profiles.getProfiles()
       console.log(profilesData)
+      console.log(typeof profilesData)
+      console.log(profilesData.profiles)
+      console.log(typeof profilesData.profiles)
       setUserProfiles(profilesData.profiles || [])
     } catch (err) {
       console.error('Error adding profile:', err)
