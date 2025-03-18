@@ -77,6 +77,16 @@ export default function Dashboard() {
     }
   }
   
+  const handleProfileDeleted = async (profile: string) => {
+    try {
+      // Refresh profiles after deletion
+      const profilesData = await api.tweets.profiles.getProfiles();
+      setUserProfiles(profilesData.profiles || []);
+    } catch (err) {
+      console.error('Error refreshing profiles after deletion:', err);
+    }
+  };
+  
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -128,6 +138,7 @@ export default function Dashboard() {
         <DashboardWorkflow 
           initialProfiles={userProfiles}
           onProfileAdded={handleProfileAdded}
+          onProfileDeleted={handleProfileDeleted}
         />
       </main>
 

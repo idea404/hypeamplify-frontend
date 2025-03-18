@@ -82,7 +82,9 @@ export const api = {
         return response.data;
       },
       deleteProfile: async (twitterAccount: string) => {
-        const response = await apiClient.delete(`/tweets/profiles/${twitterAccount}`);
+        const response = await apiClient.delete(`/tweets/profiles`, {
+          data: { twitter_account: twitterAccount }
+        });
         return response.data;
       },
     },

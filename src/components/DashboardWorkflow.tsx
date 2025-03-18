@@ -7,6 +7,7 @@ import { Input } from './ui/Input'
 import ProfileButton from './ui/ProfileButton'
 import { LoadingAnimation } from './ui/LoadingAnimation'
 import { TwitterCard } from './ui/TwitterCard'
+import { api } from '@/lib/api/client'
 
 interface DashboardWorkflowProps {
   // Props that might be needed from parent
@@ -14,6 +15,7 @@ interface DashboardWorkflowProps {
   onProfileAdded?: (profile: string) => void
   onProfileSelected?: (profile: string) => void
   onSuggestionGenerated?: (suggestions: string[]) => void
+  onProfileDeleted?: (profile: string) => void
 }
 
 export function DashboardWorkflow({
@@ -21,6 +23,7 @@ export function DashboardWorkflow({
   onProfileAdded,
   onProfileSelected,
   onSuggestionGenerated,
+  onProfileDeleted,
 }: DashboardWorkflowProps) {
   // Local state for the workflow
   const [profiles, setProfiles] = useState<string[]>(initialProfiles)
@@ -97,6 +100,29 @@ export function DashboardWorkflow({
     }, 800) // Slight delay to let user see the completion state
   }
   
+  const handleDeleteProfile = async (profile: string) => {
+    try {
+      // Call the API to delete the profile
+      await api.tweets.profiles.deleteProfile(profile);
+      
+      // Update local state
+      setProfiles(prev => prev.filter(p => p !== profile));
+      
+      // Notify parent component if callback provided
+      if (onProfileDeleted) {
+        onProfileDeleted(profile);
+      }
+      
+      // If the deleted profile was selected, reset selected profile
+      if (selectedProfile === profile) {
+        setSelectedProfile(null);
+        setCurrentStep(3); // Go back to profile selection
+      }
+    } catch (error) {
+      console.error('Error deleting profile:', error);
+    }
+  };
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -168,7 +194,7 @@ export function DashboardWorkflow({
                     required
                     value={profileUrl}
                     onChange={(e) => setProfileUrl(e.target.value)}
-                    className="w-1/5"
+                    className="w-1/5 min-w-[200px]"
                   />
                   <Button onClick={handleAddProfile} className="cursor-pointer w-1/9">
                     Add
@@ -197,13 +223,14 @@ export function DashboardWorkflow({
                   Choose a profile to generate suggestions
                 </p>
               </div>
-              <div className="space-y-2 w-1/3 mb-4">
+              <div className="space-y-2 min-w-[280px] w-1/3 max-w-[400px] mb-4">
                 {profiles.length > 0 ? (
                   profiles.map((profile, index) => (
                     <ProfileButton
                       key={index}
                       name={profile}
                       onClick={() => handleSelectProfile(profile)}
+                      onDelete={() => handleDeleteProfile(profile)}
                     />
                   ))
                 ) : (
