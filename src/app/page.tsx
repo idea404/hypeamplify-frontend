@@ -222,7 +222,7 @@ export default function Home() {
             <Button variant="default">
               Buy Credits
             </Button>
-            <Button variant="outline" onClick={handleLogout}>
+            <Button variant="outline" onClick={handleLogout} className="cursor-pointer">
               Sign Out
             </Button>
           </div>
