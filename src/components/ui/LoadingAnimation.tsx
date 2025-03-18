@@ -90,13 +90,14 @@ export function LoadingAnimation({
   ])
   
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" style={{ background: 'transparent' }}>
       <AnimatePresence mode="wait">
         {!showComplete ? (
           <motion.div 
             key="loading"
             exit={{ opacity: 0 }}
             className="space-y-2"
+            style={{ background: 'transparent' }}
           >
             <div className="flex items-center gap-2">
               <motion.div 
@@ -106,19 +107,45 @@ export function LoadingAnimation({
               />
               <p className="text-xl">AI is thinking...</p>
             </div>
-            <div className="space-y-1">
-              {displayMessages.map((message, index) => (
-                index <= currentIndex && (
-                  <motion.p
-                    key={index}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-md text-muted-foreground"
-                  >
-                    {message}
-                  </motion.p>
-                )
-              ))}
+            
+            {/* Transparent container */}
+            <div className="h-[200px] relative overflow-hidden" style={{ background: 'transparent' }}>
+              <div className="space-y-1" style={{ background: 'transparent' }}>
+                {/* Reverse the array to show newest messages at the top */}
+                {displayMessages.slice(0, currentIndex + 1).reverse().map((message, index) => {
+                  // Deterministic stepwise opacity:
+                  // - First 4 messages (index 0-3): fully visible
+                  // - Message 5 (index 4): 66% visible
+                  // - Message 6 (index 5): 33% visible
+                  // - Message 7+ (index 6+): invisible
+                  let opacity;
+                  
+                  if (index <= 3) {
+                    opacity = 1; // First 4 messages fully visible
+                  } else if (index === 4) {
+                    opacity = 0.66; // 5th message: 2/3 visible
+                  } else if (index === 5) {
+                    opacity = 0.33; // 6th message: 1/3 visible
+                  } else {
+                    opacity = 0; // 7th message and beyond: invisible
+                  }
+                  
+                  return (
+                    <motion.p
+                      key={`msg-${currentIndex}-${index}`}
+                      initial={{ opacity: 0.5, y: -20 }}
+                      animate={{ 
+                        opacity, 
+                        y: 0 
+                      }}
+                      className="text-md text-muted-foreground"
+                      style={{ background: 'transparent' }}
+                    >
+                      {message}
+                    </motion.p>
+                  );
+                })}
+              </div>
             </div>
           </motion.div>
         ) : (
@@ -127,6 +154,7 @@ export function LoadingAnimation({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="py-2"
+            style={{ background: 'transparent' }}
           >
             <div className="flex items-center gap-2 text-green-600">
               <svg 

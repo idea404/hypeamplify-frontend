@@ -101,10 +101,8 @@ export function DashboardWorkflow({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="space-y-8 w-full max-w-2xl"
+      className="w-full"
     >
-      {/* Persistent header that stays in place */}
-
 
       <AnimatePresence mode="wait">
         {/* Step 1: Add X Profile (Initial) */}
@@ -220,21 +218,27 @@ export function DashboardWorkflow({
         
         {/* Step 4: Generate Suggestions */}
         {currentStep === 4 && (
-          <motion.div
+          <div
             key="step4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="space-y-8"
+            className="space-y-8 w-1/2"
           >
-            <div className="space-y-2 text-start mb-5">
+            <motion.div 
+              className="space-y-2 text-start mb-5"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
               <h1 className="text-4xl font-bold tracking-tighter">Generate Suggestions</h1>
               <p className="text-lg text-gray-500 dark:text-gray-400">
                 Generate suggestions for @{selectedProfile}
               </p>
-            </div>
-            <div className="flex justify-left gap-4">
-              <div className="w-1/3">
+            </motion.div>
+            <motion.div 
+              className="flex justify-left gap-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              <div className="w-1/2">
                 <ProfileButton 
                   name={selectedProfile || ''} 
                   onClick={() => setCurrentStep(3)}
@@ -246,47 +250,58 @@ export function DashboardWorkflow({
               >
                 Generate
               </Button>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         )}
         
         {/* Step 5: Generating */}
         {currentStep === 5 && (
-          <motion.div
-            key="step5"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="space-y-8"
-          >
-            <div className="flex flex-row items-start gap-8">
-              {/* Left side - Header and buttons */}
-              <div className="w-1/2 space-y-4">
-                <h1 className="text-4xl font-bold tracking-tighter">Generating...</h1>
-                <div className="flex flex-col gap-4 mt-6">
-                  <div className="w-full">
-                    <ProfileButton 
-                      name={selectedProfile || ''} 
-                      onClick={() => {}} // Non-functional during generation
-                    />
+          <div key="step5" className="w-full">
+            {/* Split-screen layout with fixed heights */}
+            <div className="flex w-full">
+              {/* Left Half - Header and buttons - with fixed height */}
+              <div className="w-1/2 pr-8 h-[300px] flex flex-col">
+                <motion.div 
+                  className="space-y-8"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  {/* Header section */}
+                  <div className="space-y-2 text-start mb-5">
+                    <h1 className="text-4xl font-bold tracking-tighter">Generating...</h1>
+                    <p className="text-lg text-gray-500 dark:text-gray-400">
+                      Analyzing profile @{selectedProfile}
+                    </p>
                   </div>
-                  <Button 
-                    disabled 
-                    className="opacity-50"
-                  >
-                    Generate
-                  </Button>
-                </div>
+                  
+                  {/* Buttons section */}
+                  <div className="flex justify-left gap-4">
+                    <div className="w-1/2">
+                      <ProfileButton 
+                        name={selectedProfile || ''} 
+                        onClick={() => {}} // Non-functional during generation
+                      />
+                    </div>
+                    <Button 
+                      disabled 
+                      className="opacity-50 h-10"
+                    >
+                      Generate
+                    </Button>
+                  </div>
+                </motion.div>
               </div>
               
-              {/* Right side - AI thinking animation */}
-              <div className="w-1/2">
-                <LoadingAnimation 
-                  onComplete={handleAnimationComplete}
-                />
+              {/* Right Half - AI thinking animation - align top with left header */}
+              <div className="w-1/2 pl-8 flex flex-col">
+                <div className="pt-[0.75rem]">
+                  <LoadingAnimation 
+                    onComplete={handleAnimationComplete}
+                  />
+                </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
         
         {/* Step 6: Generated Suggestions */}

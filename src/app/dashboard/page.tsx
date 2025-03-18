@@ -123,7 +123,7 @@ export default function Dashboard() {
       </motion.div>
       
       {/* Main Dashboard Content */}
-      <main className="flex-1 flex items-center justify-start p-8 pl-48">
+      <main className="flex-1 flex items-center justify-start p-48">
         {/* Use the new ProfileWorkflow component */}
         <DashboardWorkflow 
           initialProfiles={userProfiles}
