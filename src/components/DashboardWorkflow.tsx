@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from './ui/Input'
 import ProfileButton from './ui/ProfileButton'
 import { LoadingAnimation } from './ui/LoadingAnimation'
+import { TwitterCard } from './ui/TwitterCard'
 
 interface DashboardWorkflowProps {
   // Props that might be needed from parent
@@ -334,50 +335,13 @@ export function DashboardWorkflow({
               <div className="flex-1 pl-8 flex flex-col justify-start overflow-y-auto max-h-[400px]">
                 <motion.div className="space-y-3" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                   {suggestions.map((suggestion, index) => (
-                    <motion.div
+                    <TwitterCard
                       key={index}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="p-4 border border-gray-100 dark:border-gray-800 rounded-lg bg-white dark:bg-black shadow-sm"
-                    >
-                      <div className="flex items-start gap-3">
-                        {/* Profile Image */}
-                        <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border border-gray-100 dark:border-gray-800 bg-muted">
-                          {/* Profile image placeholder */}
-                        </div>
-                        {/* Tweet Content */}
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-bold text-sm">{selectedProfile}</span>
-                            <span className="text-gray-500 dark:text-gray-400 text-sm">@{selectedProfile}</span>
-                            <span className="text-gray-500 dark:text-gray-400 text-xs">· now</span>
-                          </div>
-                          <p className="text-sm">{suggestion}</p>
-                        </div>
-                        {/* Copy Button */}
-                        <button 
-                          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-                          onClick={() => navigator.clipboard.writeText(suggestion)}
-                          title="Copy to clipboard"
-                        >
-                          <svg 
-                            xmlns="http://www.w3.org/2000/svg" 
-                            width="18" 
-                            height="18" 
-                            viewBox="0 0 24 24" 
-                            fill="none" 
-                            stroke="currentColor" 
-                            strokeWidth="2" 
-                            strokeLinecap="round" 
-                            strokeLinejoin="round"
-                          >
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                          </svg>
-                        </button>
-                      </div>
-                    </motion.div>
+                      tweet={suggestion}
+                      username={selectedProfile || ''}
+                      index={index}
+                      animationDelay={0.1}
+                    />
                   ))}
                 </motion.div>
               </div>
