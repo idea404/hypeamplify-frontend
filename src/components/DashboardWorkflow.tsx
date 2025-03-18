@@ -307,11 +307,11 @@ export function DashboardWorkflow({
         {/* Step 6: Generated Suggestions */}
         {currentStep === 6 && (
           <div key="step6" className="w-full">
-            {/* Flex container with explicit widths to prevent collapsing */}
+            {/* Flex container with proper 50/50 split */}
             <div className="flex w-full">
-              {/* Left Side: Fixed width, fixed height */}
-              <div className="w-[300px] flex-shrink-0 pr-8 h-[300px] flex flex-col">
-                <div className="space-y-2 text-start mb-5 h-[80px] flex flex-col justify-start">
+              {/* Left Side: 50% width */}
+              <div className="w-1/2 pr-8 flex flex-col">
+                <div className="space-y-2 text-start mb-5 flex flex-col justify-start">
                   <motion.h1 
                     className="text-4xl font-bold tracking-tighter leading-tight h-12"
                   >
@@ -331,9 +331,9 @@ export function DashboardWorkflow({
                 </div>
               </div>
               
-              {/* Right Side: Tweets column - takes the remaining width */}
-              <div className="flex-1 pl-8 flex flex-col justify-start overflow-y-auto max-h-[400px]">
-                <motion.div className="space-y-3" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+              {/* Right Side: Tweets column - 50% width */}
+              <div className="w-1/2 pl-8 flex flex-col justify-start overflow-y-auto max-h-[400px]">
+                <motion.div className="space-y-3 w-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                   {suggestions.map((suggestion, index) => (
                     <TwitterCard
                       key={index}
