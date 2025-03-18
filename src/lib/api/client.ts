@@ -71,6 +71,21 @@ export const api = {
       const response = await apiClient.get(`/tweets/suggestions?twitter_account=${twitterAccount}`);
       return response.data;
     },
+    // Profiles endpoints
+    profiles: {
+      getProfiles: async () => {
+        const response = await apiClient.get('/tweets/profiles');
+        return response.data;
+      },
+      addProfile: async (twitterAccount: string) => {
+        const response = await apiClient.post('/tweets/profiles', { twitter_account: twitterAccount });
+        return response.data;
+      },
+      deleteProfile: async (profileId: string) => {
+        const response = await apiClient.delete(`/tweets/profiles/${profileId}`);
+        return response.data;
+      },
+    },
   },
   
   // Payments endpoints

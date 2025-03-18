@@ -2,9 +2,11 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/Button"
 import { motion, AnimatePresence } from "framer-motion"
 import { Logo } from "@/components/ui/Logo"
+import ProfileButton from "@/components/ui/ProfileButton"
+import { LoadingAnimation } from "@/components/ui/LoadingAnimation"
 
 // Step indicator component with independent alignment and animations for number and title
 const StepIndicator = ({ step }: { step: number }) => {
@@ -53,83 +55,6 @@ const StepIndicator = ({ step }: { step: number }) => {
   )
 }
 
-// X Profile Button component with profile image
-const ProfileButton = ({ 
-  name, 
-  onClick 
-}: { 
-  name: string,
-  onClick: () => void
-}) => {
-  // Clean name for image path (removing @ if present)
-  const imageName = name.replace('@', '').toLowerCase() + '.png';
-  
-  return (
-    <Button
-      variant="outline" 
-      onClick={onClick}
-      className="w-full text-base relative overflow-hidden group transition-all duration-200 hover:bg-accent/50 hover:border-primary/30 hover:shadow-md px-2 py-5 cursor-pointer"
-    >
-      <div className="flex items-center w-full justify-start gap-3">
-        <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 border border-border">
-          <img 
-            src={`/images/${imageName}`} 
-            alt={name} 
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <span>@{name.replace('@', '')}</span>
-      </div>
-      <motion.div 
-        className="absolute inset-0 bg-primary/5 pointer-events-none opacity-0 group-hover:opacity-100" 
-        layoutId="profileButtonHighlight"
-        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-      />
-    </Button>
-  )
-}
-
-// Loading animation component
-const LoadingAnimation = ({ messages }: { messages: string[] }) => {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  
-  useEffect(() => {
-    if (currentIndex < messages.length - 1) {
-      const timer = setTimeout(() => {
-        setCurrentIndex(index => index + 1)
-      }, 1200)
-      return () => clearTimeout(timer)
-    }
-  }, [currentIndex, messages.length])
-  
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        <motion.div 
-          animate={{ rotate: 360 }} 
-          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-          className="w-5 h-5 border-t-2 border-primary rounded-full shadow-sm"
-        />
-        <p className="text-xl">AI is thinking...</p>
-      </div>
-      <AnimatePresence>
-        {messages.map((message, index) => (
-          index <= currentIndex && (
-            <motion.p
-              key={index}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-md text-muted-foreground"
-            >
-              {message}
-            </motion.p>
-          )
-        ))}
-      </AnimatePresence>
-    </div>
-  )
-}
-
 export default function Home() {
   const [step, setStep] = useState(1)
   const [hoverSide, setHoverSide] = useState<'left' | 'right' | null>(null)
@@ -138,17 +63,6 @@ export default function Home() {
   const [isComplete, setIsComplete] = useState(false)
   const [copiedTweets, setCopiedTweets] = useState<{[key: number]: boolean}>({})
   const [shuffledMessages, setShuffledMessages] = useState<string[]>([])
-  
-  // Mock loading messages
-  const loadingMessages = [
-    "Inflating follower egos...",
-    "Teaching AI to understand memes...",
-    "Analyzing what's trending before it trends...",
-    "Brewing viral tweet potential...",
-    "Convincing algorithms you're interesting...",
-    "Stalking your competition (legally)...",
-    "Simulating human authenticity..."
-  ]
 
   // Profile-specific tweet suggestions from demo data
   const profileSuggestions = {
@@ -207,13 +121,6 @@ export default function Home() {
     }, 500)
     return () => clearTimeout(timer)
   }, [])
-
-  // Effect to shuffle messages once when step changes to 2
-  useEffect(() => {
-    if (step === 2) {
-      setShuffledMessages([...loadingMessages].sort(() => Math.random() - 0.5));
-    }
-  }, [step]);
 
   // Handle profile selection
   const handleProfileSelect = (profile: string) => {
@@ -339,7 +246,7 @@ export default function Home() {
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
                         >
-                          <LoadingAnimation messages={shuffledMessages} />
+                          <LoadingAnimation />
                         </motion.div>
                       ) : (
                         <motion.div
@@ -461,7 +368,9 @@ export default function Home() {
         animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
         transition={{ delay: 0.5 }}
       >
-        <Logo width={200} height={60} />
+        <Link href="/">
+          <Logo width={200} height={60} />
+        </Link>
       </motion.div>
     </div>
   )
