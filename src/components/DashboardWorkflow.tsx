@@ -126,7 +126,21 @@ export function DashboardWorkflow({
         setIsLoadingHistoricalTweets(true)
         try {
           const data = await api.tweets.getSuggestions(selectedProfile)
-          setSuggestions(data.suggestions || [])
+          console.log(data.suggestions)
+          // Parse the suggestions data correctly
+          if (Array.isArray(data.suggestions) && data.suggestions.length > 0) {
+            // Extract suggestions from all entries and flatten them into one array
+            // Also preserve the timestamp information
+            const formattedSuggestions = data.suggestions.flatMap((entry: any) => 
+              entry.suggestions.map((text: string) => ({
+                text,
+                createdAt: entry.createdAt
+              }))
+            );
+            setSuggestions(formattedSuggestions);
+          } else {
+            setSuggestions([]);
+          }
         } catch (error) {
           console.error('Error fetching historical tweets:', error)
         } finally {
@@ -323,7 +337,7 @@ export function DashboardWorkflow({
                     ))
                   ) : (
                     <div className="flex justify-center items-center h-[200px]">
-                      <p className="text-gray-500">No historical suggestions found. Generate new ones!</p>
+                      {/* <p className="text-gray-500">No historical suggestions found. Generate new ones!</p> */}
                     </div>
                   )}
                 </motion.div>

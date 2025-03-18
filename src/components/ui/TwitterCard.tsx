@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 
 interface TwitterCardProps {
-  tweet: string
+  tweet: string | { text: string; createdAt: string }
   username: string
   displayName?: string
   index?: number
@@ -20,12 +20,40 @@ export function TwitterCard({
 }: TwitterCardProps) {
   const [copied, setCopied] = useState(false)
   
+  // Handle both string tweets and object tweets with timestamp
+  const tweetText = typeof tweet === 'string' ? tweet : tweet.text
+  const tweetDate = typeof tweet === 'object' && tweet.createdAt ? 
+    new Date(tweet.createdAt) : null
+  
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(tweet).then(() => {
+    navigator.clipboard.writeText(tweetText).then(() => {
       setCopied(true)
       setTimeout(() => {
         setCopied(false)
       }, 2000)
+    })
+  }
+  
+  // Format the date for display
+  const formatDate = (date: Date) => {
+    // For recent dates (within a day), show relative time
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffHours = diffMs / (1000 * 60 * 60)
+    
+    if (diffHours < 24) {
+      if (diffHours < 1) {
+        const diffMinutes = Math.floor(diffMs / (1000 * 60))
+        return `${diffMinutes}m ago`
+      }
+      return `${Math.floor(diffHours)}h ago`
+    }
+    
+    // For older dates, show the formatted date
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric',
+      year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
     })
   }
 
@@ -59,11 +87,24 @@ export function TwitterCard({
               {displayName || username}
             </span>
             <span className="text-gray-500 dark:text-gray-400 text-sm">@{username}</span>
-            <span className="text-gray-500 dark:text-gray-400 text-xs">· now</span>
+            <span className="text-gray-500 dark:text-gray-400 text-xs">· {tweetDate ? formatDate(tweetDate) : 'now'}</span>
           </div>
           
           {/* Tweet Text */}
-          <p className="text-sm">{tweet}</p>
+          <p className="text-sm">{tweetText}</p>
+          
+          {/* Generated timestamp if available */}
+          {tweetDate && (
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
+              Generated at: {tweetDate.toLocaleString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit'
+              })}
+            </p>
+          )}
         </div>
         
         {/* Copy Button */}
