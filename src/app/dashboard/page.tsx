@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
 import { api } from '@/lib/api/client'
 import { Logo } from '@/components/ui/Logo'
-import { ProfileWorkflow } from '@/components/ProfileWorkflow'
+import { DashboardWorkflow } from '@/components/DashboardWorkflow'
 
 export default function Dashboard() {
   const router = useRouter()
@@ -119,7 +119,7 @@ export default function Dashboard() {
       {/* Main Dashboard Content */}
       <main className="flex-1 flex items-center justify-start p-8 pl-48">
         {/* Use the new ProfileWorkflow component */}
-        <ProfileWorkflow 
+        <DashboardWorkflow 
           initialProfiles={userProfiles}
           onProfileAdded={handleProfileAdded}
         />

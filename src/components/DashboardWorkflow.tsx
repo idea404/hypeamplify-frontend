@@ -7,7 +7,7 @@ import { Input } from './ui/Input'
 import ProfileButton from './ui/ProfileButton'
 import { LoadingAnimation } from './ui/LoadingAnimation'
 
-interface ProfileWorkflowProps {
+interface DashboardWorkflowProps {
   // Props that might be needed from parent
   initialProfiles?: string[]
   onProfileAdded?: (profile: string) => void
@@ -15,12 +15,12 @@ interface ProfileWorkflowProps {
   onSuggestionGenerated?: (suggestions: string[]) => void
 }
 
-export function ProfileWorkflow({
+export function DashboardWorkflow({
   initialProfiles = [],
   onProfileAdded,
   onProfileSelected,
   onSuggestionGenerated,
-}: ProfileWorkflowProps) {
+}: DashboardWorkflowProps) {
   // Local state for the workflow
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedProfile, setSelectedProfile] = useState<string | null>(null)
