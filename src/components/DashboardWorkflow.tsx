@@ -315,7 +315,7 @@ export function DashboardWorkflow({
               </div>
               
               {/* Right Side: Tweets column - 50% width */}
-              <div className="w-1/2 pl-8 flex flex-col justify-start overflow-y-auto max-h-[400px]">
+              <div className="w-1/2 pl-8 flex flex-col justify-start overflow-y-auto min-h-[300px]">
                 <motion.div 
                   className="space-y-3 w-full" 
                   initial={{ opacity: 0 }} 
@@ -428,7 +428,7 @@ export function DashboardWorkflow({
               </div>
               
               {/* Right Side: Tweets column - 50% width */}
-              <div className="w-1/2 pl-8 flex flex-col justify-start overflow-y-auto max-h-[400px]">
+              <div className="w-1/2 pl-8 flex flex-col justify-start overflow-y-auto min-h-[300px]">
                 <motion.div className="space-y-3 w-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                   {suggestions.map((suggestion, index) => (
                     <TwitterCard
