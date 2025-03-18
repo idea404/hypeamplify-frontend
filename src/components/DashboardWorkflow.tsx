@@ -270,7 +270,7 @@ export function DashboardWorkflow({
               <div className="w-1/2">
                 <ProfileButton name={selectedProfile || ''} onClick={() => setCurrentStep(3)} />
               </div>
-              <Button onClick={handleGenerateSuggestions} className="cursor-pointer h-10">
+              <Button onClick={handleGenerateSuggestions} className="cursor-pointer h-12">
                 Generate
               </Button>
             </motion.div>
@@ -311,7 +311,7 @@ export function DashboardWorkflow({
                     </div>
                     <Button 
                       disabled 
-                      className="opacity-50 h-10"
+                      className="opacity-50 h-12"
                     >
                       Generate
                     </Button>
@@ -352,7 +352,7 @@ export function DashboardWorkflow({
                   <div className="w-1/2">
                     <ProfileButton name={selectedProfile || ''} onClick={() => setCurrentStep(3)} />
                   </div>
-                  <Button onClick={handleGenerateSuggestions} className="cursor-pointer h-10">
+                  <Button onClick={handleGenerateSuggestions} className="cursor-pointer h-12">
                     Generate Again
                   </Button>
                 </div>

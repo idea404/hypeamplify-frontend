@@ -17,7 +17,7 @@ const ProfileButton: React.FC<ProfileButtonProps> = ({ name, onClick, onDelete }
 
     return (
         <div 
-            className="relative rounded-md border border-input bg-background px-3 flex items-center justify-between hover:border-primary transition-colors min-w-[220px] w-full overflow-hidden h-10"
+            className="relative rounded-md border border-input bg-background px-3 flex items-center justify-between hover:border-primary transition-colors min-w-[220px] w-full overflow-hidden h-12"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >

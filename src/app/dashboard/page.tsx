@@ -106,8 +106,9 @@ export default function Dashboard() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
+        onClick={() => router.push('/dashboard')}
       >
-        <div className="text-sm px-4 py-1 bg-background rounded-full border border-input text-primary">
+        <div className="text-sm px-4 py-1 bg-background rounded-full border border-input text-primary cursor-pointer">
           {user?.email || 'username not found'}
         </div>
       </motion.div>
