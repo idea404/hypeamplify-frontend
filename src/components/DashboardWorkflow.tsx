@@ -8,6 +8,8 @@ import ProfileButton from './ui/ProfileButton'
 import { LoadingAnimation } from './ui/LoadingAnimation'
 import { TwitterCard } from './ui/TwitterCard'
 import { api } from '@/lib/api/client'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
+import { CreditCard, AlertCircle } from 'lucide-react'
 
 interface DashboardWorkflowProps {
   // Props that might be needed from parent
@@ -34,6 +36,23 @@ export function DashboardWorkflow({
   const [profileUrl, setProfileUrl] = useState('')
   const [animationComplete, setAnimationComplete] = useState(false)
   const [isLoadingHistoricalTweets, setIsLoadingHistoricalTweets] = useState(false)
+  const [showCreditModal, setShowCreditModal] = useState(false)
+  const [userCredits, setUserCredits] = useState<number | null>(null)
+  
+  // Add this effect to get the user's current credits
+  useEffect(() => {
+    const fetchCredits = async () => {
+      try {
+        const creditsData = await api.payments.getCredits()
+        setUserCredits(creditsData.credits || 0)
+      } catch (error) {
+        console.error('Error fetching credits:', error)
+        setUserCredits(0)
+      }
+    }
+    
+    fetchCredits()
+  }, [])
   
   // Profile management functions
   const handleAddProfile = () => {
@@ -63,6 +82,12 @@ export function DashboardWorkflow({
   const handleGenerateSuggestions = async () => {
     if (!selectedProfile) return
     
+    // Check for credits first - if we have 0 credits, show modal without trying API call
+    if (userCredits !== null && userCredits <= 0) {
+      setShowCreditModal(true)
+      return
+    }
+    
     setIsGenerating(true)
     setAnimationComplete(false) // Reset animation state
     setCurrentStep(5) // Show generating state
@@ -75,15 +100,56 @@ export function DashboardWorkflow({
       const newSuggestions = result.suggestions || []
       setSuggestions(prevSuggestions => [...newSuggestions, ...prevSuggestions])
       
-      // We'll move to step 6 after animation completes via onComplete callback
+      // Update credits after successful generation (they will have been decremented)
+      try {
+        const creditsData = await api.payments.getCredits()
+        setUserCredits(creditsData.credits || 0)
+      } catch (error) {
+        console.error('Error updating credits:', error)
+      }
       
       // Notify parent component if callback provided
       if (onSuggestionGenerated) {
         onSuggestionGenerated(newSuggestions)
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating suggestions:', error)
+      
+      // Check if this is a payment required error (402)
+      if (error.response && error.response.status === 402) {
+        // Show the credit purchase modal
+        setShowCreditModal(true)
+        // Update our local credit state to reflect server state
+        setUserCredits(0)
+      }
+      
       setIsGenerating(false)
+      // Return to step 4 if there was an error
+      setCurrentStep(4)
+    }
+  }
+  
+  // Function to handle redirecting to buy credits
+  const handleBuyCredits = async () => {
+    // Get available packages
+    try {
+      const packages = await api.payments.getPackages()
+      // You could either redirect to a dedicated page or
+      // implement the checkout flow directly here
+      
+      // For this example, we'll just close the modal
+      setShowCreditModal(false)
+      
+      // Redirect to a payment page (you might want to implement this)
+      // window.location.href = '/payments'
+      
+      // Alternative: You could trigger the checkout process for a specific package
+      // if (packages.length > 0) {
+      //   const result = await api.payments.checkout(packages[0].id)
+      //   window.location.href = result.checkout_url
+      // }
+    } catch (error) {
+      console.error('Error fetching payment packages:', error)
     }
   }
   
@@ -119,18 +185,15 @@ export function DashboardWorkflow({
     }
   };
   
-  // Add this useEffect to fetch historical tweets when a profile is selected
+  // Separate useEffect for fetching historical suggestions - this runs regardless of credit status
   useEffect(() => {
     const fetchHistoricalTweets = async () => {
       if (selectedProfile && currentStep === 4) {
         setIsLoadingHistoricalTweets(true)
         try {
           const data = await api.tweets.getSuggestions(selectedProfile)
-          console.log(data.suggestions)
-          // Parse the suggestions data correctly
           if (Array.isArray(data.suggestions) && data.suggestions.length > 0) {
             // Extract suggestions from all entries and flatten them into one array
-            // Also preserve the timestamp information
             const formattedSuggestions = data.suggestions.flatMap((entry: any) => 
               entry.suggestions.map((text: string) => ({
                 text,
@@ -159,6 +222,82 @@ export function DashboardWorkflow({
       transition={{ duration: 0.4 }}
       className="w-full"
     >
+      {/* Insufficient Credits Modal */}
+      <Dialog open={showCreditModal} onOpenChange={setShowCreditModal}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <AlertCircle className="h-5 w-5 text-amber-500" />
+              </motion.div>
+              <motion.span
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+              >
+                Insufficient Credits
+              </motion.span>
+            </DialogTitle>
+            <DialogDescription>
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3, delay: 0.2 }}
+              >
+                You don't have enough credits to generate suggestions for this profile. 
+                Purchase more credits to continue.
+              </motion.span>
+            </DialogDescription>
+          </DialogHeader>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.4 }}
+            className="py-4"
+          >
+            <div className="rounded-lg border p-4 shadow-sm">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                Generating high-quality content requires credits. Add more credits to your account to continue generating amazing suggestions.
+              </p>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CreditCard className="h-5 w-5 text-primary" />
+                  <span className="font-medium">Buy Credits</span>
+                </div>
+                <span className="text-sm text-gray-500">Starting from $5</span>
+              </div>
+            </div>
+          </motion.div>
+          
+          <DialogFooter>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.3 }}
+              className="w-full flex gap-3"
+            >
+              <Button 
+                variant="outline" 
+                onClick={() => setShowCreditModal(false)} 
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button 
+                className="cursor-pointer flex-1"
+                onClick={handleBuyCredits}
+              >
+                Purchase Credits
+              </Button>
+            </motion.div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <AnimatePresence mode="wait">
         {/* Step 1: Add X Profile (Initial) */}
@@ -171,7 +310,7 @@ export function DashboardWorkflow({
               className="space-y-8"
             >
               <motion.h1 layoutId="addProfileHeader" className="text-4xl font-bold tracking-tighter mb-2">
-                Add an X Profile
+                Add an X profile
               </motion.h1>
               <div className="space-y-1 text-left">
                 <motion.p className="text-lg text-gray-500 dark:text-gray-400 mb-6" exit={{ opacity: 0 }}>
