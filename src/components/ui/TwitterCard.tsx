@@ -109,11 +109,11 @@ export function TwitterCard({
         {onDelete && (
           <button
             onClick={handleDeleteClick}
-            className="absolute top-3 right-3 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors focus:outline-none cursor-pointer z-10"
-            style={{ right: '0.75rem', top: '0.75rem' }}
+            className="absolute top-3 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-all focus:outline-none cursor-pointer z-10 group-hover:opacity-100 opacity-70 p-1"
+            style={{ right: '1rem', top: '0.75rem' }}
             aria-label="Delete suggestion"
           >
-            <Trash2 size={16} />
+            <Trash2 size={14} className="transform transition-transform duration-200 hover:scale-150" />
           </button>
         )}
         
