@@ -67,11 +67,11 @@ export const api = {
       });
       return response.data;
     },
-    getSuggestions: async (twitterAccount: string) => {
-      const response = await apiClient.get(`/tweets/suggestions?twitter_account=${twitterAccount}`);
+    getSuggestions: async (twitterAccount: string, includeHidden: boolean = false) => {
+      const response = await apiClient.get(`/tweets/suggestions?twitter_account=${twitterAccount}&include_hidden=${includeHidden}`);
       return response.data;
     },
-    deleteSuggestion: async (twitterAccount: string, suggestionText: string) => {
+    hideSuggestion: async (twitterAccount: string, suggestionText: string) => {
       const response = await apiClient.delete(`/tweets/suggestions`, {
         data: { twitter_account: twitterAccount, suggestion_text: suggestionText }
       });

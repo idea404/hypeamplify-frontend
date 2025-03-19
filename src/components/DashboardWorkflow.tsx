@@ -189,13 +189,14 @@ export function DashboardWorkflow({
     }
   };
   
-  // Separate useEffect for fetching historical suggestions - this runs regardless of credit status
+  // Separate useEffect for fetching historical suggestions
   useEffect(() => {
     const fetchHistoricalTweets = async () => {
       if (selectedProfile && currentStep === 4) {
         setIsLoadingHistoricalTweets(true)
         try {
-          const data = await api.tweets.getSuggestions(selectedProfile)
+          // Explicitly pass includeHidden=false to exclude hidden suggestions
+          const data = await api.tweets.getSuggestions(selectedProfile, false)
           if (data.suggestions && data.suggestions.length > 0) {
             setSuggestions(data.suggestions);
           } else {
@@ -211,6 +212,24 @@ export function DashboardWorkflow({
     
     fetchHistoricalTweets()
   }, [selectedProfile, currentStep])
+  
+  // Add an API function to hide a suggestion
+  const handleHideSuggestion = async (suggestionText: string) => {
+    if (!selectedProfile) return;
+    
+    try {
+      // Call the API to hide the suggestion
+      await api.tweets.hideSuggestion(selectedProfile, suggestionText);
+      
+      // Update local state - filter out the hidden suggestion
+      setSuggestions(prev => prev.filter(suggestion => {
+        const text = typeof suggestion === 'string' ? suggestion : suggestion.text;
+        return text !== suggestionText;
+      }));
+    } catch (error) {
+      console.error('Error hiding suggestion:', error);
+    }
+  };
   
   return (
     <motion.div
@@ -435,10 +454,11 @@ export function DashboardWorkflow({
                     suggestions.map((suggestion, index) => (
                       <TwitterCard
                         key={index}
-                        tweet={suggestion.text}
+                        tweet={suggestion}
                         username={selectedProfile || ''}
                         index={index}
                         animationDelay={0.1}
+                        onDelete={handleHideSuggestion}
                       />
                     ))
                   ) : (
@@ -539,10 +559,11 @@ export function DashboardWorkflow({
                   {suggestions.map((suggestion, index) => (
                     <TwitterCard
                       key={index}
-                      tweet={suggestion.text}
+                      tweet={suggestion}
                       username={selectedProfile || ''}
                       index={index}
                       animationDelay={0.1}
+                      onDelete={handleHideSuggestion}
                     />
                   ))}
                 </motion.div>
