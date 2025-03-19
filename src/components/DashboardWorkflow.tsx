@@ -217,7 +217,7 @@ export function DashboardWorkflow({
   
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
       className="w-full"
@@ -227,60 +227,30 @@ export function DashboardWorkflow({
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <AlertCircle className="h-5 w-5 text-amber-500" />
-              </motion.div>
-              <motion.span
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-              >
-                Insufficient Credits
-              </motion.span>
+              <AlertCircle className="h-5 w-5 text-amber-500" />
+              Insufficient Credits
             </DialogTitle>
             <DialogDescription>
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3, delay: 0.2 }}
-              >
-                You don't have enough credits to generate suggestions for this profile. 
-                Purchase more credits to continue.
-              </motion.span>
+              You don't have enough credits to generate suggestions for this profile. 
+              Purchase more credits to continue.
             </DialogDescription>
           </DialogHeader>
           
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.4 }}
-            className="py-4"
-          >
-            <div className="rounded-lg border p-4 shadow-sm">
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                Generating high-quality content requires credits. Add more credits to your account to continue generating amazing suggestions.
-              </p>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <CreditCard className="h-5 w-5 text-primary" />
-                  <span className="font-medium">Buy Credits</span>
-                </div>
-                <span className="text-sm text-gray-500">Starting from $5</span>
+          <div className="rounded-lg border p-4 shadow-sm">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              Generating high-quality content requires credits. Add more credits to your account to continue generating amazing suggestions.
+            </p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5 text-primary" />
+                <span className="font-medium">Buy Credits</span>
               </div>
+              <span className="text-sm text-gray-500">Starting from $5</span>
             </div>
-          </motion.div>
+          </div>
           
           <DialogFooter>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4, duration: 0.3 }}
-              className="w-full flex gap-3"
-            >
+            <div className="w-full flex gap-3">
               <Button 
                 variant="outline" 
                 onClick={() => setShowCreditModal(false)} 
@@ -294,7 +264,7 @@ export function DashboardWorkflow({
               >
                 Purchase Credits
               </Button>
-            </motion.div>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
