@@ -1,0 +1,6 @@
+- [ ] frontend knows when user is not logged in
+- [ ] credits update instantly on frontend
+- [ ] loading ai suggestions animation should wait on backend reply
+  - [ ] add more sentence for suggestion random picking
+- [ ] payments with Stripe functional and tested
+- [ ] scrolling with fade-out for tweet suggestions
