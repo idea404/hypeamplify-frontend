@@ -1,6 +1,7 @@
 import { Button } from "./Button";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { Trash2 } from "lucide-react";
 
 // X Profile Button component with profile image
 interface ProfileButtonProps {
@@ -47,10 +48,12 @@ const ProfileButton: React.FC<ProfileButtonProps> = ({ name, onClick, onDelete }
                     className="flex items-center justify-center h-6 w-6 text-red-500 opacity-80 hover:opacity-100 transition-opacity cursor-pointer"
                     aria-label="Delete profile"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
+                    <motion.div
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                    >
+                        <Trash2 size={16} />
+                    </motion.div>
                 </button>
             )}
         </div>
