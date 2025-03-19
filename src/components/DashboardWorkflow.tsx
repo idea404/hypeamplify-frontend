@@ -32,7 +32,11 @@ export function DashboardWorkflow({
   const [currentStep, setCurrentStep] = useState(initialProfiles.length > 0 ? 3 : 1)
   const [selectedProfile, setSelectedProfile] = useState<string | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
-  const [suggestions, setSuggestions] = useState<string[]>([])
+  const [suggestions, setSuggestions] = useState<Array<{
+    text: string;
+    hidden?: boolean;
+    createdAt: Date;
+  }>>([])
   const [profileUrl, setProfileUrl] = useState('')
   const [animationComplete, setAnimationComplete] = useState(false)
   const [isLoadingHistoricalTweets, setIsLoadingHistoricalTweets] = useState(false)
@@ -192,15 +196,8 @@ export function DashboardWorkflow({
         setIsLoadingHistoricalTweets(true)
         try {
           const data = await api.tweets.getSuggestions(selectedProfile)
-          if (Array.isArray(data.suggestions) && data.suggestions.length > 0) {
-            // Extract suggestions from all entries and flatten them into one array
-            const formattedSuggestions = data.suggestions.flatMap((entry: any) => 
-              entry.suggestions.map((text: string) => ({
-                text,
-                createdAt: entry.createdAt
-              }))
-            );
-            setSuggestions(formattedSuggestions);
+          if (data.suggestions && data.suggestions.length > 0) {
+            setSuggestions(data.suggestions);
           } else {
             setSuggestions([]);
           }
@@ -438,7 +435,7 @@ export function DashboardWorkflow({
                     suggestions.map((suggestion, index) => (
                       <TwitterCard
                         key={index}
-                        tweet={suggestion}
+                        tweet={suggestion.text}
                         username={selectedProfile || ''}
                         index={index}
                         animationDelay={0.1}
@@ -542,7 +539,7 @@ export function DashboardWorkflow({
                   {suggestions.map((suggestion, index) => (
                     <TwitterCard
                       key={index}
-                      tweet={suggestion}
+                      tweet={suggestion.text}
                       username={selectedProfile || ''}
                       index={index}
                       animationDelay={0.1}

@@ -71,6 +71,12 @@ export const api = {
       const response = await apiClient.get(`/tweets/suggestions?twitter_account=${twitterAccount}`);
       return response.data;
     },
+    deleteSuggestion: async (twitterAccount: string, suggestionText: string) => {
+      const response = await apiClient.delete(`/tweets/suggestions`, {
+        data: { twitter_account: twitterAccount, suggestion_text: suggestionText }
+      });
+      return response.data;
+    },
     // Profiles endpoints
     profiles: {
       getProfiles: async () => {
