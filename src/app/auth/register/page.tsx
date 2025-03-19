@@ -41,7 +41,6 @@ export default function Register() {
     try {
       // Register the user
       const response = await api.auth.register(formData.email, formData.password)
-      console.log("handleSubmit:response", response)
       
       // Store the access token
       localStorage.setItem('accessToken', response.access_token)
