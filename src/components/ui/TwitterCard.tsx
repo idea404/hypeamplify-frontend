@@ -13,6 +13,8 @@ interface TwitterCardProps {
   index?: number
   animationDelay?: number
   onDelete?: (tweetText: string) => Promise<void>
+  useLocalImagesFirst?: boolean
+  profileImageUrl?: string
 }
 
 export function TwitterCard({ 
@@ -21,7 +23,9 @@ export function TwitterCard({
   displayName,
   index = 0, 
   animationDelay = 0.2,
-  onDelete
+  onDelete,
+  useLocalImagesFirst = false,
+  profileImageUrl
 }: TwitterCardProps) {
   const [copied, setCopied] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -84,6 +88,15 @@ export function TwitterCard({
     })
   }
 
+  // Add a function to get the image source, similar to ProfileButton
+  const getImageSrc = () => {
+    if (useLocalImagesFirst) {
+      return `/images/${username.toLowerCase()}.png`;
+    }
+    
+    return profileImageUrl || `/images/${username.toLowerCase()}.png`;
+  };
+
   return (
     <>
       <motion.div
@@ -107,14 +120,14 @@ export function TwitterCard({
         <div className="flex items-start gap-3">
           {/* Profile Image */}
           <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border border-gray-100 dark:border-gray-800">
-            {/* Try to load an image if available, otherwise show a placeholder */}
             <img 
-              src={`/images/${username.toLowerCase()}.png`} 
+              src={getImageSrc()} 
               alt={username}
               className="w-full h-full object-cover"
               onError={(e) => {
-                e.currentTarget.style.display = 'none'
-                e.currentTarget.parentElement!.classList.add('bg-muted')
+                // Show X logo as fallback
+                e.currentTarget.src = "/images/x-logo.png";
+                e.currentTarget.className = "w-full h-full object-cover p-1";
               }}
             />
           </div>

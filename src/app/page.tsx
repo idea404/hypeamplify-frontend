@@ -298,10 +298,10 @@ export default function Home() {
                     className="space-y-6"
                   >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <ProfileButton name="elonmusk" onClick={() => handleProfileSelect('elonmusk')} />
-                      <ProfileButton name="realDonaldTrump" onClick={() => handleProfileSelect('realDonaldTrump')} />
-                      <ProfileButton name="taylorswift13" onClick={() => handleProfileSelect('taylorswift13')} />
-                      <ProfileButton name="kanyewest" onClick={() => handleProfileSelect('kanyewest')} />
+                      <ProfileButton name="elonmusk" onClick={() => handleProfileSelect('elonmusk')} useLocalImagesFirst={true} />
+                      <ProfileButton name="realDonaldTrump" onClick={() => handleProfileSelect('realDonaldTrump')} useLocalImagesFirst={true} />
+                      <ProfileButton name="taylorswift13" onClick={() => handleProfileSelect('taylorswift13')} useLocalImagesFirst={true} />
+                      <ProfileButton name="kanyewest" onClick={() => handleProfileSelect('kanyewest')} useLocalImagesFirst={true} />
                     </div>
                   </motion.div>
                 )}
@@ -355,6 +355,7 @@ export default function Home() {
                           displayName={getProfileDisplayName()}
                           index={index}
                           animationDelay={0.2}
+                          useLocalImagesFirst={true}
                         />
                       ))}
                     </div>

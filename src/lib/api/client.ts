@@ -77,6 +77,16 @@ export const api = {
       });
       return response.data;
     },
+    validateUsername: async (twitterUsername: string) => {
+      try {
+        const response = await apiClient.get(`/tweets/validate-username/${twitterUsername}`);
+        return response.data;
+      } catch (error) {
+        console.error(`Error validating Twitter username ${twitterUsername}:`, error);
+        // Return a structured response even when errors occur
+        return { exists: false, error: "Could not validate username" };
+      }
+    },
     // Profiles endpoints
     profiles: {
       getProfiles: async () => {

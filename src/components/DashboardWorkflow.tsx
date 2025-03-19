@@ -14,14 +14,25 @@ import { CreditCard, AlertCircle } from 'lucide-react'
 interface DashboardWorkflowProps {
   // Props that might be needed from parent
   initialProfiles?: string[]
+  initialProfilesData?: {[key: string]: ProfileData}
   onProfileAdded?: (profile: string) => void
   onProfileSelected?: (profile: string) => void
   onSuggestionGenerated?: (suggestions: string[]) => void
   onProfileDeleted?: (profile: string) => void
 }
 
+// Define a new interface for profile data
+interface ProfileData {
+  userName: string;
+  profilePicture?: string;
+  name?: string;
+  description?: string;
+  isVerified?: boolean;
+}
+
 export function DashboardWorkflow({
   initialProfiles = [],
+  initialProfilesData = {},
   onProfileAdded,
   onProfileSelected,
   onSuggestionGenerated,
@@ -42,6 +53,10 @@ export function DashboardWorkflow({
   const [isLoadingHistoricalTweets, setIsLoadingHistoricalTweets] = useState(false)
   const [showCreditModal, setShowCreditModal] = useState(false)
   const [userCredits, setUserCredits] = useState<number | null>(null)
+  // Add new state for profile data and validation
+  const [profileData, setProfileData] = useState<{[username: string]: ProfileData}>(initialProfilesData)
+  const [validationError, setValidationError] = useState<string | null>(null)
+  const [isValidating, setIsValidating] = useState(false)
   
   // Add this effect to get the user's current credits
   useEffect(() => {
@@ -58,17 +73,52 @@ export function DashboardWorkflow({
     fetchCredits()
   }, [])
   
-  // Profile management functions
-  const handleAddProfile = () => {
+  // Update profile management functions
+  const handleAddProfile = async () => {
     if (profileUrl && !profileUrl.includes(' ')) {
-      const username = profileUrl.replace('@', '').trim()
-      setProfiles(prev => [...prev, username])
-      setProfileUrl('')
-      setCurrentStep(3) // Move to profile selection
+      setValidationError(null);
+      setIsValidating(true);
       
-      // Notify parent component if callback provided
-      if (onProfileAdded) {
-        onProfileAdded(username)
+      const username = profileUrl.replace('@', '').trim();
+      
+      try {
+        // Validate profile with the backend
+        const validationResult = await api.tweets.validateUsername(username);
+        
+        if (!validationResult.exists) {
+          setValidationError(`Profile @${username} does not exist on X or is not accessible.`);
+          setIsValidating(false);
+          return;
+        }
+        
+        // Save profile data
+        if (validationResult.profile) {
+          setProfileData(prev => ({
+            ...prev,
+            [username]: validationResult.profile
+          }));
+        }
+        
+        // Add profile
+        try {
+          await api.tweets.profiles.addProfile(username);
+          setProfiles(prev => [...prev, username]);
+          setProfileUrl('');
+          setCurrentStep(3); // Move to profile selection
+          
+          // Notify parent component if callback provided
+          if (onProfileAdded) {
+            onProfileAdded(username);
+          }
+        } catch (addError) {
+          console.error('Error adding profile:', addError);
+          setValidationError('Error adding profile. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error validating profile:', error);
+        setValidationError('Error validating profile. Please try again.');
+      } finally {
+        setIsValidating(false);
       }
     }
   }
@@ -231,6 +281,39 @@ export function DashboardWorkflow({
     }
   };
   
+  // Fetch profile data when profiles are loaded - with added error handling
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      // Don't attempt to fetch if there are no profiles
+      if (profiles.length === 0) return;
+      
+      const newProfileData = { ...profileData };
+      let anyProfilesFetched = false;
+      
+      for (const profile of profiles) {
+        // Only fetch if we don't already have the data
+        if (!profileData[profile]) {
+          try {
+            const result = await api.tweets.validateUsername(profile);
+            if (result.exists && result.profile) {
+              newProfileData[profile] = result.profile;
+              anyProfilesFetched = true;
+            }
+          } catch (error) {
+            console.error(`Error fetching profile data for ${profile}:`, error);
+          }
+        }
+      }
+      
+      // Only update state if we actually got new data
+      if (anyProfilesFetched) {
+        setProfileData(newProfileData);
+      }
+    };
+    
+    fetchProfileData();
+  }, [profiles]);
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
@@ -350,11 +433,24 @@ export function DashboardWorkflow({
                     onChange={(e) => setProfileUrl(e.target.value)}
                     className="w-1/5 min-w-[200px]"
                   />
-                  <Button onClick={handleAddProfile} className="cursor-pointer w-1/9">
-                    Add
+                  <Button 
+                    onClick={handleAddProfile} 
+                    className="cursor-pointer w-1/9"
+                    disabled={isValidating}
+                  >
+                    {isValidating ? 'Validating...' : 'Add'}
                   </Button>
                 </motion.div>
               </div>
+              {validationError && (
+                <motion.p
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-red-500 text-sm"
+                >
+                  {validationError}
+                </motion.p>
+              )}
             </motion.div>
           </div>
         )}
@@ -383,6 +479,7 @@ export function DashboardWorkflow({
                     <ProfileButton
                       key={index}
                       name={profile}
+                      profileImageUrl={profileData[profile]?.profilePicture}
                       onClick={() => handleSelectProfile(profile)}
                       onDelete={() => handleDeleteProfile(profile)}
                     />
@@ -427,7 +524,11 @@ export function DashboardWorkflow({
                   animate={{ opacity: 1 }}
                 >
                   <div className="w-1/2">
-                    <ProfileButton name={selectedProfile || ''} onClick={() => setCurrentStep(3)} />
+                    <ProfileButton 
+                      name={selectedProfile || ''} 
+                      profileImageUrl={profileData[selectedProfile || '']?.profilePicture}
+                      onClick={() => setCurrentStep(3)} 
+                    />
                   </div>
                   <Button 
                     onClick={handleGenerateSuggestions} 
@@ -459,6 +560,7 @@ export function DashboardWorkflow({
                         index={index}
                         animationDelay={0.1}
                         onDelete={handleHideSuggestion}
+                        profileImageUrl={profileData[selectedProfile || '']?.profilePicture}
                       />
                     ))
                   ) : (
@@ -501,6 +603,7 @@ export function DashboardWorkflow({
                     <div className="w-1/2">
                       <ProfileButton 
                         name={selectedProfile || ''} 
+                        profileImageUrl={profileData[selectedProfile || '']?.profilePicture}
                         onClick={() => {}} // Non-functional during generation
                       />
                     </div>
@@ -545,7 +648,11 @@ export function DashboardWorkflow({
                 </div>
                 <div className="flex justify-left gap-4">
                   <div className="w-1/2">
-                    <ProfileButton name={selectedProfile || ''} onClick={() => setCurrentStep(3)} />
+                    <ProfileButton 
+                      name={selectedProfile || ''} 
+                      profileImageUrl={profileData[selectedProfile || '']?.profilePicture}
+                      onClick={() => setCurrentStep(3)} 
+                    />
                   </div>
                   <Button onClick={handleGenerateSuggestions} className="cursor-pointer h-12">
                     Generate Again
@@ -564,6 +671,7 @@ export function DashboardWorkflow({
                       index={index}
                       animationDelay={0.1}
                       onDelete={handleHideSuggestion}
+                      profileImageUrl={profileData[selectedProfile || '']?.profilePicture}
                     />
                   ))}
                 </motion.div>

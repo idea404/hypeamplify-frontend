@@ -1,20 +1,46 @@
 import { Button } from "./Button";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Trash2 } from "lucide-react";
 
 // X Profile Button component with profile image
 interface ProfileButtonProps {
     name: string;
+    profileImageUrl?: string;
     onClick: () => void;
     onDelete?: () => void;
+    useLocalImagesFirst?: boolean; // Add this prop for demo profiles
 }
 
-const ProfileButton: React.FC<ProfileButtonProps> = ({ name, onClick, onDelete }) => {
+const ProfileButton: React.FC<ProfileButtonProps> = ({ 
+    name, 
+    profileImageUrl, 
+    onClick, 
+    onDelete,
+    useLocalImagesFirst = false // Default to false, set to true for demo profiles
+}) => {
     // Clean name for image path (removing @ if present)
     const imageName = name.replace("@", "").toLowerCase() + ".png";
     const [imageError, setImageError] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
+    
+    // Reset image error state when profileImageUrl changes
+    useEffect(() => {
+        setImageError(false);
+    }, [profileImageUrl]);
+
+    // Determine which image source to use
+    const getImageSrc = () => {
+        if (imageError) {
+            return "/images/x-logo.png";
+        }
+        
+        if (useLocalImagesFirst) {
+            return `/images/${imageName}`;
+        }
+        
+        return profileImageUrl || `/images/${imageName}`;
+    };
 
     return (
         <div 
@@ -29,9 +55,9 @@ const ProfileButton: React.FC<ProfileButtonProps> = ({ name, onClick, onDelete }
                 <div className="flex items-center w-full justify-start gap-3 min-w-0">
                     <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 border border-border">
                         <img 
-                            src={imageError ? "/images/x-logo.png" : `/images/${imageName}`} 
+                            src={getImageSrc()}
                             alt={name} 
-                            className="w-full h-full object-cover"
+                            className={`w-full h-full object-cover ${getImageSrc().includes('x-logo.png') ? 'p-1' : ''}`}
                             onError={() => setImageError(true)}
                         />
                     </div>

@@ -15,6 +15,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [credits, setCredits] = useState(0)
   const [userProfiles, setUserProfiles] = useState<string[]>([])
+  const [profilesData, setProfilesData] = useState<{[key: string]: any}>({})
   
   useEffect(() => {
     // Check if user is authenticated
@@ -37,6 +38,22 @@ export default function Dashboard() {
         // Fetch the user's profiles using the profiles API
         const profilesData = await api.tweets.profiles.getProfiles()
         setUserProfiles(profilesData.profiles || [])
+        
+        // Get profile data for each profile, but don't block UI rendering
+        setTimeout(async () => {
+          const profilesInfo: {[key: string]: any} = {}
+          for (const profile of profilesData.profiles || []) {
+            try {
+              const validation = await api.tweets.validateUsername(profile)
+              if (validation.exists && validation.profile) {
+                profilesInfo[profile] = validation.profile
+              }
+            } catch (error) {
+              console.error(`Error validating profile ${profile}:`, error)
+            }
+          }
+          setProfilesData(profilesInfo)
+        }, 500)
       } catch (err) {
         console.error('Error fetching user data:', err)
         // If unauthorized, redirect to login
@@ -131,9 +148,10 @@ export default function Dashboard() {
       
       {/* Main Dashboard Content */}
       <main className="flex-1 flex items-center justify-start p-48">
-        {/* Use the new ProfileWorkflow component */}
+        {/* Use the new ProfileWorkflow component with profile data */}
         <DashboardWorkflow 
           initialProfiles={userProfiles}
+          initialProfilesData={profilesData}
           onProfileAdded={handleProfileAdded}
           onProfileDeleted={handleProfileDeleted}
         />
