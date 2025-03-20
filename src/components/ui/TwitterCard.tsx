@@ -163,7 +163,7 @@ export function TwitterCard({
           {/* Copy Button - In original position */}
           <button 
             onClick={copyToClipboard}
-            className="self-center ml-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors focus:outline-none cursor-pointer"
+            className="self-center ml-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors focus:outline-none cursor-pointer mt-2"
             aria-label="Copy to clipboard"
           >
             {copied ? (
