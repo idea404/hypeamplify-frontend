@@ -30,7 +30,18 @@ export function LoadingAnimation({
     "Identifying trending topics...",
     "Studying content patterns...",
     "Optimizing for maximum impact...",
-    "Crafting personalized suggestions..."
+    "Crafting personalized suggestions...",
+    "Over-engineering your tweet suggestions because why not?",
+    "Distilling your personality into 280 characters...",
+    "Because your tweets deserve to be this good...",
+    "Laser-targeting your audience's fragile ego...",
+    "Tweet suggestions so sharp, they'll cut through the noise...",
+    "Inserting sublimated messages...",
+    "Searching for Llamas...",
+    "Normalizing Social Network...",
+    "Making a Little Bit of Magic...",
+    "Making a Mess...",
+    "Generating Intrigue...",
   ]
   
   // Use provided messages or fall back to default
