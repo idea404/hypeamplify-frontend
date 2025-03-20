@@ -1,10 +1,10 @@
+// This is a server component (no 'use client' directive)
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/ThemeProvider'
 import { AuthProvider } from '@/lib/auth/AuthContext'
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
-import { WebGLBackground } from '@/components/WebGLBackground'
+import { ClientAuthWrapper } from '@/components/ClientAuthWrapper'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -26,12 +26,9 @@ export default function RootLayout({
       <body className={`${inter.className} min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 relative`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>
-            <WebGLBackground />
-            <div className="absolute inset-0 bg-white/50 dark:bg-black/40 backdrop-blur-[3px] -z-5" />
-            <div className="absolute top-4 left-4 z-50">
-              <ThemeToggle />
-            </div>
-            {children}
+            <ClientAuthWrapper>
+              {children}
+            </ClientAuthWrapper>
           </AuthProvider>
         </ThemeProvider>
       </body>

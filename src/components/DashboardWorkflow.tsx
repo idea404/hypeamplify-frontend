@@ -314,6 +314,23 @@ export function DashboardWorkflow({
     fetchProfileData();
   }, [profiles]);
   
+  // Inside DashboardWorkflow component
+  useEffect(() => {
+    // Only update if there are profiles
+    if (initialProfiles && initialProfiles.length > 0) {
+      setProfiles(initialProfiles);
+      // Set the correct initial step if profiles exist
+      setCurrentStep(3); // This step should be your "select profile" step
+    }
+  }, [initialProfiles]);
+
+  // Also check initialProfilesData is handled
+  useEffect(() => {
+    if (initialProfilesData && Object.keys(initialProfilesData).length > 0) {
+      setProfileData(initialProfilesData);
+    }
+  }, [initialProfilesData]);
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
@@ -555,7 +572,7 @@ export function DashboardWorkflow({
                     suggestions.map((suggestion, index) => (
                       <TwitterCard
                         key={index}
-                        tweet={suggestion}
+                        tweet={suggestion.text}
                         username={selectedProfile || ''}
                         index={index}
                         animationDelay={0.1}
@@ -666,7 +683,7 @@ export function DashboardWorkflow({
                   {suggestions.map((suggestion, index) => (
                     <TwitterCard
                       key={index}
-                      tweet={suggestion}
+                      tweet={suggestion.text}
                       username={selectedProfile || ''}
                       index={index}
                       animationDelay={0.1}

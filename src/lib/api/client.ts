@@ -1,5 +1,11 @@
 import axios from 'axios';
 
+// Create a custom event for auth events that can be listened to throughout the app
+export const authEvents = {
+  logout: new CustomEvent('auth-logout'),
+  // You could add other auth events here if needed
+};
+
 // Base API URL
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -24,6 +30,26 @@ apiClient.interceptors.request.use(
     return config;
   },
   (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Add a response interceptor to handle authentication errors
+apiClient.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    // Check if the error is due to an unauthorized request (401)
+    if (error.response && error.response.status === 401) {
+      // Clear the token from localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('accessToken');
+        
+        // Dispatch the logout event so other components can react
+        window.dispatchEvent(authEvents.logout);
+      }
+    }
     return Promise.reject(error);
   }
 );

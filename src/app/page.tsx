@@ -10,6 +10,7 @@ import { LoadingAnimation } from "@/components/ui/LoadingAnimation"
 import { TwitterCard } from "@/components/ui/TwitterCard"
 import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api/client'
+import { useAuthContext } from '@/lib/auth/AuthContext'
 
 // Step indicator component with independent alignment and animations for number and title
 const StepIndicator = ({ step }: { step: number }) => {
@@ -60,6 +61,7 @@ const StepIndicator = ({ step }: { step: number }) => {
 
 export default function Home() {
   const router = useRouter()
+  const { isLoggedIn, user } = useAuthContext()
   const [step, setStep] = useState(1)
   const [hoverSide, setHoverSide] = useState<'left' | 'right'>('left')
   const [isLoaded, setIsLoaded] = useState(false)
@@ -68,9 +70,7 @@ export default function Home() {
   const [copiedTweets, setCopiedTweets] = useState<{[key: number]: boolean}>({})
   const [shuffledMessages, setShuffledMessages] = useState<string[]>([])
 
-  // Add auth-related state
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [user, setUser] = useState<any>(null)
+  // Add credits state
   const [credits, setCredits] = useState(0)
 
   // Profile-specific tweet suggestions from demo data
@@ -127,40 +127,25 @@ export default function Home() {
     // Initialize
     setIsLoaded(true)
     
-    // Check authentication status
-    const checkAuth = async () => {
-      const token = localStorage.getItem('accessToken')
-      if (!token) {
-        setIsLoggedIn(false)
-        return
+    // Only fetch credits if logged in
+    if (isLoggedIn) {
+      const fetchCredits = async () => {
+        try {
+          const creditsData = await api.payments.getCredits()
+          setCredits(creditsData.credits || 0)
+        } catch (err) {
+          console.error('Error fetching credits:', err)
+        }
       }
       
-      try {
-        // Fetch user data and credits
-        const userData = await api.auth.me()
-        setUser(userData)
-        setIsLoggedIn(true)
-        
-        // Get user credits
-        const creditsData = await api.payments.getCredits()
-        setCredits(creditsData.credits || 0)
-      } catch (err) {
-        console.error('Auth check error:', err)
-        // If unauthorized, clear token
-        localStorage.removeItem('accessToken')
-        setIsLoggedIn(false)
-      }
+      fetchCredits()
     }
-    
-    checkAuth()
-  }, [])
+  }, [isLoggedIn])
   
   // Handle logout
   const handleLogout = () => {
-    localStorage.removeItem('accessToken')
-    setIsLoggedIn(false)
-    setUser(null)
-    // No need to redirect since we're already on the landing page
+    const { logout } = useAuthContext()
+    logout()
   }
   
   // Handle navigation to dashboard

@@ -9,9 +9,11 @@ import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
 import { api } from '@/lib/api/client'
 import { Logo } from '@/components/ui/Logo'
+import { useAuthContext } from '@/lib/auth/AuthContext'
 
 export default function Register() {
   const router = useRouter()
+  const { checkAuth } = useAuthContext()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [formData, setFormData] = useState({
@@ -44,6 +46,9 @@ export default function Register() {
       
       // Store the access token
       localStorage.setItem('accessToken', response.access_token)
+      
+      // Update auth state before redirecting
+      await checkAuth()
       
       // Redirect to dashboard
       router.push('/dashboard')

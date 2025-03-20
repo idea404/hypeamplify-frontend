@@ -9,9 +9,11 @@ import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
 import { api } from '@/lib/api/client'
 import { Logo } from '@/components/ui/Logo'
+import { useAuthContext } from '@/lib/auth/AuthContext'
 
 export default function Login() {
   const router = useRouter()
+  const { checkAuth, login } = useAuthContext()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [formData, setFormData] = useState({
@@ -33,7 +35,9 @@ export default function Login() {
     
     try {
       const response = await api.auth.login(formData.email, formData.password)
-      localStorage.setItem('accessToken', response.access_token)
+      
+      await login(response.access_token, response.user)
+      
       router.push('/dashboard')
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Invalid email or password')

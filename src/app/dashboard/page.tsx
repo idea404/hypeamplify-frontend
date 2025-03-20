@@ -1,169 +1,157 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { ProtectedRoute } from '@/components/ProtectedRoute'
+import { useAuthContext } from '@/lib/auth/AuthContext'
+import { api } from '@/lib/api/client'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
-import { api } from '@/lib/api/client'
 import { Logo } from '@/components/ui/Logo'
 import { DashboardWorkflow } from '@/components/DashboardWorkflow'
 
 export default function Dashboard() {
-  const router = useRouter()
-  const [user, setUser] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-  const [credits, setCredits] = useState(0)
-  const [userProfiles, setUserProfiles] = useState<string[]>([])
-  const [profilesData, setProfilesData] = useState<{[key: string]: any}>({})
+  const { user, logout } = useAuthContext();
+  const [credits, setCredits] = useState(0);
+  const [userProfiles, setUserProfiles] = useState<string[]>([]);
+  const [profilesData, setProfilesData] = useState<{[key: string]: any}>({});
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
-    // Check if user is authenticated
-    const token = localStorage.getItem('accessToken')
-    if (!token) {
-      router.push('/auth/login')
-      return
-    }
-    
-    // Fetch user data
+    // Consolidated function to fetch all user data
     const fetchUserData = async () => {
+      setIsLoading(true);
       try {
-        const userData = await api.auth.me()
-        setUser(userData)
+        // Get user credits - await this call
+        const creditsData = await api.payments.getCredits();
+        setCredits(creditsData.credits || 0);
         
-        // Get user credits
-        const creditsData = await api.payments.getCredits()
-        setCredits(creditsData.credits || 0)
+        // Fetch the user's profiles - await this call
+        const profilesData = await api.tweets.profiles.getProfiles();
+        const profiles = profilesData.profiles || [];
+        setUserProfiles(profiles);
         
-        // Fetch the user's profiles using the profiles API
-        const profilesData = await api.tweets.profiles.getProfiles()
-        setUserProfiles(profilesData.profiles || [])
-        
-        // Get profile data for each profile, but don't block UI rendering
-        setTimeout(async () => {
-          const profilesInfo: {[key: string]: any} = {}
-          for (const profile of profilesData.profiles || []) {
-            try {
-              const validation = await api.tweets.validateUsername(profile)
-              if (validation.exists && validation.profile) {
-                profilesInfo[profile] = validation.profile
+        // If there are profiles, fetch their data immediately (not in setTimeout)
+        if (profiles.length > 0) {
+          const profilesInfo: {[key: string]: any} = {};
+          // Use Promise.all to fetch all profile data in parallel
+          await Promise.all(
+            profiles.map(async (profile: string) => {
+              try {
+                const validation = await api.tweets.validateUsername(profile);
+                if (validation.exists && validation.profile) {
+                  profilesInfo[profile] = validation.profile;
+                }
+              } catch (error) {
+                console.error(`Error validating profile ${profile}:`, error);
               }
-            } catch (error) {
-              console.error(`Error validating profile ${profile}:`, error)
-            }
-          }
-          setProfilesData(profilesInfo)
-        }, 500)
+            })
+          );
+          setProfilesData(profilesInfo);
+        }
       } catch (err) {
-        console.error('Error fetching user data:', err)
-        // If unauthorized, redirect to login
-        localStorage.removeItem('accessToken')
-        router.push('/auth/login')
+        console.error('Error fetching user data:', err);
       } finally {
-        setLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
     
-    fetchUserData()
-  }, [router])
+    fetchUserData();
+  }, []);
   
-  const handleLogout = () => {
-    localStorage.removeItem('accessToken')
-    router.push('/')
-  }
-  
-  // Callback handlers
+  // Event handlers for profile operations
   const handleProfileAdded = async (profile: string) => {
+    setUserProfiles(prev => [...prev, profile]);
+    
+    // Also update profile data immediately
     try {
-      // Save the profile to the backend
-      await api.tweets.profiles.addProfile(profile)
-      
-      // Refresh profiles after adding
-      const profilesData = await api.tweets.profiles.getProfiles()
-      setUserProfiles(profilesData.profiles || [])
-    } catch (err) {
-      console.error('Error adding profile:', err)
-    }
-  }
-  
-  const handleProfileDeleted = async (profile: string) => {
-    try {
-      // Refresh profiles after deletion
-      const profilesData = await api.tweets.profiles.getProfiles();
-      setUserProfiles(profilesData.profiles || []);
-    } catch (err) {
-      console.error('Error refreshing profiles after deletion:', err);
+      const validation = await api.tweets.validateUsername(profile);
+      if (validation.exists && validation.profile) {
+        setProfilesData(prev => ({
+          ...prev,
+          [profile]: validation.profile
+        }));
+      }
+    } catch (error) {
+      console.error(`Error validating new profile ${profile}:`, error);
     }
   };
   
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p>Loading your dashboard...</p>
-        </div>
-      </div>
-    )
-  }
+  const handleProfileDeleted = (profile: string) => {
+    setUserProfiles(prev => prev.filter(p => p !== profile));
+    
+    // Also remove from profilesData
+    setProfilesData(prev => {
+      const updated = {...prev};
+      delete updated[profile];
+      return updated;
+    });
+  };
   
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Username next to theme toggle */}
-      <motion.div 
-        className="absolute top-5 left-16"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        onClick={() => router.push('/dashboard')}
-      >
-        <div className="text-sm px-4 py-1 bg-background rounded-full border border-input text-primary cursor-pointer">
-          {user?.email || 'username not found'}
-        </div>
-      </motion.div>
-
-      {/* Header/Navigation */}
-      <motion.div 
-        className="absolute top-4 right-4"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-      >
-        <div className="flex items-center gap-4">
-          <div className="text-sm px-4 py-1 bg-background rounded-full border border-input text-primary">
-            {credits} credits available
+    <ProtectedRoute>
+      <div className="min-h-screen flex flex-col">
+        {/* Username next to theme toggle */}
+        <motion.div 
+          className="absolute top-5 left-16"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <div className="text-sm px-4 py-1 bg-background rounded-full border border-input text-primary cursor-pointer">
+            {user?.email || 'username not found'}
           </div>
-          <Button variant="default">
-            Buy Credits
-          </Button>
-          <Button variant="outline" onClick={handleLogout} className="cursor-pointer">
-            Sign Out
-          </Button>
-        </div>
-      </motion.div>
-      
-      {/* Main Dashboard Content */}
-      <main className="flex-1 flex items-center justify-start p-48">
-        {/* Use the new ProfileWorkflow component with profile data */}
-        <DashboardWorkflow 
-          initialProfiles={userProfiles}
-          initialProfilesData={profilesData}
-          onProfileAdded={handleProfileAdded}
-          onProfileDeleted={handleProfileDeleted}
-        />
-      </main>
+        </motion.div>
 
-      {/* HypeAmplify Logo */}
-      <motion.div 
-        className="absolute bottom-6 left-6"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-      >
-        <Link href="/">
-          <Logo width={200} height={60} />
-        </Link>
-      </motion.div>
-    </div>
-  )
+        {/* Header/Navigation */}
+        <motion.div 
+          className="absolute top-4 right-4"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <div className="flex items-center gap-4">
+            <div className="text-sm px-4 py-1 bg-background rounded-full border border-input text-primary">
+              {credits} credits available
+            </div>
+            <Button variant="default">
+              Buy Credits
+            </Button>
+            <Button variant="outline" onClick={logout} className="cursor-pointer">
+              Sign Out
+            </Button>
+          </div>
+        </motion.div>
+        
+        {/* Main Dashboard Content */}
+        <main className="flex-1 flex items-center justify-start p-48">
+          {isLoading ? (
+            <div className="flex justify-center items-center w-full">
+              <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+              <span className="ml-3">Loading your profiles...</span>
+            </div>
+          ) : (
+            <DashboardWorkflow 
+              initialProfiles={userProfiles}
+              initialProfilesData={profilesData}
+              onProfileAdded={handleProfileAdded}
+              onProfileDeleted={handleProfileDeleted}
+            />
+          )}
+        </main>
+
+        {/* HypeAmplify Logo */}
+        <motion.div 
+          className="absolute bottom-6 left-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Link href="/">
+            <Logo width={200} height={60} />
+          </Link>
+        </motion.div>
+      </div>
+    </ProtectedRoute>
+  );
 }
