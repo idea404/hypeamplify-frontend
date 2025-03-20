@@ -69,19 +69,25 @@ export default function Dashboard() {
   
   // Event handlers for profile operations
   const handleProfileAdded = async (profile: string) => {
-    setUserProfiles(prev => [...prev, profile]);
-    
-    // Also update profile data immediately
     try {
-      const validation = await api.tweets.validateUsername(profile);
-      if (validation.exists && validation.profile) {
-        setProfilesData(prev => ({
-          ...prev,
-          [profile]: validation.profile
-        }));
-      }
+      // Fetch the latest profiles to ensure we have the correct data
+      const profilesData = await api.tweets.profiles.getProfiles();
+      
+      // Update profiles with the latest data
+      const profiles = profilesData.profiles.map((profile: any) => profile.twitter_account || profile.userName) || [];
+      setUserProfiles(profiles);
+      
+      // Update profile data
+      const profilesInfo: {[key: string]: any} = {};
+      profilesData.profiles.forEach((profileItem: any) => {
+        const username = profileItem.twitter_account || profileItem.userName;
+        if (profileItem.profile) {
+          profilesInfo[username] = profileItem.profile;
+        }
+      });
+      setProfilesData(profilesInfo);
     } catch (error) {
-      console.error(`Error validating new profile ${profile}:`, error);
+      console.error(`Error updating profiles after adding ${profile}:`, error);
     }
   };
   

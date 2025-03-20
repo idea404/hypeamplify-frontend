@@ -76,24 +76,30 @@ export function DashboardWorkflow({
           return;
         }
         
-        // Save profile data first
-        if (validationResult.profile) {
-          setProfileData(prev => ({
-            ...prev,
-            [username]: validationResult.profile
-          }));
-        }
-        
-        // Add profile
+        // Add profile first
         try {
-          await api.tweets.profiles.addProfile(username);
-          setProfiles(prev => [...prev, username]);
+          const addProfileResult = await api.tweets.profiles.addProfile(username);
+          
+          // Use the userName from the validation result for correct casing
+          const correctUsername = validationResult.profile?.userName || username;
+          
+          // Update profiles with correct casing
+          setProfiles(prev => [...prev, correctUsername]);
+          
+          // Save profile data with correct casing as the key
+          if (validationResult.profile) {
+            setProfileData(prev => ({
+              ...prev,
+              [correctUsername]: validationResult.profile
+            }));
+          }
+          
           setProfileUrl('');
           setCurrentStep(3); // Move to profile selection
           
           // Notify parent component if callback provided
           if (onProfileAdded) {
-            onProfileAdded(username);
+            onProfileAdded(correctUsername);
           }
         } catch (addError) {
           console.error('Error adding profile:', addError);
