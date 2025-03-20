@@ -4,4 +4,4 @@
   - [X] add more sentence for suggestion random picking
 - [ ] payments with Stripe functional and tested
 - [ ] scrolling with fade-out for tweet suggestions
-- [ ] duplicate polling of endpoints
+- [X] duplicate polling of endpoints

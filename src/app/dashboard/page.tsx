@@ -144,7 +144,7 @@ export default function Dashboard() {
         </motion.div>
         
         {/* Main Dashboard Content */}
-        <main className="flex-1 flex items-center justify-start pl-48">
+        <main className="flex-1 flex items-center justify-start p-32">
           {isLoading ? (
             <div className="flex justify-center items-center w-full">
               <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
