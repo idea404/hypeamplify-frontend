@@ -67,9 +67,12 @@ export function TwitterCard({
   
   // Format the date for display
   const formatDate = (date: Date) => {
+    // Convert UTC date string to local time
+    const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
+    
     // For recent dates (within a day), show relative time
     const now = new Date()
-    const diffMs = now.getTime() - date.getTime()
+    const diffMs = now.getTime() - localDate.getTime()
     const diffHours = diffMs / (1000 * 60 * 60)
     
     if (diffHours < 24) {
@@ -81,10 +84,10 @@ export function TwitterCard({
     }
     
     // For older dates, show the formatted date
-    return date.toLocaleDateString('en-US', { 
+    return localDate.toLocaleDateString('en-US', { 
       month: 'short', 
       day: 'numeric',
-      year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+      year: localDate.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
     })
   }
 
@@ -149,7 +152,7 @@ export function TwitterCard({
             {/* Generated timestamp if available */}
             {tweetDate && (
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
-                Generated at: {tweetDate.toLocaleString('en-US', { 
+                Generated at: {new Date(tweetDate.getTime() - (tweetDate.getTimezoneOffset() * 60000)).toLocaleString('en-US', { 
                   month: 'short', 
                   day: 'numeric', 
                   year: 'numeric',
