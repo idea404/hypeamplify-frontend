@@ -22,7 +22,8 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   useEffect(() => {
     // Only redirect if we're not loading and not logged in
     if (!loading && !isLoggedIn) {
-      router.push('/auth/login');
+      // Use replace instead of push to avoid adding to browser history
+      router.replace('/auth/login');
     }
   }, [isLoggedIn, loading, router]);
   
@@ -39,6 +40,5 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
   
   // Only render children if logged in, otherwise render nothing
-  // (the redirect effect will handle moving to login page)
   return isLoggedIn ? <>{children}</> : null;
 } 

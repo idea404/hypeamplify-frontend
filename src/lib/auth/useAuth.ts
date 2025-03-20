@@ -57,7 +57,9 @@ export function useAuth() {
     localStorage.removeItem('accessToken');
     setIsLoggedIn(false);
     setUser(null);
-    router.push('/auth/login');
+    
+    // Use replace instead of push to avoid adding to browser history
+    router.replace('/auth/login');
   }, [router]);
 
   // Listen for auth-logout events
@@ -65,7 +67,7 @@ export function useAuth() {
     const handleLogout = () => {
       setIsLoggedIn(false);
       setUser(null);
-      router.push('/auth/login');
+      router.replace('/auth/login');
     };
 
     window.addEventListener('auth-logout', handleLogout);

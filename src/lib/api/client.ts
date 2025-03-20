@@ -54,7 +54,17 @@ apiClient.interceptors.response.use(
   }
 );
 
-// API methods
+// Create a request cache to prevent duplicate calls
+const requestCache = new Map<string, Promise<any>>();
+
+// Clear cache entries after they resolve to prevent memory leaks
+const clearCacheEntry = (cacheKey: string) => {
+  setTimeout(() => {
+    requestCache.delete(cacheKey);
+  }, 0);
+};
+
+// API methods with deduplication
 export const api = {
   // Auth endpoints
   auth: {
@@ -79,8 +89,24 @@ export const api = {
       return response.data;
     },
     me: async () => {
-      const response = await apiClient.get('/auth/me');
-      return response.data;
+      const cacheKey = 'auth/me';
+      
+      if (requestCache.has(cacheKey)) {
+        return requestCache.get(cacheKey);
+      }
+      
+      const request = apiClient.get('/auth/me')
+        .then(response => {
+          clearCacheEntry(cacheKey);
+          return response.data;
+        })
+        .catch(error => {
+          clearCacheEntry(cacheKey);
+          throw error;
+        });
+      
+      requestCache.set(cacheKey, request);
+      return request;
     },
   },
   
@@ -104,20 +130,47 @@ export const api = {
       return response.data;
     },
     validateUsername: async (twitterUsername: string) => {
-      try {
-        const response = await apiClient.get(`/tweets/validate-username/${twitterUsername}`);
-        return response.data;
-      } catch (error) {
-        console.error(`Error validating Twitter username ${twitterUsername}:`, error);
-        // Return a structured response even when errors occur
-        return { exists: false, error: "Could not validate username" };
+      const cacheKey = `tweets/validate-username/${twitterUsername}`;
+      
+      if (requestCache.has(cacheKey)) {
+        return requestCache.get(cacheKey);
       }
+      
+      const request = apiClient.get(`/tweets/validate-username/${twitterUsername}`)
+        .then(response => {
+          clearCacheEntry(cacheKey);
+          return response.data;
+        })
+        .catch(error => {
+          clearCacheEntry(cacheKey);
+          console.error(`Error validating Twitter username ${twitterUsername}:`, error);
+          return { exists: false, error: "Could not validate username" };
+        });
+      
+      requestCache.set(cacheKey, request);
+      return request;
     },
     // Profiles endpoints
     profiles: {
       getProfiles: async () => {
-        const response = await apiClient.get('/tweets/profiles');
-        return response.data;
+        const cacheKey = 'tweets/profiles';
+        
+        if (requestCache.has(cacheKey)) {
+          return requestCache.get(cacheKey);
+        }
+        
+        const request = apiClient.get('/tweets/profiles')
+          .then(response => {
+            clearCacheEntry(cacheKey);
+            return response.data;
+          })
+          .catch(error => {
+            clearCacheEntry(cacheKey);
+            throw error;
+          });
+        
+        requestCache.set(cacheKey, request);
+        return request;
       },
       addProfile: async (twitterAccount: string) => {
         const response = await apiClient.post('/tweets/profiles', { twitter_account: twitterAccount });
@@ -147,8 +200,24 @@ export const api = {
       return response.data;
     },
     getCredits: async () => {
-      const response = await apiClient.get('/payments/credits');
-      return response.data;
+      const cacheKey = 'payments/credits';
+      
+      if (requestCache.has(cacheKey)) {
+        return requestCache.get(cacheKey);
+      }
+      
+      const request = apiClient.get('/payments/credits')
+        .then(response => {
+          clearCacheEntry(cacheKey);
+          return response.data;
+        })
+        .catch(error => {
+          clearCacheEntry(cacheKey);
+          throw error;
+        });
+      
+      requestCache.set(cacheKey, request);
+      return request;
     },
   },
 };

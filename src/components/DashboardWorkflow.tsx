@@ -213,15 +213,20 @@ export function DashboardWorkflow({
       if (selectedProfile && currentStep === 4) {
         setIsLoadingHistoricalTweets(true)
         try {
-          // Explicitly pass includeHidden=false to exclude hidden suggestions
           const data = await api.tweets.getSuggestions(selectedProfile, false)
           if (data.suggestions && data.suggestions.length > 0) {
             setSuggestions(data.suggestions);
           } else {
             setSuggestions([]);
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error fetching historical tweets:', error)
+          // If it's a 401 error, don't show an error message as the redirect will happen
+          // If it's any other error, we can show an appropriate message
+          if (error.response && error.response.status !== 401) {
+            // Show non-auth error message
+            // setErrorMessage("Failed to load suggestions. Please try again.");
+          }
         } finally {
           setIsLoadingHistoricalTweets(false)
         }
@@ -458,7 +463,7 @@ export function DashboardWorkflow({
                   Choose a profile to generate suggestions
                 </p>
               </div>
-              <div className="space-y-2 min-w-[280px] w-1/3 max-w-[400px] mb-4">
+              <div className="space-y-2 min-w-[280px] w-1/3 max-w-[320] mb-4">
                 {profiles.length > 0 ? (
                   profiles.map((profile, index) => (
                     <ProfileButton
@@ -490,7 +495,7 @@ export function DashboardWorkflow({
             {/* Flex container with proper 50/50 split */}
             <div className="flex w-full">
               {/* Left Side: 50% width */}
-              <div className="w-1/2 pr-8 flex flex-col">
+              <div className="w-1/2 pr-8 flex flex-col min-w-[500px]">
                 <div className="space-y-2 text-start mb-5 flex flex-col justify-start">
                   <motion.h1 
                     className="text-4xl font-bold tracking-tighter leading-tight h-12"
