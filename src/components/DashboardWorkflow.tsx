@@ -76,7 +76,7 @@ export function DashboardWorkflow({
           return;
         }
         
-        // Save profile data
+        // Save profile data first
         if (validationResult.profile) {
           setProfileData(prev => ({
             ...prev,
@@ -545,7 +545,7 @@ export function DashboardWorkflow({
                     suggestions.map((suggestion, index) => (
                       <TwitterCard
                         key={index}
-                        tweet={suggestion.text}
+                        tweet={suggestion}
                         username={selectedProfile || ''}
                         index={index}
                         animationDelay={0.1}
@@ -656,7 +656,7 @@ export function DashboardWorkflow({
                   {suggestions.map((suggestion, index) => (
                     <TwitterCard
                       key={index}
-                      tweet={suggestion.text}
+                      tweet={suggestion}
                       username={selectedProfile || ''}
                       index={index}
                       animationDelay={0.1}

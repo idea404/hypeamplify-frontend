@@ -38,35 +38,23 @@ export default function Dashboard() {
         
         // Fetch the user's profiles - await this call
         const profilesData = await api.tweets.profiles.getProfiles();
-        const profiles = profilesData.profiles || [];
+        
+        // Update this section to handle the new response format
+        const profiles = profilesData.profiles.map((profile: any) => profile.twitter_account || profile.userName) || [];
         setUserProfiles(profiles);
         
-        // Create a cache of profile validations to avoid duplicate API calls
-        const validationCache = new Map();
-        
-        // If there are profiles, fetch their data immediately
-        if (profiles.length > 0) {
+        // Build the profile data object
+        if (profilesData.profiles.length > 0) {
           const profilesInfo: {[key: string]: any} = {};
           
-          // Use Promise.all to fetch all profile data in parallel
-          await Promise.all(
-            profiles.map(async (profile: string) => {
-              try {
-                // Check cache first
-                if (!validationCache.has(profile)) {
-                  const validation = await api.tweets.validateUsername(profile);
-                  validationCache.set(profile, validation);
-                }
-                
-                const cachedValidation = validationCache.get(profile);
-                if (cachedValidation.exists && cachedValidation.profile) {
-                  profilesInfo[profile] = cachedValidation.profile;
-                }
-              } catch (error) {
-                console.error(`Error validating profile ${profile}:`, error);
-              }
-            })
-          );
+          // Process profiles and their data
+          profilesData.profiles.forEach((profileItem: any) => {
+            const username = profileItem.twitter_account || profileItem.userName;
+            if (profileItem.profile) {
+              profilesInfo[username] = profileItem.profile;
+            }
+          });
+          
           setProfilesData(profilesInfo);
         }
       } catch (err) {

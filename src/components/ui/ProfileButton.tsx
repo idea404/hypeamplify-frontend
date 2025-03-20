@@ -29,17 +29,31 @@ const ProfileButton: React.FC<ProfileButtonProps> = ({
         setImageError(false);
     }, [profileImageUrl]);
 
+    // Reset error state when profile changes
+    useEffect(() => {
+        if (profileImageUrl) {
+            setImageError(false);
+        }
+    }, [profileImageUrl, name]);
+
     // Determine which image source to use
     const getImageSrc = () => {
         if (imageError) {
             return "/images/x-logo.png";
         }
         
+        // Use profile image URL if available
+        if (profileImageUrl) {
+            return profileImageUrl;
+        }
+        
+        // Fallback to local image if enabled
         if (useLocalImagesFirst) {
             return `/images/${imageName}`;
         }
         
-        return profileImageUrl || `/images/${imageName}`;
+        // Ultimate fallback
+        return `/images/${imageName}`;
     };
 
     return (

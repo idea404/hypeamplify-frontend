@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from '@/components/ui/Button'
 
 interface TwitterCardProps {
-  tweet: string | { text: string; createdAt: string; hidden?: boolean }
+  tweet: string | { text: string; createdAt: string | Date; hidden?: boolean }
   username: string
   displayName?: string
   index?: number
@@ -34,7 +34,7 @@ export function TwitterCard({
   // Handle both string tweets and object tweets with timestamp
   const tweetText = typeof tweet === 'string' ? tweet : tweet.text
   const tweetDate = typeof tweet === 'object' && tweet.createdAt ? 
-    new Date(tweet.createdAt) : null
+    (typeof tweet.createdAt === 'string' ? new Date(tweet.createdAt) : tweet.createdAt) : null
   
   const copyToClipboard = () => {
     navigator.clipboard.writeText(tweetText).then(() => {

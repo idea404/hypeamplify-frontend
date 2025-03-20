@@ -174,6 +174,8 @@ export const api = {
       },
       addProfile: async (twitterAccount: string) => {
         const response = await apiClient.post('/tweets/profiles', { twitter_account: twitterAccount });
+        // Clear the profiles cache after adding a new profile
+        requestCache.delete('tweets/profiles');
         return response.data;
       },
       deleteProfile: async (twitterAccount: string) => {
