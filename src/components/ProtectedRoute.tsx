@@ -13,9 +13,11 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const router = useRouter();
   
   useEffect(() => {
-    // Always check auth when the component mounts to ensure we have fresh data
-    checkAuth();
-  }, [checkAuth]);
+    // Only check auth if we don't already know the login status
+    if (!isLoggedIn && !loading) {
+      checkAuth();
+    }
+  }, [checkAuth, isLoggedIn, loading]);
   
   useEffect(() => {
     // Only redirect if we're not loading and not logged in

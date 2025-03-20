@@ -17,6 +17,16 @@ export default function Dashboard() {
   const [profilesData, setProfilesData] = useState<{[key: string]: any}>({});
   const [isLoading, setIsLoading] = useState(true);
   
+  // This function will be called after suggestion generation to refresh credits
+  const handleSuggestionGenerated = async () => {
+    try {
+      const creditsData = await api.payments.getCredits();
+      setCredits(creditsData.credits || 0);
+    } catch (error) {
+      console.error('Error refreshing credits:', error);
+    }
+  };
+  
   useEffect(() => {
     // Consolidated function to fetch all user data
     const fetchUserData = async () => {
@@ -31,16 +41,26 @@ export default function Dashboard() {
         const profiles = profilesData.profiles || [];
         setUserProfiles(profiles);
         
-        // If there are profiles, fetch their data immediately (not in setTimeout)
+        // Create a cache of profile validations to avoid duplicate API calls
+        const validationCache = new Map();
+        
+        // If there are profiles, fetch their data immediately
         if (profiles.length > 0) {
           const profilesInfo: {[key: string]: any} = {};
+          
           // Use Promise.all to fetch all profile data in parallel
           await Promise.all(
             profiles.map(async (profile: string) => {
               try {
-                const validation = await api.tweets.validateUsername(profile);
-                if (validation.exists && validation.profile) {
-                  profilesInfo[profile] = validation.profile;
+                // Check cache first
+                if (!validationCache.has(profile)) {
+                  const validation = await api.tweets.validateUsername(profile);
+                  validationCache.set(profile, validation);
+                }
+                
+                const cachedValidation = validationCache.get(profile);
+                if (cachedValidation.exists && cachedValidation.profile) {
+                  profilesInfo[profile] = cachedValidation.profile;
                 }
               } catch (error) {
                 console.error(`Error validating profile ${profile}:`, error);
@@ -134,8 +154,10 @@ export default function Dashboard() {
             <DashboardWorkflow 
               initialProfiles={userProfiles}
               initialProfilesData={profilesData}
+              userCredits={credits}
               onProfileAdded={handleProfileAdded}
               onProfileDeleted={handleProfileDeleted}
+              onSuggestionGenerated={handleSuggestionGenerated}
             />
           )}
         </main>

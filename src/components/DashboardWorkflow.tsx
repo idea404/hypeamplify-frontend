@@ -15,6 +15,7 @@ interface DashboardWorkflowProps {
   // Props that might be needed from parent
   initialProfiles?: string[]
   initialProfilesData?: {[key: string]: ProfileData}
+  userCredits?: number
   onProfileAdded?: (profile: string) => void
   onProfileSelected?: (profile: string) => void
   onSuggestionGenerated?: (suggestions: string[]) => void
@@ -33,6 +34,7 @@ interface ProfileData {
 export function DashboardWorkflow({
   initialProfiles = [],
   initialProfilesData = {},
+  userCredits = 0,
   onProfileAdded,
   onProfileSelected,
   onSuggestionGenerated,
@@ -52,26 +54,9 @@ export function DashboardWorkflow({
   const [animationComplete, setAnimationComplete] = useState(false)
   const [isLoadingHistoricalTweets, setIsLoadingHistoricalTweets] = useState(false)
   const [showCreditModal, setShowCreditModal] = useState(false)
-  const [userCredits, setUserCredits] = useState<number | null>(null)
-  // Add new state for profile data and validation
   const [profileData, setProfileData] = useState<{[username: string]: ProfileData}>(initialProfilesData)
   const [validationError, setValidationError] = useState<string | null>(null)
   const [isValidating, setIsValidating] = useState(false)
-  
-  // Add this effect to get the user's current credits
-  useEffect(() => {
-    const fetchCredits = async () => {
-      try {
-        const creditsData = await api.payments.getCredits()
-        setUserCredits(creditsData.credits || 0)
-      } catch (error) {
-        console.error('Error fetching credits:', error)
-        setUserCredits(0)
-      }
-    }
-    
-    fetchCredits()
-  }, [])
   
   // Update profile management functions
   const handleAddProfile = async () => {
@@ -136,33 +121,18 @@ export function DashboardWorkflow({
   const handleGenerateSuggestions = async () => {
     if (!selectedProfile) return
     
-    // Check for credits first - if we have 0 credits, show modal without trying API call
-    if (userCredits !== null && userCredits <= 0) {
-      setShowCreditModal(true)
-      return
-    }
-    
     setIsGenerating(true)
     setAnimationComplete(false) // Reset animation state
     setCurrentStep(5) // Show generating state
     
     try {
-      // Use real API call instead of setTimeout
       const result = await api.tweets.suggest(selectedProfile)
       
       // Prepend new suggestions to existing ones
       const newSuggestions = result.suggestions || []
       setSuggestions(prevSuggestions => [...newSuggestions, ...prevSuggestions])
       
-      // Update credits after successful generation (they will have been decremented)
-      try {
-        const creditsData = await api.payments.getCredits()
-        setUserCredits(creditsData.credits || 0)
-      } catch (error) {
-        console.error('Error updating credits:', error)
-      }
-      
-      // Notify parent component if callback provided
+      // Call parent's callback instead of fetching credits again
       if (onSuggestionGenerated) {
         onSuggestionGenerated(newSuggestions)
       }
@@ -173,8 +143,6 @@ export function DashboardWorkflow({
       if (error.response && error.response.status === 402) {
         // Show the credit purchase modal
         setShowCreditModal(true)
-        // Update our local credit state to reflect server state
-        setUserCredits(0)
       }
       
       setIsGenerating(false)

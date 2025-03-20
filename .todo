@@ -1,4 +1,4 @@
-- [ ] frontend knows when user is not logged in
+- [X] frontend knows when user is not logged in
 - [ ] credits update instantly on frontend
 - [ ] loading ai suggestions animation should wait on backend reply
   - [X] add more sentence for suggestion random picking
