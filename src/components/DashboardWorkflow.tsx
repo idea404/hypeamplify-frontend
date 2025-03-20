@@ -1,4 +1,5 @@
 'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -57,7 +58,8 @@ export function DashboardWorkflow({
   const [profileData, setProfileData] = useState<{[username: string]: ProfileData}>(initialProfilesData)
   const [validationError, setValidationError] = useState<string | null>(null)
   const [isValidating, setIsValidating] = useState(false)
-  
+  const [scrolled, setScrolled] = useState(false)
+
   // Update profile management functions
   const handleAddProfile = async () => {
     if (profileUrl && !profileUrl.includes(' ')) {
@@ -537,34 +539,60 @@ export function DashboardWorkflow({
               </div>
               
               {/* Right Side: Tweets column - 50% width */}
-              <div className="w-1/2 pl-8 flex flex-col justify-start overflow-y-auto min-h-[300px]">
-                <motion.div 
-                  className="space-y-3 w-full" 
-                  initial={{ opacity: 0 }} 
-                  animate={{ opacity: 1 }}
+              <div className="w-1/2 pl-8 relative">
+                {/* Fixed height container with overflow */}
+                <div 
+                  className="h-[calc(100vh-320px)] overflow-hidden relative"
                 >
-                  {isLoadingHistoricalTweets ? (
-                    <div className="flex justify-center items-center h-[200px]">
-                      <p className="text-gray-500">Loading historical suggestions...</p>
-                    </div>
-                  ) : suggestions.length > 0 ? (
-                    suggestions.map((suggestion, index) => (
-                      <TwitterCard
+                  {/* Top fade overlay - only visible when scrolling */}
+                  <motion.div 
+                    className="absolute top-0 left-0 right-4 h-20 z-10 pointer-events-none"
+                    style={{ 
+                      background: 'linear-gradient(to bottom, var(--bg-color) 0%, transparent 100%)',
+                      opacity: 0,
+                    }}
+                    animate={{ opacity: scrolled ? 1 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  />
+
+                  {/* Bottom fade - always visible */}
+                  <div 
+                    className="absolute bottom-0 left-0 right-4 h-20 z-10 pointer-events-none"
+                    style={{ 
+                      background: 'linear-gradient(to top, var(--bg-color) 0%, transparent 100%)',
+                    }}
+                  />
+
+                  <motion.div 
+                    className="space-y-3 w-full h-full pr-4 pt-0 overflow-y-scroll scrollbar-hide"
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }}
+                    onScroll={(e) => {
+                      const target = e.target as HTMLDivElement;
+                      setScrolled(target.scrollTop > 0);
+                    }}
+                  >
+                    {suggestions.map((suggestion, index) => (
+                      <motion.div
                         key={index}
-                        tweet={suggestion}
-                        username={selectedProfile || ''}
-                        index={index}
-                        animationDelay={0.1}
-                        onDelete={handleHideSuggestion}
-                        profileImageUrl={profileData[selectedProfile || '']?.profilePicture}
-                      />
-                    ))
-                  ) : (
-                    <div className="flex justify-center items-center h-[200px]">
-                      {/* <p className="text-gray-500">No historical suggestions found. Generate new ones!</p> */}
-                    </div>
-                  )}
-                </motion.div>
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ 
+                          delay: index * 0.1,
+                          duration: 0.5 
+                        }}
+                      >
+                        <TwitterCard
+                          tweet={suggestion}
+                          username={selectedProfile || ''}
+                          index={index}
+                          onDelete={handleHideSuggestion}
+                          profileImageUrl={profileData[selectedProfile || '']?.profilePicture}
+                        />
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                </div>
               </div>
             </div>
           </div>
@@ -657,20 +685,60 @@ export function DashboardWorkflow({
               </div>
               
               {/* Right Side: Tweets column - 50% width */}
-              <div className="w-1/2 pl-8 flex flex-col justify-start overflow-y-auto min-h-[300px]">
-                <motion.div className="space-y-3 w-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  {suggestions.map((suggestion, index) => (
-                    <TwitterCard
-                      key={index}
-                      tweet={suggestion}
-                      username={selectedProfile || ''}
-                      index={index}
-                      animationDelay={0.1}
-                      onDelete={handleHideSuggestion}
-                      profileImageUrl={profileData[selectedProfile || '']?.profilePicture}
-                    />
-                  ))}
-                </motion.div>
+              <div className="w-1/2 pl-8 relative">
+                {/* Fixed height container with overflow */}
+                <div 
+                  className="h-[calc(100vh-320px)] overflow-hidden relative"
+                >
+                  {/* Top fade overlay - only visible when scrolling */}
+                  <motion.div 
+                    className="absolute top-0 left-0 right-4 h-20 z-10 pointer-events-none"
+                    style={{ 
+                      background: 'linear-gradient(to bottom, var(--bg-color) 0%, transparent 100%)',
+                      opacity: 0,
+                    }}
+                    animate={{ opacity: scrolled ? 1 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  />
+
+                  {/* Bottom fade - always visible */}
+                  <div 
+                    className="absolute bottom-0 left-0 right-4 h-20 z-10 pointer-events-none"
+                    style={{ 
+                      background: 'linear-gradient(to top, var(--bg-color) 0%, transparent 100%)',
+                    }}
+                  />
+
+                  <motion.div 
+                    className="space-y-3 w-full h-full pr-4 pt-0 overflow-y-scroll scrollbar-hide"
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }}
+                    onScroll={(e) => {
+                      const target = e.target as HTMLDivElement;
+                      setScrolled(target.scrollTop > 0);
+                    }}
+                  >
+                    {suggestions.map((suggestion, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ 
+                          delay: index * 0.1,
+                          duration: 0.5 
+                        }}
+                      >
+                        <TwitterCard
+                          tweet={suggestion}
+                          username={selectedProfile || ''}
+                          index={index}
+                          onDelete={handleHideSuggestion}
+                          profileImageUrl={profileData[selectedProfile || '']?.profilePicture}
+                        />
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                </div>
               </div>
             </div>
           </div>
