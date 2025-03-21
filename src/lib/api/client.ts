@@ -221,6 +221,10 @@ export const api = {
       requestCache.set(cacheKey, request);
       return request;
     },
+    createPaymentIntent: async (packageId: string) => {
+      const response = await apiClient.post('/payments/create-intent', { package_id: packageId });
+      return response.data;
+    },
   },
 };
 

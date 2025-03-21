@@ -5,13 +5,10 @@ import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api/client'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { Button } from '@/components/ui/Button'
-import { loadStripe } from '@stripe/stripe-js'
 import { motion } from 'framer-motion'
 import { Logo } from '@/components/ui/Logo'
 import Link from 'next/link'
-
-// Initialize Stripe - make sure to use your publishable key
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '')
+import { StripePaymentModal } from '@/components/StripePaymentModal'
 
 interface Package {
   id: string
@@ -25,7 +22,8 @@ export default function PaymentsPage() {
   const router = useRouter()
   const [packages, setPackages] = useState<Package[]>([])
   const [loading, setLoading] = useState(true)
-  const [processingId, setProcessingId] = useState<string | null>(null)
+  const [selectedPackage, setSelectedPackage] = useState<Package | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     const fetchPackages = async () => {
@@ -42,17 +40,20 @@ export default function PaymentsPage() {
     fetchPackages()
   }, [])
 
-  const handleCheckout = async (packageId: string) => {
-    try {
-      setProcessingId(packageId)
-      const checkout = await api.payments.checkout(packageId)
+  const handlePackageSelect = (pkg: Package) => {
+    setSelectedPackage(pkg)
+    setIsModalOpen(true)
+  }
+
+  const handlePaymentSuccess = (credits: number) => {
+    // Close the modal after a short delay to show the success message
+    setTimeout(() => {
+      setIsModalOpen(false)
+      setSelectedPackage(null)
       
-      // Redirect to Stripe checkout page
-      window.location.href = checkout.url
-    } catch (error) {
-      console.error('Error creating checkout session:', error)
-      setProcessingId(null)
-    }
+      // Optionally redirect to dashboard
+      router.push('/dashboard')
+    }, 3000)
   }
 
   return (
@@ -96,10 +97,9 @@ export default function PaymentsPage() {
                     <p className="text-primary mb-6">{pkg.credits} credits</p>
                     <Button
                       className="w-full cursor-pointer"
-                      onClick={() => handleCheckout(pkg.id)}
-                      disabled={processingId === pkg.id}
+                      onClick={() => handlePackageSelect(pkg)}
                     >
-                      {processingId === pkg.id ? 'Processing...' : 'Buy Now'}
+                      Buy Now
                     </Button>
                   </div>
                 ))}
@@ -107,6 +107,18 @@ export default function PaymentsPage() {
             )}
           </motion.div>
         </main>
+
+        {selectedPackage && (
+          <StripePaymentModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            packageId={selectedPackage.id}
+            packageName={selectedPackage.name}
+            packageCredits={selectedPackage.credits}
+            packagePrice={selectedPackage.price_usd}
+            onSuccess={handlePaymentSuccess}
+          />
+        )}
       </div>
     </ProtectedRoute>
   )

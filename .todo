@@ -6,3 +6,6 @@
   - [X] add more sentence for suggestion random picking
 - [X] duplicate polling of endpoints
 - [X] bug fix for indexing of profiles in backend
+- [ ] timestamp on TwitterCard wrong timezones
+- [ ] add more sentence for suggestion random picking and make senetence selection random
+- [X] escaping of some characters in strings from suggestion string
