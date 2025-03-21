@@ -160,27 +160,12 @@ export function DashboardWorkflow({
   }
   
   // Function to handle redirecting to buy credits
-  const handleBuyCredits = async () => {
-    // Get available packages
-    try {
-      const packages = await api.payments.getPackages()
-      // You could either redirect to a dedicated page or
-      // implement the checkout flow directly here
-      
-      // For this example, we'll just close the modal
-      setShowCreditModal(false)
-      
-      // Redirect to a payment page (you might want to implement this)
-      // window.location.href = '/payments'
-      
-      // Alternative: You could trigger the checkout process for a specific package
-      // if (packages.length > 0) {
-      //   const result = await api.payments.checkout(packages[0].id)
-      //   window.location.href = result.checkout_url
-      // }
-    } catch (error) {
-      console.error('Error fetching payment packages:', error)
-    }
+  const handleBuyCredits = () => {
+    // Close the modal
+    setShowCreditModal(false)
+    
+    // Redirect to the payments page
+    window.location.href = '/payments'
   }
   
   // Handle completion of the loading animation

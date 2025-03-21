@@ -128,9 +128,11 @@ export default function Dashboard() {
             <div className="text-sm px-4 py-1 bg-background rounded-full border border-input text-primary">
               {credits} credits available
             </div>
-            <Button variant="default">
-              Buy Credits
-            </Button>
+            <Link href="/payments">
+              <Button variant="default" className="cursor-pointer">
+                Buy Credits
+              </Button>
+            </Link>
             <Button variant="outline" onClick={logout} className="cursor-pointer">
               Sign Out
             </Button>
