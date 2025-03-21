@@ -1,7 +1,7 @@
 'use client'
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
 import { Input } from './ui/Input'
@@ -59,6 +59,7 @@ export function DashboardWorkflow({
   const [validationError, setValidationError] = useState<string | null>(null)
   const [isValidating, setIsValidating] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const tweetsContainerRef = useRef<HTMLDivElement>(null)
 
   // Update profile management functions
   const handleAddProfile = async () => {
@@ -540,15 +541,8 @@ export function DashboardWorkflow({
                     transition={{ duration: 0.2 }}
                   />
 
-                  {/* Bottom fade - always visible */}
-                  <div 
-                    className="absolute bottom-0 left-0 right-4 h-20 z-10 pointer-events-none"
-                    style={{ 
-                      background: 'linear-gradient(to top, var(--bg-color) 0%, transparent 100%)',
-                    }}
-                  />
-
                   <motion.div 
+                    ref={tweetsContainerRef}
                     className="space-y-3 w-full h-full pr-4 pt-0 overflow-y-scroll scrollbar-hide"
                     initial={{ opacity: 0 }} 
                     animate={{ opacity: 1 }}
@@ -580,6 +574,43 @@ export function DashboardWorkflow({
                 </div>
               </div>
             </div>
+
+            {/* Scroll indicator - appears when there are 4+ tweets */}
+            {suggestions.length >= 4 && (
+              <motion.div 
+                className="absolute bottom-4 right-4 flex justify-center items-center pointer-events-none"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: scrolled ? 0 : 0.7 }}
+                transition={{ duration: 0.3 }}
+              >
+                <motion.div
+                  animate={{ 
+                    y: [0, 8, 0],
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 2, 
+                    ease: "easeInOut" 
+                  }}
+                  className="flex flex-col items-center"
+                >
+                  <span className="text-xs text-gray-500 dark:text-gray-400 mb-1">Scroll for more</span>
+                  <svg 
+                    width="16" 
+                    height="16" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    className="text-gray-500 dark:text-gray-400"
+                  >
+                    <path d="M12 5v14M5 12l7 7 7-7" />
+                  </svg>
+                </motion.div>
+              </motion.div>
+            )}
           </div>
         )}
         
@@ -686,15 +717,8 @@ export function DashboardWorkflow({
                     transition={{ duration: 0.2 }}
                   />
 
-                  {/* Bottom fade - always visible */}
-                  <div 
-                    className="absolute bottom-0 left-0 right-4 h-20 z-10 pointer-events-none"
-                    style={{ 
-                      background: 'linear-gradient(to top, var(--bg-color) 0%, transparent 100%)',
-                    }}
-                  />
-
                   <motion.div 
+                    ref={tweetsContainerRef}
                     className="space-y-3 w-full h-full pr-4 pt-0 overflow-y-scroll scrollbar-hide"
                     initial={{ opacity: 0 }} 
                     animate={{ opacity: 1 }}
@@ -726,6 +750,43 @@ export function DashboardWorkflow({
                 </div>
               </div>
             </div>
+
+            {/* Scroll indicator - appears when there are 4+ tweets */}
+            {suggestions.length >= 4 && (
+              <motion.div 
+                className="absolute bottom-4 right-4 flex justify-center items-center pointer-events-none"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: scrolled ? 0 : 0.7 }}
+                transition={{ duration: 0.3 }}
+              >
+                <motion.div
+                  animate={{ 
+                    y: [0, 8, 0],
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 2, 
+                    ease: "easeInOut" 
+                  }}
+                  className="flex flex-col items-center"
+                >
+                  <span className="text-xs text-gray-500 dark:text-gray-400 mb-1">Scroll for more</span>
+                  <svg 
+                    width="16" 
+                    height="16" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    className="text-gray-500 dark:text-gray-400"
+                  >
+                    <path d="M12 5v14M5 12l7 7 7-7" />
+                  </svg>
+                </motion.div>
+              </motion.div>
+            )}
           </div>
         )}
       </AnimatePresence>
