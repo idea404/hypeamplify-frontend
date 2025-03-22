@@ -93,6 +93,7 @@ export default function PaymentsPage() {
               <div className="grid md:grid-cols-3 gap-6">
                 {packages.map((pkg) => {
                   const isPremium = pkg.name.toLowerCase() === 'premium';
+                  const isStandard = pkg.name.toLowerCase() === 'standard';
                   
                   return (
                     <motion.div
@@ -143,6 +144,13 @@ export default function PaymentsPage() {
                           Best Value
                         </div>
                       )}
+
+                      {/* Silver "< $1 per Credit" tag for Standard */}
+                      {isStandard && (
+                        <div className="absolute top-3 right-3 bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800 font-medium text-xs px-2 py-1 rounded-full z-10 shadow-md border border-gray-200">
+                          &lt; $1 per Credit
+                        </div>
+                      )}
                       
                       {/* Card content container with glassmorphism */}
                       <div className="relative z-10 h-full">
@@ -172,7 +180,11 @@ export default function PaymentsPage() {
                         
                         <p className="text-gray-500 dark:text-gray-400 mb-6">{pkg.credits * 3} tweet suggestions</p>
                         <Button
-                          className={`w-full cursor-pointer ${isPremium ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 border-0' : ''}`}
+                          className={`w-full cursor-pointer ${
+                            isPremium 
+                              ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 hover:text-yellow-300 hover:border hover:border-yellow-300 dark:hover:border-yellow-600' 
+                              : ''
+                          }`}
                           onClick={() => handlePackageSelect(pkg)}
                         >
                           Buy Now
