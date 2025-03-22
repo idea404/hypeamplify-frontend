@@ -80,11 +80,12 @@ export default function PaymentsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <h1 className="text-7xl font-bold mb-8 text-center">Buy Credits</h1>
-            <p className="text-lg text-gray-500 dark:text-gray-400 mb-12 max- text-center">
-              Purchase credits to generate tweet suggestions. Every credit generates 3 tweet suggestions for any profile.
-            </p>
-
+            <h1 className="text-7xl font-bold mb-4 text-center">Buy Credits</h1>
+            <div className="flex justify-center mx-50">
+              <p className="text-lg text-gray-500 dark:text-gray-400 mb-12 text-center">
+                Purchase credits to generate tweet suggestions. Every credit generates 3 tweet suggestions for any profile.
+              </p>
+            </div>
             {loading ? (
               <div className="flex justify-center">
                 <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
@@ -100,7 +101,7 @@ export default function PaymentsPage() {
                       key={pkg.id}
                       className={`rounded-lg p-6 shadow-sm relative overflow-hidden 
                         backdrop-blur-md bg-background/20 backdrop-saturate-150
-                        ${!isPremium ? 'border' : 'border-0'}`}
+                        border`}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       whileHover={{ 
