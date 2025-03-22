@@ -1,11 +1,16 @@
+# v1
 - [ ] credits update instantly on frontend
 - [ ] payments with Stripe functional and tested
-- [ ] scrolling with fade-out for tweet suggestions
+- [ ] timestamp on TwitterCard wrong timezones
+- [ ] add more sentence for suggestion random picking and make senetence selection random
+- [X] scrolling with fade-out for tweet suggestions
 - [X] frontend knows when user is not logged in
 - [X] loading ai suggestions animation should wait on backend reply
   - [X] add more sentence for suggestion random picking
 - [X] duplicate polling of endpoints
 - [X] bug fix for indexing of profiles in backend
-- [ ] timestamp on TwitterCard wrong timezones
-- [ ] add more sentence for suggestion random picking and make senetence selection random
 - [X] escaping of some characters in strings from suggestion string
+
+# v1.1
+- [ ] 1.1 fix that users can remove suggestions for a profile across all users
+- [ ] 1.1 add referral system
