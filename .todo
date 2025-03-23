@@ -2,7 +2,7 @@
 - [ ] credits update instantly on frontend
 - [ ] payments with Stripe functional and tested
 - [ ] timestamp on TwitterCard wrong timezones
-- [ ] add more sentence for suggestion random picking and make senetence selection random
+- [X] add more sentence for suggestion random picking and make senetence selection random
 - [X] scrolling with fade-out for tweet suggestions
 - [X] frontend knows when user is not logged in
 - [X] loading ai suggestions animation should wait on backend reply
