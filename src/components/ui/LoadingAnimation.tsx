@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface LoadingAnimationProps {
@@ -21,7 +21,6 @@ export function LoadingAnimation({
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isComplete, setIsComplete] = useState(false)
   const [showComplete, setShowComplete] = useState(false)
-  const [shuffledMessages, setShuffledMessages] = useState<string[]>([])
   
   // Default messages to use if none provided
   const defaultMessages = [
@@ -55,23 +54,18 @@ export function LoadingAnimation({
     "Generating Intrigue...",
   ]
   
-  // Use provided messages or fall back to default
-  const displayMessages = messages || defaultMessages
-  
-  // Shuffle the messages array when component mounts
-  useEffect(() => {
-    // Fisher-Yates shuffle algorithm
-    const shuffleArray = (array: string[]) => {
-      const newArray = [...array]
-      for (let i = newArray.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [newArray[i], newArray[j]] = [newArray[j], newArray[i]]
-      }
-      return newArray
+  // Shuffle the default messages so that they appear in a random order each mount
+  const shuffledDefaultMessages = useMemo(() => {
+    const messagesCopy = [...defaultMessages];
+    for (let i = messagesCopy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [messagesCopy[i], messagesCopy[j]] = [messagesCopy[j], messagesCopy[i]];
     }
-    
-    setShuffledMessages(shuffleArray(displayMessages))
-  }, [displayMessages])
+    return messagesCopy;
+  }, []);
+  
+  // Use provided messages or fall back to the shuffled default messages
+  const displayMessages = messages || shuffledDefaultMessages
   
   // Track animation start time to enforce minimum duration
   const [startTime] = useState(Date.now())
@@ -99,7 +93,7 @@ export function LoadingAnimation({
     }
   }, [minDuration, startTime, onComplete])
   
-  // Handle message cycling - update to use shuffled messages
+  // Handle message cycling
   useEffect(() => {
     // If externally controlled completion state is provided and true
     if (externalComplete) {
@@ -108,29 +102,23 @@ export function LoadingAnimation({
       return
     }
     
-    // Check if we have shuffled messages and haven't reached the end
-    if (shuffledMessages.length > 0 && currentIndex < shuffledMessages.length - 1 && !isComplete) {
+    if (currentIndex < displayMessages.length - 1 && !isComplete) {
       const timer = setTimeout(() => {
         setCurrentIndex(index => index + 1)
       }, messageDelay)
       return () => clearTimeout(timer)
-    } else if (shuffledMessages.length > 0 && currentIndex >= shuffledMessages.length - 1 && !isComplete) {
+    } else if (currentIndex >= displayMessages.length - 1 && !isComplete) {
       // We've shown all messages, initiate completion
       finishAnimation()
     }
   }, [
     currentIndex, 
-    shuffledMessages.length, 
+    displayMessages.length, 
     messageDelay, 
     isComplete, 
     finishAnimation,
     externalComplete
   ])
-  
-  // Don't render until we have shuffled the messages
-  if (shuffledMessages.length === 0) {
-    return null
-  }
   
   return (
     <div className="space-y-2" style={{ background: 'transparent' }}>
@@ -154,8 +142,8 @@ export function LoadingAnimation({
             {/* Transparent container */}
             <div className="h-[200px] relative overflow-hidden" style={{ background: 'transparent' }}>
               <div className="space-y-1" style={{ background: 'transparent' }}>
-                {/* Use shuffledMessages instead of displayMessages */}
-                {shuffledMessages.slice(0, currentIndex + 1).reverse().map((message, index) => {
+                {/* Reverse the array to show newest messages at the top */}
+                {displayMessages.slice(0, currentIndex + 1).reverse().map((message, index) => {
                   // Deterministic stepwise opacity:
                   // - First 4 messages (index 0-3): fully visible
                   // - Message 5 (index 4): 66% visible
