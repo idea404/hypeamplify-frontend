@@ -59,6 +59,7 @@ export function DashboardWorkflow({
   const [isValidating, setIsValidating] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const tweetsContainerRef = useRef<HTMLDivElement>(null)
+  const [isComplete, setIsComplete] = useState(false)
 
   // Update profile management functions
   const handleAddProfile = async () => {
@@ -144,6 +145,9 @@ export function DashboardWorkflow({
       if (onSuggestionGenerated) {
         onSuggestionGenerated(newSuggestions)
       }
+      
+      // Add this line to signal the animation to complete
+      setIsComplete(true)
     } catch (error: any) {
       console.error('Error generating suggestions:', error)
       
@@ -663,6 +667,7 @@ export function DashboardWorkflow({
                 <div className="pt-[0.75rem]">
                   <LoadingAnimation 
                     onComplete={handleAnimationComplete}
+                    isComplete={isComplete}
                   />
                 </div>
               </div>

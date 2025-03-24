@@ -142,7 +142,7 @@ export function LoadingAnimation({
             {/* Transparent container */}
             <div className="h-[200px] relative overflow-hidden" style={{ background: 'transparent' }}>
               <div className="space-y-1" style={{ background: 'transparent' }}>
-                {/* Reverse the array to show newest messages at the top */}
+                {/* Process the messages first */}
                 {displayMessages.slice(0, currentIndex + 1).reverse().map((message, index) => {
                   // Deterministic stepwise opacity:
                   // - First 4 messages (index 0-3): fully visible
@@ -161,19 +161,29 @@ export function LoadingAnimation({
                     opacity = 0; // 7th message and beyond: invisible
                   }
                   
+                  // Use AnimatePresence for each message
                   return (
-                    <motion.p
-                      key={`msg-${currentIndex}-${index}`}
-                      initial={{ opacity: 0.5, y: -20 }}
-                      animate={{ 
-                        opacity, 
-                        y: 0 
-                      }}
-                      className="text-md text-muted-foreground"
-                      style={{ background: 'transparent' }}
-                    >
-                      {message}
-                    </motion.p>
+                    <AnimatePresence key={`container-${message}`} mode="sync">
+                      <motion.p
+                        key={`msg-${message}`}
+                        initial={{ opacity: 0, y: -20, height: 0 }}
+                        animate={{ 
+                          opacity, 
+                          y: 0,
+                          height: 'auto'
+                        }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ 
+                          opacity: { duration: 0.2 },
+                          y: { duration: 0.2 },
+                          height: { duration: 0.1 }
+                        }}
+                        className="text-md text-muted-foreground"
+                        style={{ background: 'transparent' }}
+                      >
+                        {message}
+                      </motion.p>
+                    </AnimatePresence>
                   );
                 })}
               </div>
