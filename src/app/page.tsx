@@ -61,7 +61,7 @@ const StepIndicator = ({ step }: { step: number }) => {
 
 export default function Home() {
   const router = useRouter()
-  const { isLoggedIn, user } = useAuthContext()
+  const { isLoggedIn, user, logout } = useAuthContext()
   const [step, setStep] = useState(1)
   const [hoverSide, setHoverSide] = useState<'left' | 'right'>('left')
   const [isLoaded, setIsLoaded] = useState(false)
@@ -144,7 +144,6 @@ export default function Home() {
   
   // Handle logout
   const handleLogout = () => {
-    const { logout } = useAuthContext()
     logout()
   }
   
