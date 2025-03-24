@@ -1,5 +1,6 @@
 # v1
 - [ ] timestamp on TwitterCard wrong timezones
+- [ ] loading animation in tune with backend and dashboard workflow transitions to show tweets
 - [X] credits update instantly on frontend
 - [X] animations for payments page elements
 - [X] payments with Stripe functional and tested

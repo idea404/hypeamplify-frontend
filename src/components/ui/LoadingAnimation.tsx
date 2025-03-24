@@ -98,7 +98,10 @@ export function LoadingAnimation({
     // If externally controlled completion state is provided and true
     if (externalComplete) {
       setIsComplete(true)
-      setTimeout(() => setShowComplete(true), 500)
+      setTimeout(() => {
+        setShowComplete(true)
+        if (onComplete) onComplete()
+      }, 500)
       return
     }
     
@@ -117,7 +120,8 @@ export function LoadingAnimation({
     messageDelay, 
     isComplete, 
     finishAnimation,
-    externalComplete
+    externalComplete,
+    onComplete
   ])
   
   return (
