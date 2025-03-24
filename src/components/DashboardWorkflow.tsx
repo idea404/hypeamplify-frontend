@@ -132,22 +132,31 @@ export function DashboardWorkflow({
     
     setIsGenerating(true)
     setAnimationComplete(false) // Reset animation state
+    setIsComplete(false) // Reset completion state
     setCurrentStep(5) // Show generating state
     
     try {
+      // Start the API call
       const result = await api.tweets.suggest(selectedProfile)
       
-      // Prepend new suggestions to existing ones
+      // Prepare the new suggestions
       const newSuggestions = result.suggestions || []
-      setSuggestions(prevSuggestions => [...newSuggestions, ...prevSuggestions])
       
-      // Call parent's callback instead of fetching credits again
-      if (onSuggestionGenerated) {
-        onSuggestionGenerated(newSuggestions)
-      }
+      // Create a small artificial delay to ensure UI shows a satisfying loading animation
+      // This gives the backend a moment to finish any remaining processing
+      setTimeout(() => {
+        // Update suggestions state
+        setSuggestions(prevSuggestions => [...newSuggestions, ...prevSuggestions])
+        
+        // Call parent's callback for credits update
+        if (onSuggestionGenerated) {
+          onSuggestionGenerated(newSuggestions)
+        }
+        
+        // Signal completion to the animation
+        setIsComplete(true)
+      }, 1500) // Delay by 1.5 seconds
       
-      // Add this line to signal the animation to complete
-      setIsComplete(true)
     } catch (error: any) {
       console.error('Error generating suggestions:', error)
       
