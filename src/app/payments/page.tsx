@@ -10,6 +10,7 @@ import { Logo } from '@/components/ui/Logo'
 import Link from 'next/link'
 import { StripePaymentModal } from '@/components/StripePaymentModal'
 import { useAuthContext } from '@/lib/auth/AuthContext'
+import { Loader2 } from 'lucide-react'
 
 interface Package {
   id: string
@@ -24,8 +25,8 @@ export default function PaymentsPage() {
   const { user, logout } = useAuthContext()
   const [packages, setPackages] = useState<Package[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedPackage, setSelectedPackage] = useState<Package | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [processingPackage, setProcessingPackage] = useState<string | null>(null)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchPackages = async () => {
@@ -40,22 +41,36 @@ export default function PaymentsPage() {
     }
 
     fetchPackages()
-  }, [])
 
-  const handlePackageSelect = (pkg: Package) => {
-    setSelectedPackage(pkg)
-    setIsModalOpen(true)
-  }
-
-  const handlePaymentSuccess = (credits: number) => {
-    // Close the modal after a short delay to show the success message
-    setTimeout(() => {
-      setIsModalOpen(false)
-      setSelectedPackage(null)
+    // Check for session_id in the URL when redirected back from Stripe
+    const url = new URL(window.location.href)
+    const sessionId = url.searchParams.get('session_id')
+    
+    if (sessionId) {
+      // Clean up the URL to remove the session_id
+      url.searchParams.delete('session_id')
+      window.history.replaceState({}, '', url.toString())
       
-      // Optionally redirect to dashboard
-      router.push('/dashboard')
-    }, 3000)
+      // Navigate to success page for consistent UX
+      router.push('/payment/success')
+    }
+  }, [router])
+
+  const handlePackageSelect = async (pkg: Package) => {
+    setProcessingPackage(pkg.id)
+    setCheckoutError(null)
+    
+    try {
+      // Directly call the checkout endpoint
+      const result = await api.payments.checkout(pkg.id)
+      
+      // Redirect to Stripe Checkout page
+      window.location.href = result.url
+    } catch (error) {
+      console.error('Error creating checkout session:', error)
+      setCheckoutError('Could not initialize checkout. Please try again.')
+      setProcessingPackage(null)
+    }
   }
 
   return (
@@ -79,6 +94,7 @@ export default function PaymentsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}
+            className="w-full max-w-4xl"
           >
             <h1 className="text-7xl font-bold mb-4 text-center">Buy Credits</h1>
             <div className="flex justify-center mx-50">
@@ -86,6 +102,18 @@ export default function PaymentsPage() {
                 Purchase credits to generate tweet suggestions. Every credit generates 3 tweet suggestions for any profile.
               </p>
             </div>
+            
+            {/* Show error if checkout failed */}
+            {checkoutError && (
+              <motion.div 
+                className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 text-center"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                {checkoutError}
+              </motion.div>
+            )}
+            
             {loading ? (
               <div className="flex justify-center">
                 <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
@@ -187,8 +215,16 @@ export default function PaymentsPage() {
                               : ''
                           }`}
                           onClick={() => handlePackageSelect(pkg)}
+                          disabled={processingPackage !== null}
                         >
-                          Buy Now
+                          {processingPackage === pkg.id ? (
+                            <div className="flex items-center justify-center">
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Processing...
+                            </div>
+                          ) : (
+                            'Buy Now'
+                          )}
                         </Button>
                       </div>
                     </motion.div>
@@ -210,18 +246,6 @@ export default function PaymentsPage() {
             </Link>
           </motion.div>
         </main>
-
-        {selectedPackage && (
-          <StripePaymentModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            packageId={selectedPackage.id}
-            packageName={selectedPackage.name}
-            packageCredits={selectedPackage.credits}
-            packagePrice={selectedPackage.price_usd}
-            onSuccess={handlePaymentSuccess}
-          />
-        )}
       </div>
     </ProtectedRoute>
   )

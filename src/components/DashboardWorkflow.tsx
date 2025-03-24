@@ -1,5 +1,4 @@
 'use client'
-'use client'
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -10,7 +9,7 @@ import { LoadingAnimation } from './ui/LoadingAnimation'
 import { TwitterCard } from './ui/TwitterCard'
 import { api } from '@/lib/api/client'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
-import { CreditCard, AlertCircle } from 'lucide-react'
+import { CreditCard, AlertCircle, Link } from 'lucide-react'
 
 interface DashboardWorkflowProps {
   // Props that might be needed from parent
@@ -326,7 +325,9 @@ export function DashboardWorkflow({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <CreditCard className="h-5 w-5 text-primary" />
-                <span className="font-medium">Buy Credits</span>
+                <Link href="/payments">
+                  <span className="font-medium">Buy Credits</span>
+                </Link>
               </div>
               <span className="text-sm text-gray-500">Starting from $5</span>
             </div>
