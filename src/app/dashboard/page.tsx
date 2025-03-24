@@ -112,7 +112,7 @@ export default function Dashboard() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <div className="text-sm px-4 py-1 bg-background rounded-full border border-input text-primary cursor-pointer">
+          <div className="text-sm px-4 py-1 bg-background rounded-full border border-input text-primary cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
             {user?.email || 'username not found'}
           </div>
         </motion.div>

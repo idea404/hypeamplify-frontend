@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/Button'
 import { motion } from 'framer-motion'
 import { Logo } from '@/components/ui/Logo'
 import Link from 'next/link'
-import { StripePaymentModal } from '@/components/StripePaymentModal'
 import { useAuthContext } from '@/lib/auth/AuthContext'
 import { Loader2 } from 'lucide-react'
 
@@ -99,7 +98,7 @@ export default function PaymentsPage() {
           transition={{ delay: 0.2, duration: 0.4 }}
           onClick={() => router.push('/dashboard')}
         >
-          <div className="text-sm px-4 py-1 bg-background rounded-full border border-input text-primary">
+          <div className="text-sm px-4 py-1 bg-background rounded-full border border-input text-primary hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
             {user?.email || 'username not found'}
           </div>
         </motion.div>

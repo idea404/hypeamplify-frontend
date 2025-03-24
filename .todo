@@ -1,7 +1,7 @@
 # v1
-- [ ] credits update instantly on frontend
 - [ ] timestamp on TwitterCard wrong timezones
-- [ ] animations for payments page elements
+- [X] credits update instantly on frontend
+- [X] animations for payments page elements
 - [X] payments with Stripe functional and tested
 - [X] once user clicks buy on payments page, redirect to stripe checkout page at once without showing a modal to confirm
 - [X] add more sentence for suggestion random picking and make senetence selection random
