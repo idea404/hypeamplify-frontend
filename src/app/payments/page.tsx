@@ -73,35 +73,63 @@ export default function PaymentsPage() {
     }
   }
 
+  // Variants for the container and items
+  const containerVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  }
+
   return (
     <ProtectedRoute>
       <div className="min-h-screen flex flex-col">
         {/* Username next to theme toggle */}
         <motion.div 
-          className="absolute top-5 left-16"
+          className="absolute top-5 left-16 cursor-pointer"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.2, duration: 0.4 }}
           onClick={() => router.push('/dashboard')}
         >
-          <div className="text-sm px-4 py-1 bg-background rounded-full border border-input text-primary cursor-pointer">
+          <div className="text-sm px-4 py-1 bg-background rounded-full border border-input text-primary">
             {user?.email || 'username not found'}
           </div>
         </motion.div>
 
         <main className="flex-1 flex items-center justify-center p-32">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
             className="w-full max-w-4xl"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
           >
-            <h1 className="text-7xl font-bold mb-4 text-center">Buy Credits</h1>
-            <div className="flex justify-center mx-50">
+            <motion.h1 
+              className="text-7xl font-bold mb-4 text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.4 }}
+            >
+              Buy Credits
+            </motion.h1>
+
+            <motion.div 
+              className="flex justify-center mx-50"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.4 }}
+            >
               <p className="text-lg text-gray-500 dark:text-gray-400 mb-12 text-center">
                 Purchase credits to generate tweet suggestions. Every credit generates 3 tweet suggestions for any profile.
               </p>
-            </div>
+            </motion.div>
             
             {/* Show error if checkout failed */}
             {checkoutError && (
@@ -109,6 +137,7 @@ export default function PaymentsPage() {
                 className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 text-center"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
               >
                 {checkoutError}
               </motion.div>
@@ -119,10 +148,15 @@ export default function PaymentsPage() {
                 <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
               </div>
             ) : (
-              <div className="grid md:grid-cols-3 gap-6">
+              <motion.div 
+                className="grid md:grid-cols-3 gap-6"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+              >
                 {packages.map((pkg) => {
-                  const isPremium = pkg.name.toLowerCase() === 'premium';
-                  const isStandard = pkg.name.toLowerCase() === 'standard';
+                  const isPremium = pkg.name.toLowerCase() === 'premium'
+                  const isStandard = pkg.name.toLowerCase() === 'standard'
                   
                   return (
                     <motion.div
@@ -130,8 +164,8 @@ export default function PaymentsPage() {
                       className={`rounded-lg p-6 shadow-sm relative overflow-hidden 
                         backdrop-blur-md bg-background/20 backdrop-saturate-150
                         border`}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
+                      variants={itemVariants}
+                      transition={{ duration: 0.4 }}
                       whileHover={{ 
                         scale: 1.03, 
                         boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
@@ -152,10 +186,10 @@ export default function PaymentsPage() {
                           style={{ 
                             background: 'linear-gradient(90deg, #ff0000, #ff9a00, #d0de21, #4fdc4a, #3fdad8, #2fc9e2, #1c7fee, #5f15f2, #ba0cf8, #fb07d9, #ff0000)',
                             backgroundSize: '500% 500%',
-                            padding: '2px', // Border thickness
+                            padding: '2px'
                           }}
                           animate={{
-                            backgroundPosition: ['0% 0%', '100% 100%', '200% 0%', '300% 100%', '400% 0%'],
+                            backgroundPosition: ['0% 0%', '100% 100%', '200% 0%', '300% 100%', '400% 0%']
                           }}
                           transition={{
                             duration: 8,
@@ -169,29 +203,36 @@ export default function PaymentsPage() {
 
                       {/* Best Value tag for Premium */}
                       {isPremium && (
-                        <div className="absolute top-3 right-3 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-medium text-xs px-2 py-1 rounded-full z-10 shadow-md border border-yellow-200">
+                        <motion.div 
+                          className="absolute top-3 right-3 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-medium text-xs px-2 py-1 rounded-full z-10 shadow-md border border-yellow-200"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.5, duration: 0.3 }}
+                        >
                           Best Value
-                        </div>
+                        </motion.div>
                       )}
 
                       {/* Silver "< $1 per Credit" tag for Standard */}
                       {isStandard && (
-                        <div className="absolute top-3 right-3 bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800 font-medium text-xs px-2 py-1 rounded-full z-10 shadow-md border border-gray-200">
+                        <motion.div 
+                          className="absolute top-3 right-3 bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800 font-medium text-xs px-2 py-1 rounded-full z-10 shadow-md border border-gray-200"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.5, duration: 0.3 }}
+                        >
                           &lt; $1 per Credit
-                        </div>
+                        </motion.div>
                       )}
                       
                       {/* Card content container with glassmorphism */}
                       <div className="relative z-10 h-full">
-                        {/* Metallic shine effect overlay - improved */}
+                        {/* Metallic shine effect overlay */}
                         <motion.div 
                           className="absolute inset-0 bg-gradient-to-br from-white/5 via-white/40 to-transparent pointer-events-none" 
                           initial={{ opacity: 0, left: "-100%" }}
                           whileHover={{ opacity: 1, left: "100%" }}
-                          transition={{ 
-                            duration: 1.2, 
-                            ease: "easeInOut"
-                          }}
+                          transition={{ duration: 1.2, ease: "easeInOut" }}
                           style={{
                             width: "70%",
                             filter: "blur(8px)",
@@ -205,9 +246,10 @@ export default function PaymentsPage() {
                           <p className="text-gray-500 mb-4">{pkg.description}</p>
                         )}
                         <div className="text-3xl font-bold mb-2">${pkg.price_usd}</div>
-                        <p className="text-primary mb-3">{pkg.credits} credits</p> 
-                        
-                        <p className="text-gray-500 dark:text-gray-400 mb-6">{pkg.credits * 3} tweet suggestions</p>
+                        <p className="text-primary mb-3">{pkg.credits} credits</p>
+                        <p className="text-gray-500 dark:text-gray-400 mb-6">
+                          {pkg.credits * 3} tweet suggestions
+                        </p>
                         <Button
                           className={`w-full cursor-pointer ${
                             isPremium 
@@ -228,9 +270,9 @@ export default function PaymentsPage() {
                         </Button>
                       </div>
                     </motion.div>
-                  );
+                  )
                 })}
-              </div>
+              </motion.div>
             )}
           </motion.div>
 
@@ -239,7 +281,7 @@ export default function PaymentsPage() {
             className="absolute bottom-6 left-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.2, duration: 0.4 }}
           >
             <Link href="/">
               <Logo width={200} height={60} />

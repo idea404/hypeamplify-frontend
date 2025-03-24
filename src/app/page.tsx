@@ -204,7 +204,7 @@ export default function Home() {
             <div className="text-sm px-4 py-1 bg-background rounded-full border border-input text-primary">
               {credits} credits available
             </div>
-            <Button variant="default">
+            <Button variant="default" onClick={() => router.push('/payments')} className="cursor-pointer">
               Buy Credits
             </Button>
             <Button variant="outline" onClick={handleLogout} className="cursor-pointer">
