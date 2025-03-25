@@ -1,0 +1,7 @@
+{
+    "build": {
+        "env": {
+            "VERCEL_FILESYSTEM_CASE_SENSITIVE": "false"
+        }
+    }
+}
