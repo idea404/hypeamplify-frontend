@@ -164,7 +164,6 @@ export default function PaymentsPage() {
                         backdrop-blur-md bg-background/20 backdrop-saturate-150
                         border`}
                       variants={itemVariants}
-                      transition={{ duration: 0.4 }}
                       whileHover={{ 
                         scale: 1.03, 
                         boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
