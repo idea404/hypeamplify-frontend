@@ -6,8 +6,8 @@ import { useAuthContext } from '@/lib/auth/AuthContext'
 import { api } from '@/lib/api/client'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Button } from '@/components/ui/Button'
-import { Logo } from '@/components/ui/Logo'
+import { Button } from '@/components/ui/button'
+import { Logo } from '@/components/ui/logo'
 import { DashboardWorkflow } from '@/components/DashboardWorkflow'
 
 export default function Dashboard() {

@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button } from '@/components/ui/Button'
-import { Input } from './ui/Input'
-import ProfileButton from './ui/ProfileButton'
-import { LoadingAnimation } from './ui/LoadingAnimation'
-import { TwitterCard } from './ui/TwitterCard'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import ProfileButton from '@/components/ui/profile-button'
+import { LoadingAnimation } from '@/components/ui/loading-animation'
+import { TwitterCard } from '@/components/ui/twitter-card'
 import { api } from '@/lib/api/client'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { CreditCard, AlertCircle, Link } from 'lucide-react'
 
 interface DashboardWorkflowProps {

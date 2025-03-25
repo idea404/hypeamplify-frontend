@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { WebGLBackground } from '@/components/WebGLBackground'
 import { useAuthContext } from '@/lib/auth/AuthContext'
 

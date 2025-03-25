@@ -1,4 +1,4 @@
-import { Button } from "./Button";
+import { Button } from "./button";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Trash2 } from "lucide-react";

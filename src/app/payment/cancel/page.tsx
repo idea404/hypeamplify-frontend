@@ -3,10 +3,10 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Logo } from '@/components/ui/Logo'
+import { Logo } from '@/components/ui/logo'
 import Link from 'next/link'
 import { XCircle } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
+import { Button } from '@/components/ui/button'
 
 export default function PaymentCancelPage() {
   const router = useRouter()

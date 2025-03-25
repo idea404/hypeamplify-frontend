@@ -2,12 +2,12 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { Button } from "@/components/ui/Button"
+import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
-import { Logo } from "@/components/ui/Logo"
-import ProfileButton from "@/components/ui/ProfileButton"
-import { LoadingAnimation } from "@/components/ui/LoadingAnimation"
-import { TwitterCard } from "@/components/ui/TwitterCard"
+import { Logo } from "@/components/ui/logo"
+import ProfileButton from "@/components/ui/profile-button"
+import { LoadingAnimation } from "@/components/ui/loading-animation"
+import { TwitterCard } from "@/components/ui/twitter-card"
 import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api/client'
 import { useAuthContext } from '@/lib/auth/AuthContext'
