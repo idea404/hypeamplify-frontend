@@ -7,7 +7,7 @@ export const authEvents = {
 };
 
 // Base API URL
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 // Create an axios instance
 const apiClient = axios.create({
