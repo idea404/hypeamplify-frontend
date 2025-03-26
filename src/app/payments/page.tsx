@@ -10,6 +10,7 @@ import { Logo } from '@/components/ui/logo'
 import Link from 'next/link'
 import { useAuthContext } from '@/lib/auth/AuthContext'
 import { Loader2 } from 'lucide-react'
+import { Navbar, NavbarItemProps } from '@/components/ui/navbar'
 
 interface Package {
   id: string
@@ -72,6 +73,20 @@ export default function PaymentsPage() {
     }
   }
 
+  // Custom navbar items
+  const navbarItems: NavbarItemProps[] = [
+    {
+      key: 'sign-out',
+      element: (
+        <Button variant="outline" onClick={logout} className="cursor-pointer">
+          Sign Out
+        </Button>
+      ),
+      position: 'right',
+      order: 1
+    }
+  ];
+
   // Variants for the container and items
   const containerVariants = {
     hidden: {},
@@ -90,18 +105,12 @@ export default function PaymentsPage() {
   return (
     <ProtectedRoute>
       <div className="min-h-screen flex flex-col">
-        {/* Username next to theme toggle */}
-        <motion.div 
-          className="absolute top-5 left-16 cursor-pointer"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.4 }}
-          onClick={() => router.push('/dashboard')}
-        >
-          <div className="text-sm px-4 py-1 bg-background rounded-full border border-input text-primary hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-            {user?.email || 'username not found'}
-          </div>
-        </motion.div>
+        {/* Use the Navbar component */}
+        <Navbar 
+          items={navbarItems}
+          showUserEmail={true}
+          showCredits={false}
+        />
 
         <main className="flex-1 flex items-center justify-center p-32">
           <motion.div

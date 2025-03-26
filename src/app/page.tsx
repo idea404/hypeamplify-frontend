@@ -11,6 +11,7 @@ import { TwitterCard } from "@/components/ui/twitter-card"
 import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api/client'
 import { useAuthContext } from '@/lib/auth/AuthContext'
+import { Navbar, NavbarItemProps } from '@/components/ui/navbar'
 
 // Step indicator component with independent alignment and animations for number and title
 const StepIndicator = ({ step }: { step: number }) => {
@@ -179,6 +180,43 @@ export default function Home() {
     })
   }
 
+  // Custom navbar items for logged in and logged out states
+  const loggedInNavItems: NavbarItemProps[] = [
+    {
+      key: 'buy-credits',
+      element: (
+        <Button variant="default" onClick={() => router.push('/payments')} className="cursor-pointer">
+          Buy Credits
+        </Button>
+      ),
+      position: 'right',
+      order: 1
+    },
+    {
+      key: 'sign-out',
+      element: (
+        <Button variant="outline" onClick={handleLogout} className="cursor-pointer">
+          Sign Out
+        </Button>
+      ),
+      position: 'right',
+      order: 2
+    }
+  ];
+
+  const loggedOutNavItems: NavbarItemProps[] = [
+    {
+      key: 'sign-in',
+      element: (
+        <Button asChild variant="outline">
+          <Link href="/auth/login">Sign In</Link>
+        </Button>
+      ),
+      position: 'right',
+      order: 1
+    }
+  ];
+
   return (
     <div 
       className="flex flex-col min-h-screen relative"
@@ -191,46 +229,12 @@ export default function Home() {
         }
       }}
     >
-      {/* Authentication Button(s) */}
-      <motion.div 
-        className="absolute top-4 right-4"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : -20 }}
-        transition={{ delay: 0.2 }}
-      >
-        {isLoggedIn ? (
-          <div className="flex items-center gap-4">
-            <div className="text-sm px-4 py-1 bg-background rounded-full border border-input text-primary">
-              {credits} credits available
-            </div>
-            <Button variant="default" onClick={() => router.push('/payments')} className="cursor-pointer">
-              Buy Credits
-            </Button>
-            <Button variant="outline" onClick={handleLogout} className="cursor-pointer">
-              Sign Out
-            </Button>
-          </div>
-        ) : (
-          <Button asChild variant="outline">
-            <Link href="/auth/login">Sign In</Link>
-          </Button>
-        )}
-      </motion.div>
-      
-      {/* User Email (if logged in) */}
-      {isLoggedIn && (
-        <motion.div 
-          className="absolute top-5 left-16 cursor-pointer"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : -20 }}
-          transition={{ delay: 0.2 }}
-          onClick={goToDashboard}
-        >
-          <div className="text-sm px-4 py-1 bg-background rounded-full border border-input text-primary hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-            {user?.email || 'username not found'}
-          </div>
-        </motion.div>
-      )}
+      {/* Use the Navbar component */}
+      <Navbar 
+        items={isLoggedIn ? loggedInNavItems : loggedOutNavItems}
+        showUserEmail={isLoggedIn}
+        showCredits={isLoggedIn}
+      />
       
       {/* Main Content */}
       <main className="flex-1 flex overflow-hidden">

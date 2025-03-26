@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { api } from '@/lib/api/client'
 import { Logo } from '@/components/ui/logo'
 import { useAuthContext } from '@/lib/auth/AuthContext'
+import { Navbar, NavbarItemProps } from '@/components/ui/navbar'
 
 export default function Register() {
   const router = useRouter()
@@ -60,19 +61,24 @@ export default function Register() {
     }
   }
 
-  return (
-    <div className="min-h-screen flex flex-col">
-      {/* Header/Navigation */}
-      <motion.div 
-        className="absolute top-4 right-4"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-      >
+  // Custom navbar items
+  const navbarItems: NavbarItemProps[] = [
+    {
+      key: 'sign-in',
+      element: (
         <Button asChild variant="outline">
           <Link href="/auth/login">Sign In</Link>
         </Button>
-      </motion.div>
+      ),
+      position: 'right',
+      order: 1
+    }
+  ];
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* Use the Navbar component */}
+      <Navbar items={navbarItems} />
 
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center p-8">

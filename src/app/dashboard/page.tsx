@@ -9,9 +9,12 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/ui/logo'
 import { DashboardWorkflow } from '@/components/DashboardWorkflow'
+import { Navbar, NavbarItemProps } from '@/components/ui/navbar'
+import { useRouter } from 'next/navigation'
 
 export default function Dashboard() {
   const { user, logout } = useAuthContext();
+  const router = useRouter();
   const [credits, setCredits] = useState(0);
   const [userProfiles, setUserProfiles] = useState<string[]>([]);
   const [profilesData, setProfilesData] = useState<{[key: string]: any}>({});
@@ -102,42 +105,39 @@ export default function Dashboard() {
     });
   };
   
+  // Custom navbar items
+  const navbarItems: NavbarItemProps[] = [
+    {
+      key: 'buy-credits',
+      element: (
+        <Button variant="default" onClick={() => router.push('/payments')} className="cursor-pointer">
+          Buy Credits
+        </Button>
+      ),
+      position: 'right',
+      order: 1
+    },
+    {
+      key: 'sign-out',
+      element: (
+        <Button variant="outline" onClick={logout} className="cursor-pointer">
+          Sign Out
+        </Button>
+      ),
+      position: 'right',
+      order: 2
+    }
+  ];
+  
   return (
     <ProtectedRoute>
       <div className="min-h-screen flex flex-col">
-        {/* Username next to theme toggle */}
-        <motion.div 
-          className="absolute top-5 left-16"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <div className="text-sm px-4 py-1 bg-background rounded-full border border-input text-primary cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-            {user?.email || 'username not found'}
-          </div>
-        </motion.div>
-
-        {/* Header/Navigation */}
-        <motion.div 
-          className="absolute top-4 right-4"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <div className="flex items-center gap-4">
-            <div className="text-sm px-4 py-1 bg-background rounded-full border border-input text-primary">
-              {credits} credits available
-            </div>
-            <Link href="/payments">
-              <Button variant="default" className="cursor-pointer">
-                Buy Credits
-              </Button>
-            </Link>
-            <Button variant="outline" onClick={logout} className="cursor-pointer">
-              Sign Out
-            </Button>
-          </div>
-        </motion.div>
+        {/* Use the Navbar component */}
+        <Navbar 
+          items={navbarItems}
+          showUserEmail={true}
+          showCredits={true}
+        />
         
         {/* Main Dashboard Content */}
         <main className="flex-1 flex items-center justify-start p-32">

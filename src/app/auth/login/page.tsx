@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { api } from '@/lib/api/client'
 import { Logo } from '@/components/ui/logo'
 import { useAuthContext } from '@/lib/auth/AuthContext'
+import { Navbar, NavbarItemProps } from '@/components/ui/navbar'
 
 export default function Login() {
   const router = useRouter()
@@ -47,19 +48,24 @@ export default function Login() {
     }
   }
 
-  return (
-    <div className="min-h-screen flex flex-col">
-      {/* Header/Navigation */}
-      <motion.div 
-        className="absolute top-4 right-4"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-      >
+  // Custom navbar items
+  const navbarItems: NavbarItemProps[] = [
+    {
+      key: 'create-account',
+      element: (
         <Button asChild variant="outline">
           <Link href="/auth/register">Create Account</Link>
         </Button>
-      </motion.div>
+      ),
+      position: 'right',
+      order: 1
+    }
+  ];
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* Use the Navbar component */}
+      <Navbar items={navbarItems} />
 
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center p-8">
