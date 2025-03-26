@@ -11,6 +11,13 @@ const nextConfig: NextConfig = {
     config.resolve.alias['@'] = path.join(__dirname, 'src');
     return config;
   },
+  experimental: {
+    turbo: {
+      resolveAlias: {
+        '@': path.join(__dirname, 'src'),
+      },
+    },
+  },
 };
 
 export default nextConfig;
