@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api/client'
 import { useAuthContext } from '@/lib/auth/AuthContext'
 import { Navbar, NavbarItemProps } from '@/components/ui/navbar'
+import { CreditCard, LogOut, User } from 'lucide-react'
 
 // Step indicator component with independent alignment and animations for number and title
 const StepIndicator = ({ step }: { step: number }) => {
@@ -23,9 +24,9 @@ const StepIndicator = ({ step }: { step: number }) => {
   
   return (
     <div className="flex items-center mb-6 relative">
-      <div className="flex items-center absolute" style={{ left: "-3rem" }}>
+      <div className="flex items-center lg:absolute" style={{ left: "0", position: "relative", marginRight: "0.75rem", width: "auto", display: "inline-flex" }}>
         <motion.span 
-          className="text-4xl font-bold tracking-tighter"
+          className="text-2xl lg:text-4xl font-bold tracking-tighter"
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.3 }}
@@ -33,7 +34,7 @@ const StepIndicator = ({ step }: { step: number }) => {
           {step}
         </motion.span>
         <motion.span
-          className="text-4xl font-bold tracking-tighter text-muted-foreground mx-1"
+          className="text-2xl lg:text-4xl font-bold tracking-tighter text-muted-foreground mx-1"
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3, duration: 0.3 }}
@@ -43,7 +44,7 @@ const StepIndicator = ({ step }: { step: number }) => {
       </div>
       
       <motion.h2 
-        className="text-4xl font-bold tracking-tighter"
+        className="text-2xl lg:text-4xl font-bold tracking-tighter"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
@@ -70,9 +71,36 @@ export default function Home() {
   const [isComplete, setIsComplete] = useState(false)
   const [copiedTweets, setCopiedTweets] = useState<{[key: number]: boolean}>({})
   const [shuffledMessages, setShuffledMessages] = useState<string[]>([])
-
-  // Add credits state
   const [credits, setCredits] = useState(0)
+  const [isDesktop, setIsDesktop] = useState(false)
+
+  // Check if we're on desktop on mount
+  useEffect(() => {
+    setIsDesktop(window.innerWidth >= 1024)
+    
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 1024)
+    }
+    
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  // Add effect for mouse move
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isDesktop) {
+        if (e.clientX < window.innerWidth / 2) {
+          setHoverSide('left')
+        } else {
+          setHoverSide('right')
+        }
+      }
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [isDesktop])
 
   // Profile-specific tweet suggestions from demo data
   const profileSuggestions = {
@@ -185,7 +213,8 @@ export default function Home() {
     {
       key: 'buy-credits',
       element: (
-        <Button variant="default" onClick={() => router.push('/payments')} className="cursor-pointer">
+        <Button variant="default" onClick={() => router.push('/payments')} className="w-full justify-start h-10 cursor-pointer">
+          <CreditCard className="mr-2 h-4 w-4" />
           Buy Credits
         </Button>
       ),
@@ -195,7 +224,8 @@ export default function Home() {
     {
       key: 'sign-out',
       element: (
-        <Button variant="outline" onClick={handleLogout} className="cursor-pointer">
+        <Button variant="outline" onClick={handleLogout} className="w-full justify-start h-10 cursor-pointer">
+          <LogOut className="mr-2 h-4 w-4" />
           Sign Out
         </Button>
       ),
@@ -208,8 +238,11 @@ export default function Home() {
     {
       key: 'sign-in',
       element: (
-        <Button asChild variant="outline">
-          <Link href="/auth/login">Sign In</Link>
+        <Button asChild variant="outline" className="w-full justify-start h-10">
+          <Link href="/auth/login">
+            <User className="mr-2 h-4 w-4" />
+            Sign In
+          </Link>
         </Button>
       ),
       position: 'right',
@@ -218,17 +251,7 @@ export default function Home() {
   ];
 
   return (
-    <div 
-      className="flex flex-col min-h-screen relative"
-      onMouseMove={(e) => {
-        // Determine which side of the screen the mouse is on
-        if (e.clientX < window.innerWidth / 2) {
-          setHoverSide('left')
-        } else {
-          setHoverSide('right')
-        }
-      }}
-    >
+    <div className="flex flex-col min-h-screen relative">
       {/* Use the Navbar component */}
       <Navbar 
         items={isLoggedIn ? loggedInNavItems : loggedOutNavItems}
@@ -237,16 +260,16 @@ export default function Home() {
       />
       
       {/* Main Content */}
-      <main className="flex-1 flex overflow-hidden">
+      <main className="flex-1 flex flex-col lg:flex-row overflow-hidden mt-16 lg:mt-0">
         {/* Left Half - Intro */}
         <motion.div
-          className={`w-1/2 flex items-center justify-center pr-12 p-8 ${hoverSide === 'right' ? 'blur-sm' : ''} transition-all duration-300`}
+          className={`w-full lg:w-1/2 flex items-center justify-center p-4 lg:pr-12 lg:p-8 ${isDesktop && hoverSide === 'right' ? 'blur-sm' : ''} transition-all duration-300`}
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: isLoaded ? 1 : 0, x: isLoaded ? 0 : -50 }}
           transition={{ delay: 0.3 }}
         >
-          <div className="max-w-md space-y-6">
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl/none">
+          <div className="max-w-md space-y-6 text-center lg:text-left">
+            <h1 className="text-3xl lg:text-4xl font-bold tracking-tighter sm:text-5xl/none">
               Supercharge Your Presence on X
             </h1>
             <p className="text-gray-500 dark:text-gray-400">
@@ -263,7 +286,7 @@ export default function Home() {
         
         {/* Right Half - Profile Selection / Generation */}
         <motion.div
-          className={`w-1/2 flex items-center justify-start pl-12 p-8 ${hoverSide === 'left' ? 'blur-sm' : ''} transition-all duration-300`}
+          className={`w-full lg:w-1/2 flex items-center justify-start p-4 lg:pl-12 lg:p-8 ${isDesktop && hoverSide === 'left' ? 'blur-sm' : ''} transition-all duration-300`}
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: isLoaded ? 1 : 0, x: isLoaded ? 0 : 50 }}
           transition={{ delay: 0.4 }}
@@ -285,7 +308,7 @@ export default function Home() {
                     exit={{ opacity: 0, y: -20 }}
                     className="space-y-6"
                   >
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <ProfileButton name="elonmusk" onClick={() => handleProfileSelect('elonmusk')} useLocalImagesFirst={true} />
                       <ProfileButton name="realDonaldTrump" onClick={() => handleProfileSelect('realDonaldTrump')} useLocalImagesFirst={true} />
                       <ProfileButton name="taylorswift13" onClick={() => handleProfileSelect('taylorswift13')} useLocalImagesFirst={true} />
@@ -354,18 +377,6 @@ export default function Home() {
           </div>
         </motion.div>
       </main>
-      
-      {/* HypeAmplify Logo */}
-      <motion.div 
-        className="absolute bottom-6 left-6"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
-        transition={{ delay: 0.5 }}
-      >
-        <Link href="/">
-          <Logo width={200} height={60} />
-        </Link>
-      </motion.div>
     </div>
   )
 }

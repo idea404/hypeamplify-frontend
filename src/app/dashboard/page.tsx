@@ -11,6 +11,7 @@ import { Logo } from '@/components/ui/logo'
 import { DashboardWorkflow } from '@/components/DashboardWorkflow'
 import { Navbar, NavbarItemProps } from '@/components/ui/navbar'
 import { useRouter } from 'next/navigation'
+import { CreditCard, LogOut } from 'lucide-react'
 
 export default function Dashboard() {
   const { user, logout } = useAuthContext();
@@ -110,7 +111,8 @@ export default function Dashboard() {
     {
       key: 'buy-credits',
       element: (
-        <Button variant="default" onClick={() => router.push('/payments')} className="cursor-pointer">
+        <Button variant="default" onClick={() => router.push('/payments')} className="w-full justify-start h-10 cursor-pointer">
+          <CreditCard className="mr-2 h-4 w-4" />
           Buy Credits
         </Button>
       ),
@@ -120,7 +122,8 @@ export default function Dashboard() {
     {
       key: 'sign-out',
       element: (
-        <Button variant="outline" onClick={logout} className="cursor-pointer">
+        <Button variant="outline" onClick={logout} className="w-full justify-start h-10 cursor-pointer">
+          <LogOut className="mr-2 h-4 w-4" />
           Sign Out
         </Button>
       ),
@@ -140,7 +143,7 @@ export default function Dashboard() {
         />
         
         {/* Main Dashboard Content */}
-        <main className="flex-1 flex items-center justify-start p-32">
+        <main className="flex-1 flex items-center justify-start p-4 lg:p-32 mt-16 lg:mt-0">
           {isLoading ? (
             <div className="flex justify-center items-center w-full">
               <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
@@ -157,18 +160,6 @@ export default function Dashboard() {
             />
           )}
         </main>
-
-        {/* HypeAmplify Logo */}
-        <motion.div 
-          className="absolute bottom-6 left-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Link href="/">
-            <Logo width={200} height={60} />
-          </Link>
-        </motion.div>
       </div>
     </ProtectedRoute>
   );
