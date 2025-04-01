@@ -112,7 +112,7 @@ export default function Dashboard() {
       key: 'buy-credits',
       element: (
         <Button variant="default" onClick={() => router.push('/payments')} className="w-full justify-start h-10 cursor-pointer">
-          <CreditCard className="mr-2 h-4 w-4" />
+          <CreditCard className="h-4 w-4" />
           Buy Credits
         </Button>
       ),
@@ -123,7 +123,7 @@ export default function Dashboard() {
       key: 'sign-out',
       element: (
         <Button variant="outline" onClick={logout} className="w-full justify-start h-10 cursor-pointer">
-          <LogOut className="mr-2 h-4 w-4" />
+          <LogOut className="h-4 w-4" />
           Sign Out
         </Button>
       ),
@@ -160,6 +160,18 @@ export default function Dashboard() {
             />
           )}
         </main>
+
+        {/* HypeAmplify Logo - only visible on desktop */}
+        <motion.div 
+          className="absolute bottom-6 left-6 hidden lg:block"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Link href="/">
+            <Logo width={200} height={60} />
+          </Link>
+        </motion.div>
       </div>
     </ProtectedRoute>
   );

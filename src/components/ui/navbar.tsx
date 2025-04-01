@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { useAuthContext } from '@/lib/auth/AuthContext'
 import { Logo } from './logo'
 import { ThemeToggle } from './theme-toggle'
-import { Menu, X, User, Home, CreditCard } from 'lucide-react'
+import { Menu, X, User, Home, Coins } from 'lucide-react'
 import { Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 import { useTheme } from 'next-themes'
@@ -82,29 +82,54 @@ export function Navbar({
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-transparent">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          {/* Left side - Logo */}
-          <div className="flex items-center">
+          {/* Desktop Navigation - Left Side */}
+          <div className="hidden lg:flex lg:items-center lg:space-x-4">
+            {/* Theme toggle first */}
+            <ThemeToggle />
+            
+            {/* Home button if logged in */}
+            {isLoggedIn && (
+              <Button 
+                variant="outline" 
+                onClick={handleDashboardClick}
+                className="cursor-pointer space-x-1.5"
+              >
+                <Home className="h-4 w-4" />
+                Dashboard
+              </Button>
+            )}
+            
+            {/* User account name if logged in */}
+            {showUserEmail && user && (
+              <div className="flex items-center text-sm font-medium">
+                {user.email}
+              </div>
+            )}
+          </div>
+
+          {/* Mobile logo - centered */}
+          <div className="flex items-center lg:hidden">
             <Link href="/" className="flex-shrink-0">
               <Logo width={120} height={36} />
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation - Right Side */}
           <div className="hidden lg:flex lg:items-center lg:space-x-4">
-            {/* Left items */}
-            {leftItems.map(item => (
-              <div key={item.key}>{item.element}</div>
-            ))}
-
+            {/* Credits if shown */}
+            {showCredits && (
+              <div className="flex items-center space-x-2 text-sm">
+                <Coins className="h-4 w-4 text-primary" />
+                <span>{credits} credits</span>
+              </div>
+            )}
+            
             {/* Right items */}
             {rightItems.map(item => (
               <div key={item.key}>{item.element}</div>
             ))}
-
-            {/* Theme toggle */}
-            <ThemeToggle />
           </div>
 
           {/* Mobile menu button */}
@@ -157,7 +182,7 @@ export function Navbar({
             {showCredits && (
               <div className="px-4 py-3 flex items-center space-x-3">
                 <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <CreditCard className="h-4 w-4 text-primary" />
+                  <Coins className="h-4 w-4 text-primary" />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm font-medium">{credits} credits</span>
@@ -173,12 +198,12 @@ export function Navbar({
                 <div className="px-2 w-full">
                   <Button 
                     variant="outline"
-                    className="w-full justify-start cursor-pointer h-10"
+                    className="w-full justify-start cursor-pointer h-10 space-x-1.5"
                     size="default"
                     onClick={handleDashboardClick}
                   >
-                    <Home className="mr-2 h-4 w-4" />
-                    Go to Dashboard
+                    <Home className="h-4 w-4" />
+                    Dashboard
                   </Button>
                 </div>
               )}
@@ -194,7 +219,7 @@ export function Navbar({
               <div className="px-2 w-full">
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start cursor-pointer h-10"
+                  className="w-full justify-start cursor-pointer h-10 space-x-1.5"
                   size="default"
                   onClick={() => {
                     const newTheme = theme === 'dark' ? 'light' : 'dark';
@@ -211,7 +236,6 @@ export function Navbar({
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="mr-2"
                   >
                     <circle cx="12" cy="12" r="5" />
                     <line x1="12" y1="1" x2="12" y2="3" />

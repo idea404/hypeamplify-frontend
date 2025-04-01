@@ -8,10 +8,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { api } from '@/lib/api/client'
-import { Logo } from '@/components/ui/logo'
 import { useAuthContext } from '@/lib/auth/AuthContext'
 import { Navbar, NavbarItemProps } from '@/components/ui/navbar'
 import { PlusCircle } from 'lucide-react'
+import { Logo } from '@/components/ui/logo'
 
 function LoginForm() {
   const [formData, setFormData] = useState({
@@ -159,9 +159,9 @@ export default function Login() {
     {
       key: 'create-account',
       element: (
-        <Button asChild variant="outline" className="w-full justify-start h-10">
+        <Button asChild variant="outline" className="w-full justify-start h-10 space-x-1.5">
           <Link href="/auth/register">
-            <PlusCircle className="mr-2 h-4 w-4" />
+            <PlusCircle className="h-4 w-4" />
             Create Account
           </Link>
         </Button>
@@ -188,6 +188,18 @@ export default function Login() {
           <LoginForm />
         </div>
       </main>
+
+      {/* HypeAmplify Logo - only visible on desktop */}
+      <motion.div 
+        className="absolute bottom-6 left-6 hidden lg:block"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <Link href="/">
+          <Logo width={200} height={60} />
+        </Link>
+      </motion.div>
     </div>
   )
 } 

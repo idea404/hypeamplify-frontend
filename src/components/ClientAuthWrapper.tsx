@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect } from 'react'
-import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { WebGLBackground } from '@/components/WebGLBackground'
 import { useAuthContext } from '@/lib/auth/AuthContext'
 
@@ -27,9 +26,6 @@ export function ClientAuthWrapper({ children }: ClientAuthWrapperProps) {
     <>
       <WebGLBackground />
       <div className="absolute inset-0 bg-white/50 dark:bg-black/40 backdrop-blur-[3px] -z-5" />
-      <div className="absolute top-4 left-4 z-50 hidden lg:block">
-        <ThemeToggle />
-      </div>
       {children}
     </>
   );

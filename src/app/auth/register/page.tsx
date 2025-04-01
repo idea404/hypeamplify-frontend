@@ -11,7 +11,7 @@ import { api } from '@/lib/api/client'
 import { Logo } from '@/components/ui/logo'
 import { useAuthContext } from '@/lib/auth/AuthContext'
 import { Navbar, NavbarItemProps } from '@/components/ui/navbar'
-import { LogIn } from 'lucide-react'
+import { User } from 'lucide-react'
 
 export default function Register() {
   const router = useRouter()
@@ -67,9 +67,9 @@ export default function Register() {
     {
       key: 'sign-in',
       element: (
-        <Button asChild variant="outline" className="w-full justify-start h-10">
+        <Button asChild variant="outline" className="w-full justify-start h-10 space-x-1.5">
           <Link href="/auth/login">
-            <LogIn className="mr-2 h-4 w-4" />
+            <User className="h-4 w-4" />
             Sign In
           </Link>
         </Button>
@@ -175,9 +175,9 @@ export default function Register() {
         </div>
       </main>
 
-      {/* HypeAmplify Logo */}
+      {/* HypeAmplify Logo - only visible on desktop */}
       <motion.div 
-        className="absolute bottom-6 left-6"
+        className="absolute bottom-6 left-6 hidden lg:block"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
