@@ -9,7 +9,7 @@ import { motion } from 'framer-motion'
 import { Logo } from '@/components/ui/logo'
 import Link from 'next/link'
 import { useAuthContext } from '@/lib/auth/AuthContext'
-import { Loader2 } from 'lucide-react'
+import { Loader2, LogOut } from 'lucide-react'
 import { Navbar, NavbarItemProps } from '@/components/ui/navbar'
 
 interface Package {
@@ -78,7 +78,8 @@ export default function PaymentsPage() {
     {
       key: 'sign-out',
       element: (
-        <Button variant="outline" onClick={logout} className="cursor-pointer">
+        <Button variant="outline" onClick={logout} className="w-full justify-start h-10 cursor-pointer">
+          <LogOut className="h-4 w-4" />
           Sign Out
         </Button>
       ),
@@ -112,7 +113,7 @@ export default function PaymentsPage() {
           showCredits={false}
         />
 
-        <main className="flex-1 flex items-center justify-center p-32">
+        <main className="flex-1 flex items-center justify-center p-4 lg:p-32 mt-16 lg:mt-0">
           <motion.div
             className="w-full max-w-4xl"
             initial={{ opacity: 0, x: -50 }}
@@ -120,7 +121,7 @@ export default function PaymentsPage() {
             transition={{ duration: 0.5, ease: "easeOut" }}
           >
             <motion.h1 
-              className="text-7xl font-bold mb-4 text-center"
+              className="text-5xl lg:text-7xl font-bold mb-4 text-center"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.4 }}
@@ -129,12 +130,12 @@ export default function PaymentsPage() {
             </motion.h1>
 
             <motion.div 
-              className="flex justify-center mx-50"
+              className="flex justify-center mx-auto max-w-2xl"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.4 }}
             >
-              <p className="text-lg text-gray-500 dark:text-gray-400 mb-12 text-center">
+              <p className="text-base lg:text-lg text-gray-500 dark:text-gray-400 mb-8 lg:mb-12 text-center">
                 Purchase credits to generate tweet suggestions. Every credit generates 3 tweet suggestions for any profile.
               </p>
             </motion.div>
@@ -157,7 +158,7 @@ export default function PaymentsPage() {
               </div>
             ) : (
               <motion.div 
-                className="grid md:grid-cols-3 gap-6"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
@@ -282,19 +283,19 @@ export default function PaymentsPage() {
               </motion.div>
             )}
           </motion.div>
-
-          {/* HypeAmplify Logo */}
-          <motion.div 
-            className="absolute bottom-6 left-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.4 }}
-          >
-            <Link href="/">
-              <Logo width={200} height={60} />
-            </Link>
-          </motion.div>
         </main>
+
+        {/* HypeAmplify Logo - only visible on desktop */}
+        <motion.div 
+          className="absolute bottom-6 left-6 hidden lg:block"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Link href="/">
+            <Logo width={200} height={60} />
+          </Link>
+        </motion.div>
       </div>
     </ProtectedRoute>
   )

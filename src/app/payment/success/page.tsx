@@ -66,7 +66,7 @@ export default function PaymentSuccessPage() {
       </motion.div>
       
       <motion.div 
-        className="absolute bottom-6 left-6"
+        className="absolute bottom-6 left-6 hidden lg:block"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}

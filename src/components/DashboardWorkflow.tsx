@@ -501,12 +501,12 @@ export function DashboardWorkflow({
         {currentStep === 4 && (
           <div key="step4" className="w-full">
             {/* Flex container with proper 50/50 split */}
-            <div className="flex w-full">
+            <div className="flex flex-col lg:flex-row w-full">
               {/* Left Side: 50% width */}
-              <div className="w-1/2 pr-8 flex flex-col min-w-[500px]">
+              <div className="w-full lg:w-1/2 lg:pr-8 flex flex-col min-w-0">
                 <div className="space-y-2 text-start mb-5 flex flex-col justify-start">
                   <motion.h1 
-                    className="text-4xl font-bold tracking-tighter leading-tight h-12"
+                    className="text-3xl lg:text-4xl font-bold tracking-tighter leading-tight h-12"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                   >
@@ -517,11 +517,11 @@ export function DashboardWorkflow({
                   </p>
                 </div>
                 <motion.div
-                  className="flex justify-left gap-4"
+                  className="flex flex-col sm:flex-row justify-left gap-4"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                 >
-                  <div className="w-1/2">
+                  <div className="w-full sm:w-1/2">
                     <ProfileButton 
                       name={selectedProfile || ''} 
                       profileImageUrl={profileData[selectedProfile || '']?.profilePicture}
@@ -530,7 +530,7 @@ export function DashboardWorkflow({
                   </div>
                   <Button 
                     onClick={handleGenerateSuggestions} 
-                    className="cursor-pointer h-12"
+                    className="cursor-pointer h-12 w-full sm:w-auto"
                     disabled={isLoadingHistoricalTweets}
                   >
                     {isLoadingHistoricalTweets ? 'Loading...' : 'Generate'}
@@ -539,7 +539,7 @@ export function DashboardWorkflow({
               </div>
               
               {/* Right Side: Tweets column - 50% width */}
-              <div className="w-1/2 pl-8 relative">
+              <div className="w-full lg:w-1/2 lg:pl-8 relative mt-8 lg:mt-0">
                 {/* Fixed height container with overflow */}
                 <div 
                   className="h-[calc(100vh-320px)] overflow-hidden relative"
@@ -632,9 +632,9 @@ export function DashboardWorkflow({
         {currentStep === 5 && (
           <div key="step5" className="w-full">
             {/* Split-screen layout with fixed heights */}
-            <div className="flex w-full">
+            <div className="flex flex-col lg:flex-row w-full">
               {/* Left Half - Header and buttons - with fixed height */}
-              <div className="w-1/2 pr-8 h-[300px] flex flex-col">
+              <div className="w-full lg:w-1/2 lg:pr-8 h-[300px] flex flex-col">
                 <motion.div 
                   className="space-y-8"
                   initial={{ opacity: 0 }}
@@ -644,7 +644,7 @@ export function DashboardWorkflow({
                   <div className="space-y-2 text-start mb-5 min-h-[80px] flex flex-col justify-start">
                     <motion.h1 
                       layoutId="header" 
-                      className="text-4xl font-bold tracking-tighter leading-tight h-12"
+                      className="text-3xl lg:text-4xl font-bold tracking-tighter leading-tight h-12"
                     >
                       Generating...
                     </motion.h1>
@@ -653,8 +653,8 @@ export function DashboardWorkflow({
                     </p>
                   </div>
                   {/* Buttons section */}
-                  <div className="flex justify-left gap-4">
-                    <div className="w-1/2">
+                  <div className="flex flex-col sm:flex-row justify-left gap-4">
+                    <div className="w-full sm:w-1/2">
                       <ProfileButton 
                         name={selectedProfile || ''} 
                         profileImageUrl={profileData[selectedProfile || '']?.profilePicture}
@@ -663,7 +663,7 @@ export function DashboardWorkflow({
                     </div>
                     <Button 
                       disabled 
-                      className="opacity-50 h-12"
+                      className="opacity-50 h-12 w-full sm:w-auto"
                     >
                       Generate
                     </Button>
@@ -672,7 +672,7 @@ export function DashboardWorkflow({
               </div>
               
               {/* Right Half - AI thinking animation - align top with left header */}
-              <div className="w-1/2 pl-8 flex flex-col">
+              <div className="w-full lg:w-1/2 lg:pl-8 flex flex-col mt-8 lg:mt-0">
                 <div className="pt-[0.75rem]">
                   <LoadingAnimation 
                     onComplete={handleAnimationComplete}

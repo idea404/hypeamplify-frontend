@@ -8,9 +8,115 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { api } from '@/lib/api/client'
-import { Logo } from '@/components/ui/logo'
 import { useAuthContext } from '@/lib/auth/AuthContext'
 import { Navbar, NavbarItemProps } from '@/components/ui/navbar'
+import { PlusCircle } from 'lucide-react'
+import { Logo } from '@/components/ui/logo'
+
+function LoginForm() {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  })
+  const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+  const { login } = useAuthContext()
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    setError('')
+
+    try {
+      const response = await api.auth.login(formData.email, formData.password)
+      
+      await login(response.access_token, response.user)
+      
+      router.push('/dashboard')
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Invalid email or password')
+      console.error('Login error:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <motion.div 
+      className="w-full p-6 rounded-lg border bg-card text-card-foreground shadow-sm"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      <div className="space-y-6">
+        {error && (
+          <motion.div 
+            className="p-3 bg-destructive/10 border border-destructive/20 text-destructive rounded-md text-sm"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+          >
+            {error}
+          </motion.div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="youremail@example.com"
+              required
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="Your password"
+              required
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full"
+            />
+          </div>
+
+          <Button 
+            type="submit" 
+            className="w-full" 
+            disabled={isLoading}
+          >
+            {isLoading ? 'Signing In...' : 'Sign In'}
+          </Button>
+        </form>
+
+        <div className="text-center text-sm">
+          <p className="text-muted-foreground">
+            Don't have an account?{' '}
+            <Link href="/auth/register" className="text-primary hover:underline">
+              Create one
+            </Link>
+          </p>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
 
 export default function Login() {
   const router = useRouter()
@@ -53,8 +159,11 @@ export default function Login() {
     {
       key: 'create-account',
       element: (
-        <Button asChild variant="outline">
-          <Link href="/auth/register">Create Account</Link>
+        <Button asChild variant="outline" className="w-full justify-start h-10 space-x-1.5">
+          <Link href="/auth/register">
+            <PlusCircle className="h-4 w-4" />
+            Create Account
+          </Link>
         </Button>
       ),
       position: 'right',
@@ -68,82 +177,21 @@ export default function Login() {
       <Navbar items={navbarItems} />
 
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center p-8">
-        <motion.div 
-          className="max-w-md w-full p-8 rounded-lg border border-gray-100 dark:border-gray-800 bg-white dark:bg-black shadow-sm"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <div className="space-y-6">
-            <div className="space-y-2 text-center">
-              <h1 className="text-3xl font-bold tracking-tighter">Welcome Back</h1>
-              <p className="text-gray-500 dark:text-gray-400">
-                Sign in to continue supercharging your X presence
-              </p>
-            </div>
-
-            {error && (
-              <motion.div 
-                className="p-3 bg-red-100 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 rounded-md text-sm"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-              >
-                {error}
-              </motion.div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="youremail@example.com"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  placeholder="Your password"
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={isLoading}
-              >
-                {isLoading ? 'Signing In...' : 'Sign In'}
-              </Button>
-            </form>
-
-            <div className="text-center text-sm">
-              <p className="text-gray-500 dark:text-gray-400">
-                Don't have an account?{' '}
-                <Link href="/auth/register" className="text-primary hover:underline">
-                  Create one
-                </Link>
-              </p>
-            </div>
+      <main className="flex-1 flex flex-col items-center justify-center p-4">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold">Welcome back</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Sign in to your account to continue
+            </p>
           </div>
-        </motion.div>
+          <LoginForm />
+        </div>
       </main>
 
-      {/* HypeAmplify Logo */}
+      {/* HypeAmplify Logo - only visible on desktop */}
       <motion.div 
-        className="absolute bottom-6 left-6"
+        className="absolute bottom-6 left-6 hidden lg:block"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}

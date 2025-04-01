@@ -106,23 +106,11 @@ export function TwitterCard({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: index * animationDelay }}
-        className="p-4 bg-white dark:bg-black rounded-md relative group border border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors shadow-sm"
+        className="p-3 bg-white dark:bg-black rounded-md relative group border border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors shadow-sm"
       >
-        {/* Delete Button - Always visible at top right */}
-        {onDelete && (
-          <button
-            onClick={handleDeleteClick}
-            className="absolute top-3 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-all focus:outline-none cursor-pointer z-10 group-hover:opacity-100 opacity-70 p-1"
-            style={{ right: '1rem', top: '0.75rem' }}
-            aria-label="Delete suggestion"
-          >
-            <Trash2 size={14} className="transform transition-transform duration-200 hover:scale-150" />
-          </button>
-        )}
-        
-        <div className="flex items-start gap-3">
+        <div className="flex items-start gap-2 max-w-full">
           {/* Profile Image */}
-          <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border border-gray-100 dark:border-gray-800">
+          <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 border border-gray-100 dark:border-gray-800">
             <img 
               src={getImageSrc()} 
               alt={username}
@@ -136,23 +124,23 @@ export function TwitterCard({
           </div>
           
           {/* Tweet Content */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0 pr-6">
             {/* Account Info */}
-            <div className="flex items-center gap-2 mb-1">
-              <span className="font-bold text-sm">
+            <div className="flex flex-wrap items-center gap-1 mb-1">
+              <span className="font-bold text-xs truncate max-w-[90px]">
                 {displayName || username}
               </span>
-              <span className="text-gray-500 dark:text-gray-400 text-sm">@{username}</span>
+              <span className="text-gray-500 dark:text-gray-400 text-xs truncate max-w-[80px]">@{username}</span>
               <span className="text-gray-500 dark:text-gray-400 text-xs">· {tweetDate ? formatDate(tweetDate) : 'now'}</span>
             </div>
             
             {/* Tweet Text */}
-            <p className="text-sm">{tweetText}</p>
+            <p className="text-sm break-words">{tweetText}</p>
             
             {/* Generated timestamp if available */}
             {tweetDate && (
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
-                Generated at: {new Date(tweetDate.getTime() - (tweetDate.getTimezoneOffset() * 60000)).toLocaleString('en-US', { 
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                Generated: {new Date(tweetDate.getTime() - (tweetDate.getTimezoneOffset() * 60000)).toLocaleString('en-US', { 
                   month: 'short', 
                   day: 'numeric', 
                   year: 'numeric',
@@ -163,10 +151,10 @@ export function TwitterCard({
             )}
           </div>
           
-          {/* Copy Button - In original position */}
+          {/* Copy Button - Absolute positioned */}
           <button 
             onClick={copyToClipboard}
-            className="self-center ml-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors focus:outline-none cursor-pointer mt-2"
+            className="absolute bottom-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors focus:outline-none cursor-pointer"
             aria-label="Copy to clipboard"
           >
             {copied ? (
@@ -174,8 +162,8 @@ export function TwitterCard({
                 initial={{ scale: 0.8 }} 
                 animate={{ scale: 1 }}
                 xmlns="http://www.w3.org/2000/svg" 
-                width="20" 
-                height="20" 
+                width="16" 
+                height="16" 
                 viewBox="0 0 24 24" 
                 fill="none" 
                 stroke="currentColor" 
@@ -190,8 +178,8 @@ export function TwitterCard({
             ) : (
               <svg 
                 xmlns="http://www.w3.org/2000/svg" 
-                width="20" 
-                height="20" 
+                width="16" 
+                height="16" 
                 viewBox="0 0 24 24" 
                 fill="none" 
                 stroke="currentColor" 
@@ -205,6 +193,17 @@ export function TwitterCard({
             )}
           </button>
         </div>
+
+        {/* Delete Button - Always visible at top right, absolute positioned */}
+        {onDelete && (
+          <button
+            onClick={handleDeleteClick}
+            className="absolute top-2 right-2 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-all focus:outline-none cursor-pointer z-10"
+            aria-label="Delete suggestion"
+          >
+            <Trash2 size={14} className="transform transition-transform duration-200 hover:scale-150" />
+          </button>
+        )}
       </motion.div>
       
       {/* Delete Confirmation Dialog */}
