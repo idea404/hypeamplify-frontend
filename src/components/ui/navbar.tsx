@@ -12,6 +12,7 @@ import { Menu, X, User, Home, Coins } from 'lucide-react'
 import { Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 import { useTheme } from 'next-themes'
+import { delay, motion } from 'framer-motion'
 
 export interface NavbarItemProps {
   key: string
@@ -80,60 +81,111 @@ export function Navbar({
     }
   }
 
+  // Animation variants
+  const navVariants = {
+    hidden: {
+      opacity: 0,
+    },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+        delay: 0.2,
+        // stagger: 0.1
+      }
+    }
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: -10 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        type: "spring", 
+        stiffness: 300, 
+        damping: 20
+      }
+    }
+  }
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-transparent">
+    <motion.nav 
+      className="fixed top-0 left-0 right-0 z-50 bg-transparent"
+      variants={navVariants}
+      initial="hidden"
+      animate="visible"
+    >
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Desktop Navigation - Left Side */}
           <div className="hidden lg:flex lg:items-center lg:space-x-4">
             {/* Theme toggle first */}
-            <ThemeToggle />
+            <motion.div variants={itemVariants}>
+              <ThemeToggle />
+            </motion.div>
             
             {/* Home button if logged in */}
             {isLoggedIn && (
-              <Button 
-                variant="outline" 
-                onClick={handleDashboardClick}
-                className="cursor-pointer space-x-1.5"
-              >
-                <Home className="h-4 w-4" />
-                Dashboard
-              </Button>
+              <motion.div variants={itemVariants}>
+                <Button 
+                  variant="outline" 
+                  onClick={handleDashboardClick}
+                  className="cursor-pointer space-x-1.5"
+                >
+                  <Home className="h-4 w-4" />
+                  Dashboard
+                </Button>
+              </motion.div>
             )}
             
             {/* User account name if logged in */}
             {showUserEmail && user && (
-              <div className="flex items-center text-sm font-medium">
+              <motion.div 
+                variants={itemVariants}
+                className="flex items-center text-sm font-medium"
+              >
                 {user.email}
-              </div>
+              </motion.div>
             )}
           </div>
 
           {/* Mobile logo - centered */}
-          <div className="flex items-center lg:hidden">
+          <motion.div 
+            className="flex items-center lg:hidden"
+            variants={itemVariants}
+          >
             <Link href="/" className="flex-shrink-0">
               <Logo width={120} height={36} />
             </Link>
-          </div>
+          </motion.div>
 
           {/* Desktop Navigation - Right Side */}
           <div className="hidden lg:flex lg:items-center lg:space-x-4">
             {/* Credits if shown */}
             {showCredits && (
-              <div className="flex items-center space-x-2 text-sm">
+              <motion.div 
+                variants={itemVariants}
+                className="flex items-center space-x-2 text-sm"
+              >
                 <Coins className="h-4 w-4 text-primary" />
                 <span>{credits} credits</span>
-              </div>
+              </motion.div>
             )}
             
             {/* Right items */}
             {rightItems.map(item => (
-              <div key={item.key}>{item.element}</div>
+              <motion.div key={item.key} variants={itemVariants}>
+                {item.element}
+              </motion.div>
             ))}
           </div>
 
           {/* Mobile menu button */}
-          <div className="flex items-center lg:hidden">
+          <motion.div 
+            className="flex items-center lg:hidden"
+            variants={itemVariants}
+          >
             <Button
               variant="outline"
               size="icon"
@@ -146,7 +198,7 @@ export function Navbar({
                 <Menu className="h-5 w-5" />
               )}
             </Button>
-          </div>
+          </motion.div>
         </div>
       </div>
 
@@ -254,6 +306,6 @@ export function Navbar({
           </div>
         </div>
       </Transition>
-    </nav>
+    </motion.nav>
   )
 } 
