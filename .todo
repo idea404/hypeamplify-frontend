@@ -19,3 +19,4 @@
 - [ ] add referral system
 - [ ] twitter card icons mess up for short tweet texts
 - [ ] credits do not auto-update after performing a tweet suggestion generation
+- [ ] text from backend includes newline characters
