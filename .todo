@@ -16,9 +16,9 @@
 
 # v1.1
 - [X] fix that users can remove suggestions for a profile across all users
-- [ ] twitter card icons mess up for short tweet texts
+- [X] twitter card icons mess up for short tweet texts
+- [X] text from backend includes newline characters
 - [ ] credits do not auto-update after performing a tweet suggestion generation
-- [ ] text from backend includes newline characters
 - [ ] add referral system
 
 # v1.2

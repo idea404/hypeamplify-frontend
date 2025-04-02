@@ -135,7 +135,7 @@ export function TwitterCard({
             </div>
             
             {/* Tweet Text */}
-            <p className="text-sm break-words">{tweetText}</p>
+            <p className="text-sm break-words whitespace-pre-line">{tweetText}</p>
             
             {/* Generated timestamp if available */}
             {tweetDate && (
