@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Trash2 } from 'lucide-react'
+import { Trash2, Copy, CheckCircle } from 'lucide-react'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 
@@ -154,42 +154,15 @@ export function TwitterCard({
           {/* Copy Button - Absolute positioned */}
           <button 
             onClick={copyToClipboard}
-            className="absolute bottom-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors focus:outline-none cursor-pointer"
+            className="absolute bottom-2 right-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all focus:outline-none cursor-pointer transform hover:scale-130"
             aria-label="Copy to clipboard"
           >
             {copied ? (
-              <motion.svg 
-                initial={{ scale: 0.8 }} 
-                animate={{ scale: 1 }}
-                xmlns="http://www.w3.org/2000/svg" 
-                width="16" 
-                height="16" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                className="text-green-500"
-              >
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </motion.svg>
+              <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }}>
+                <CheckCircle size={14} className="text-green-500" />
+              </motion.div>
             ) : (
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="16" 
-                height="16" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              >
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-              </svg>
+              <Copy size={14} />
             )}
           </button>
         </div>
@@ -201,7 +174,7 @@ export function TwitterCard({
             className="absolute top-2 right-2 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-all focus:outline-none cursor-pointer z-10"
             aria-label="Delete suggestion"
           >
-            <Trash2 size={14} className="transform transition-transform duration-200 hover:scale-150" />
+            <Trash2 size={14} className="transform transition-transform duration-200 hover:scale-130" />
           </button>
         )}
       </motion.div>
