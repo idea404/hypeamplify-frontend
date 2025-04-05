@@ -14,9 +14,8 @@ import { useRouter } from 'next/navigation'
 import { CreditCard, LogOut } from 'lucide-react'
 
 export default function Dashboard() {
-  const { user, logout } = useAuthContext();
+  const { user, logout, credits, refreshCredits } = useAuthContext();
   const router = useRouter();
-  const [credits, setCredits] = useState(0);
   const [userProfiles, setUserProfiles] = useState<string[]>([]);
   const [profilesData, setProfilesData] = useState<{[key: string]: any}>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -24,8 +23,7 @@ export default function Dashboard() {
   // This function will be called after suggestion generation to refresh credits
   const handleSuggestionGenerated = async () => {
     try {
-      const creditsData = await api.payments.getCredits();
-      setCredits(creditsData.credits || 0);
+      await refreshCredits();
     } catch (error) {
       console.error('Error refreshing credits:', error);
     }
@@ -36,10 +34,6 @@ export default function Dashboard() {
     const fetchUserData = async () => {
       setIsLoading(true);
       try {
-        // Get user credits - await this call
-        const creditsData = await api.payments.getCredits();
-        setCredits(creditsData.credits || 0);
-        
         // Fetch the user's profiles - await this call
         const profilesData = await api.tweets.profiles.getProfiles();
         

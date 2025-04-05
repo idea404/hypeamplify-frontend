@@ -22,7 +22,7 @@ interface Package {
 
 export default function PaymentsPage() {
   const router = useRouter()
-  const { user, logout } = useAuthContext()
+  const { user, logout, refreshCredits } = useAuthContext()
   const [packages, setPackages] = useState<Package[]>([])
   const [loading, setLoading] = useState(true)
   const [processingPackage, setProcessingPackage] = useState<string | null>(null)
@@ -110,7 +110,7 @@ export default function PaymentsPage() {
         <Navbar 
           items={navbarItems}
           showUserEmail={true}
-          showCredits={false}
+          showCredits={true}
         />
 
         <main className="flex-1 flex items-center justify-center p-4 lg:p-32 mt-16 lg:mt-0">

@@ -56,6 +56,7 @@ apiClient.interceptors.response.use(
 
 // Create a request cache to prevent duplicate calls
 const requestCache = new Map<string, Promise<any>>();
+const CREDITS_CACHE_KEY = 'payments/credits'; // Define key for credits
 
 // Clear cache entries after they resolve to prevent memory leaks
 const clearCacheEntry = (cacheKey: string) => {
@@ -102,7 +103,13 @@ export const api = {
         })
         .catch(error => {
           clearCacheEntry(cacheKey);
-          throw error;
+          // If 'me' fails with 401, the interceptor should handle logout
+          if (error.response && error.response.status === 401) {
+             console.log("GET /auth/me failed with 401, interceptor should handle logout.");
+          } else {
+             console.error("Error fetching /auth/me:", error);
+          }
+          throw error; // Rethrow error for calling code/interceptor
         });
       
       requestCache.set(cacheKey, request);
@@ -202,12 +209,14 @@ export const api = {
       return response.data;
     },
     getCredits: async () => {
-      const cacheKey = 'payments/credits';
+      const cacheKey = CREDITS_CACHE_KEY;
       
       if (requestCache.has(cacheKey)) {
+        console.log("Returning cached credits promise"); // Log cache hit
         return requestCache.get(cacheKey);
       }
       
+      console.log("Fetching fresh credits from API"); // Log cache miss
       const request = apiClient.get('/payments/credits')
         .then(response => {
           clearCacheEntry(cacheKey);
@@ -215,7 +224,11 @@ export const api = {
         })
         .catch(error => {
           clearCacheEntry(cacheKey);
-          throw error;
+          // Let interceptor handle 401, just log others
+          if (error.response && error.response.status !== 401) {
+              console.error("Error fetching credits:", error);
+          }
+          throw error; // Rethrow error for calling code/interceptor
         });
       
       requestCache.set(cacheKey, request);
@@ -224,6 +237,11 @@ export const api = {
     createPaymentIntent: async (packageId: string) => {
       const response = await apiClient.post('/payments/create-intent', { package_id: packageId });
       return response.data;
+    },
+    // Function to explicitly clear the credits cache
+    clearCreditsCache: () => {
+        console.log("Clearing credits cache.");
+        requestCache.delete(CREDITS_CACHE_KEY);
     },
   },
 };

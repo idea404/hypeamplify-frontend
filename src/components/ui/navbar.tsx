@@ -35,30 +35,15 @@ export function Navbar({
   onDashboardClick,
 }: NavbarProps) {
   const router = useRouter()
-  const { isLoggedIn, user, logout } = useAuthContext()
-  const [credits, setCredits] = useState<number>(0)
+  const { isLoggedIn, user, logout, credits } = useAuthContext()
   const [isLoaded, setIsLoaded] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { setTheme, theme } = useTheme()
 
-  // Fetch credits if needed
+  // Set loaded state
   useEffect(() => {
-    setIsLoaded(true)
-    
-    if (showCredits && isLoggedIn) {
-      const fetchCredits = async () => {
-        try {
-          const { api } = await import('@/lib/api/client')
-          const creditsData = await api.payments.getCredits()
-          setCredits(creditsData.credits || 0)
-        } catch (err) {
-          console.error('Error fetching credits:', err)
-        }
-      }
-      
-      fetchCredits()
-    }
-  }, [showCredits, isLoggedIn])
+    setIsLoaded(true);
+  }, []);
 
   // Filter and sort items
   const leftItems = items
@@ -163,7 +148,7 @@ export function Navbar({
           {/* Desktop Navigation - Right Side */}
           <div className="hidden lg:flex lg:items-center lg:space-x-4">
             {/* Credits if shown */}
-            {showCredits && (
+            {showCredits && credits !== null && (
               <motion.div 
                 variants={itemVariants}
                 className="flex items-center space-x-2 text-sm"
@@ -231,7 +216,7 @@ export function Navbar({
             )}
 
             {/* Credits if shown */}
-            {showCredits && (
+            {showCredits && credits !== null && (
               <div className="px-4 py-3 flex items-center space-x-3">
                 <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                   <Coins className="h-4 w-4 text-primary" />

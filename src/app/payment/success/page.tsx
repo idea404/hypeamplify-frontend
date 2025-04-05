@@ -1,70 +1,96 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { api } from '@/lib/api/client'
-import { motion } from 'framer-motion'
-import { Logo } from '@/components/ui/logo'
 import Link from 'next/link'
-import { CheckCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Logo } from '@/components/ui/logo'
+import { motion } from 'framer-motion'
+import { useAuthContext } from '@/lib/auth/AuthContext'
+import { Navbar, NavbarItemProps } from '@/components/ui/navbar'
+import { CreditCard, LogOut } from 'lucide-react'
 
 export default function PaymentSuccessPage() {
   const router = useRouter()
-  const [credits, setCredits] = useState(0)
-  const [isLoading, setIsLoading] = useState(true)
-  
+  const { logout, refreshCredits } = useAuthContext()
+
+  // Refresh credits when the page loads after successful payment
   useEffect(() => {
-    const fetchCredits = async () => {
-      try {
-        const creditsData = await api.payments.getCredits()
-        setCredits(creditsData.credits || 0)
-      } catch (error) {
-        console.error('Error fetching credits:', error)
-      } finally {
-        setIsLoading(false)
-      }
+    refreshCredits()
+  }, [refreshCredits])
+
+  // Navbar items for this page
+  const navbarItems: NavbarItemProps[] = [
+    {
+      key: 'buy-more',
+      element: (
+        <Button variant="default" onClick={() => router.push('/payments')} className="w-full justify-start h-10 cursor-pointer">
+          <CreditCard className="h-4 w-4" />
+          Buy More Credits
+        </Button>
+      ),
+      position: 'right',
+      order: 1
+    },
+    {
+      key: 'sign-out',
+      element: (
+        <Button variant="outline" onClick={logout} className="w-full justify-start h-10 cursor-pointer">
+          <LogOut className="h-4 w-4" />
+          Sign Out
+        </Button>
+      ),
+      position: 'right',
+      order: 2
     }
-    
-    fetchCredits()
-    
-    // Redirect to dashboard after 5 seconds
-    const timer = setTimeout(() => {
-      router.push('/dashboard')
-    }, 5000)
-    
-    return () => clearTimeout(timer)
-  }, [router])
-  
+  ];
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      <motion.div 
-        className="max-w-md w-full p-8 rounded-lg border shadow-lg bg-background"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        <div className="flex flex-col items-center text-center">
-          <CheckCircle className="w-16 h-16 text-green-500 mb-4" />
-          <h1 className="text-2xl font-bold mb-2">Payment Successful!</h1>
-          
-          {isLoading ? (
-            <p className="text-gray-500 mb-6">Loading your updated credits...</p>
-          ) : (
-            <p className="text-gray-500 mb-6">
-              Your payment was successful! You now have <span className="font-bold text-primary">{credits}</span> credits in your account.
-            </p>
-          )}
-          
-          <Button 
-            onClick={() => router.push('/dashboard')} 
-            className="w-full cursor-pointer"
+    <div className="min-h-screen flex flex-col">
+      {/* Use the Navbar component, show credits */}
+      <Navbar 
+        items={navbarItems}
+        showUserEmail={true}
+        showCredits={true}
+        onDashboardClick={() => router.push('/dashboard')} // Ensure dashboard button works
+      />
+
+      <main className="flex-1 flex flex-col items-center justify-center text-center p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-16 w-16 text-green-500 mx-auto mb-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
           >
-            Continue to Dashboard
-          </Button>
-        </div>
-      </motion.div>
-      
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <h1 className="text-3xl font-bold mb-2">Payment Successful!</h1>
+          <p className="text-gray-500 dark:text-gray-400 mb-6">
+            Your credits have been added to your account.
+          </p>
+          <div className="space-x-4">
+            <Button onClick={() => router.push('/dashboard')} size="lg">
+              Go to Dashboard
+            </Button>
+            <Button variant="outline" onClick={() => router.push('/payments')} size="lg">
+              Buy More Credits
+            </Button>
+          </div>
+        </motion.div>
+      </main>
+
+      {/* HypeAmplify Logo - only visible on desktop */}
       <motion.div 
         className="absolute bottom-6 left-6 hidden lg:block"
         initial={{ opacity: 0, y: 20 }}
@@ -76,5 +102,5 @@ export default function PaymentSuccessPage() {
         </Link>
       </motion.div>
     </div>
-  )
+  );
 } 

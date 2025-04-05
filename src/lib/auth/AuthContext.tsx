@@ -8,9 +8,11 @@ interface AuthContextType {
   isLoggedIn: boolean
   user: any
   loading: boolean
+  credits: number | null
   login: (token: string, userData?: any) => Promise<void>
   logout: () => void
   checkAuth: () => Promise<boolean>
+  refreshCredits: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)

@@ -63,7 +63,7 @@ const StepIndicator = ({ step }: { step: number }) => {
 
 export default function Home() {
   const router = useRouter()
-  const { isLoggedIn, user, logout } = useAuthContext()
+  const { isLoggedIn, user, logout, credits } = useAuthContext()
   const [step, setStep] = useState(1)
   const [hoverSide, setHoverSide] = useState<'left' | 'right'>('left')
   const [isLoaded, setIsLoaded] = useState(false)
@@ -71,7 +71,6 @@ export default function Home() {
   const [isComplete, setIsComplete] = useState(false)
   const [copiedTweets, setCopiedTweets] = useState<{[key: number]: boolean}>({})
   const [shuffledMessages, setShuffledMessages] = useState<string[]>([])
-  const [credits, setCredits] = useState(0)
   const [isDesktop, setIsDesktop] = useState(false)
 
   // Check if we're on desktop on mount
@@ -155,21 +154,7 @@ export default function Home() {
   useEffect(() => {
     // Initialize
     setIsLoaded(true)
-    
-    // Only fetch credits if logged in
-    if (isLoggedIn) {
-      const fetchCredits = async () => {
-        try {
-          const creditsData = await api.payments.getCredits()
-          setCredits(creditsData.credits || 0)
-        } catch (err) {
-          console.error('Error fetching credits:', err)
-        }
-      }
-      
-      fetchCredits()
-    }
-  }, [isLoggedIn])
+  }, [])
   
   // Handle logout
   const handleLogout = () => {
