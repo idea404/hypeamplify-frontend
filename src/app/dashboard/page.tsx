@@ -147,7 +147,7 @@ export default function Dashboard() {
             <DashboardWorkflow 
               initialProfiles={userProfiles}
               initialProfilesData={profilesData}
-              userCredits={credits}
+              userCredits={credits || 0}
               onProfileAdded={handleProfileAdded}
               onProfileDeleted={handleProfileDeleted}
               onSuggestionGenerated={handleSuggestionGenerated}

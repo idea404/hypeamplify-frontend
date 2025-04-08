@@ -11,6 +11,13 @@ import { api } from '@/lib/api/client'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { CreditCard, AlertCircle, Link } from 'lucide-react'
 
+// Define suggestion type
+interface Suggestion {
+  text: string;
+  hidden?: boolean;
+  createdAt: Date | string; // Allow string initially if that's what the API returns
+}
+
 interface DashboardWorkflowProps {
   // Props that might be needed from parent
   initialProfiles?: string[]
@@ -45,11 +52,7 @@ export function DashboardWorkflow({
   const [currentStep, setCurrentStep] = useState(initialProfiles.length > 0 ? 3 : 1)
   const [selectedProfile, setSelectedProfile] = useState<string | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
-  const [suggestions, setSuggestions] = useState<Array<{
-    text: string;
-    hidden?: boolean;
-    createdAt: Date;
-  }>>([])
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([])
   const [profileUrl, setProfileUrl] = useState('')
   const [animationComplete, setAnimationComplete] = useState(false)
   const [isLoadingHistoricalTweets, setIsLoadingHistoricalTweets] = useState(false)
@@ -219,10 +222,10 @@ export function DashboardWorkflow({
       if (selectedProfile && currentStep === 4) {
         setIsLoadingHistoricalTweets(true)
         try {
-          const data = await api.tweets.getSuggestions(selectedProfile, false)
+          const data = await api.tweets.getSuggestions(selectedProfile);
           if (data.suggestions && data.suggestions.length > 0) {
             // Sort suggestions by createdAt date, newest first
-            const sortedSuggestions = data.suggestions.sort((a, b) => 
+            const sortedSuggestions = data.suggestions.sort((a: Suggestion, b: Suggestion) => 
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
             );
             setSuggestions(sortedSuggestions);
