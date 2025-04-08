@@ -221,7 +221,11 @@ export function DashboardWorkflow({
         try {
           const data = await api.tweets.getSuggestions(selectedProfile, false)
           if (data.suggestions && data.suggestions.length > 0) {
-            setSuggestions(data.suggestions);
+            // Sort suggestions by createdAt date, newest first
+            const sortedSuggestions = data.suggestions.sort((a, b) => 
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            );
+            setSuggestions(sortedSuggestions);
           } else {
             setSuggestions([]);
           }
