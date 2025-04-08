@@ -20,6 +20,10 @@
 - [X] text from backend includes newline characters
 - [X] credits do not auto-update after performing a tweet suggestion generation
 - [ ] add referral system
+- [ ] suggestions are sorted anti-chronologically on dashboard
+- [ ] page auto-refreshes on dashboard and we are back at step 1 instead of staying on the same step
+- [ ] get rid of fade out in tweet scrolling, keep 'Scroll for more' with the arrow pop up
 
 # v1.2
 - [ ] backend should filter ecosystem tweets by high engagement scores
+- [ ] add scroll list mode for several profiles on dashboard

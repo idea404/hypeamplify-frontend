@@ -9,8 +9,9 @@ import { motion } from 'framer-motion'
 import { Logo } from '@/components/ui/logo'
 import Link from 'next/link'
 import { useAuthContext } from '@/lib/auth/AuthContext'
-import { Loader2, LogOut } from 'lucide-react'
+import { Loader2, LogOut, CheckCircle, XCircle, Loader2 as SmallLoader } from 'lucide-react'
 import { Navbar, NavbarItemProps } from '@/components/ui/navbar'
+import { Input } from '@/components/ui/input'
 
 interface Package {
   id: string
@@ -27,6 +28,10 @@ export default function PaymentsPage() {
   const [loading, setLoading] = useState(true)
   const [processingPackage, setProcessingPackage] = useState<string | null>(null)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
+  const [referralCode, setReferralCode] = useState('')
+  const [validationStatus, setValidationStatus] = useState<'idle' | 'validating' | 'valid' | 'invalid'>('idle')
+  const [validationMessage, setValidationMessage] = useState('')
+  const [bonusFactor, setBonusFactor] = useState(1.0)
 
   useEffect(() => {
     const fetchPackages = async () => {
@@ -56,19 +61,68 @@ export default function PaymentsPage() {
     }
   }, [router])
 
+  // Debounced effect for referral code validation
+  useEffect(() => {
+    // Clear previous timeout if exists
+    const handler = setTimeout(async () => {
+      if (!referralCode) {
+        setValidationStatus('idle')
+        setValidationMessage('')
+        setBonusFactor(1.0)
+        return
+      }
+
+      setValidationStatus('validating')
+      setValidationMessage('')
+      setBonusFactor(1.0)
+
+      try {
+        const result = await api.payments.validateReferralCode(referralCode)
+        if (result.valid) {
+          setValidationStatus('valid')
+          setValidationMessage(result.message || 'Referral code applied!')
+          setBonusFactor(result.bonus_credits_factor || 1.0)
+        } else {
+          setValidationStatus('invalid')
+          setValidationMessage(result.message || 'Invalid referral code.')
+        }
+      } catch (error) {
+        console.error('Error validating referral code:', error)
+        setValidationStatus('invalid')
+        setValidationMessage('Could not validate code. Please try again.')
+      }
+    }, 500) // Debounce for 500ms
+
+    // Cleanup function to clear timeout
+    return () => {
+      clearTimeout(handler)
+    }
+  }, [referralCode]) // Re-run effect when referralCode changes
+
   const handlePackageSelect = async (pkg: Package) => {
     setProcessingPackage(pkg.id)
     setCheckoutError(null)
     
+    // Determine the referral code to send (only if valid)
+    const codeToSend = validationStatus === 'valid' ? referralCode : undefined
+    
     try {
-      // Directly call the checkout endpoint
-      const result = await api.payments.checkout(pkg.id)
+      // Directly call the checkout endpoint, passing the validated referral code
+      const result = await api.payments.checkout(pkg.id, codeToSend)
       
       // Redirect to Stripe Checkout page
       window.location.href = result.url
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating checkout session:', error)
-      setCheckoutError('Could not initialize checkout. Please try again.')
+      // Check if error message contains specific referral issue
+      const errorDetail = error.response?.data?.detail || 'Could not initialize checkout. Please try again.';
+      if (errorDetail.toLowerCase().includes('referral')) {
+        setCheckoutError(errorDetail) // Show referral-specific error
+        setValidationStatus('invalid') // Mark code as invalid again if checkout fails due to it
+        setValidationMessage(errorDetail)
+      } else {
+        setCheckoutError('Could not initialize checkout. Please try again.')
+      }
       setProcessingPackage(null)
     }
   }
@@ -135,15 +189,44 @@ export default function PaymentsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.4 }}
             >
-              <p className="text-base lg:text-lg text-gray-500 dark:text-gray-400 mb-8 lg:mb-12 text-center">
+              <p className="text-base lg:text-lg text-gray-500 dark:text-gray-400 text-center">
                 Purchase credits to generate tweet suggestions. Every credit generates 3 tweet suggestions for any profile.
               </p>
             </motion.div>
             
+            {/* Referral Code Input */} 
+            <motion.div 
+              className="mt-6 mb-8 w-full max-w-xl md:max-w-md lg:max-w-70 mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.4 }}
+            >
+              <div className="relative">
+                <Input
+                  id="referral-code"
+                  type="text"
+                  placeholder="Enter referral code here"
+                  value={referralCode}
+                  onChange={(e) => setReferralCode(e.target.value.toUpperCase())} // Convert to uppercase for consistency
+                  className={`pr-10 ${validationStatus === 'valid' ? 'border-green-500 focus:border-green-600' : validationStatus === 'invalid' ? 'border-red-500 focus:border-red-600' : ''}`}
+                />
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  {validationStatus === 'validating' && <SmallLoader className="h-5 w-5 text-gray-400 animate-spin" />}
+                  {validationStatus === 'valid' && <CheckCircle className="h-5 w-5 text-green-500" />}
+                  {validationStatus === 'invalid' && referralCode && <XCircle className="h-5 w-5 text-red-500" />}
+                </div>
+              </div>
+              {/* {validationMessage && (
+                <p className={`mt-2 text-sm ${validationStatus === 'valid' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  {validationMessage}
+                </p>
+              )} */}
+            </motion.div>
+
             {/* Show error if checkout failed */}
             {checkoutError && (
               <motion.div 
-                className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 text-center"
+                className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 text-center max-w-md mx-auto"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
@@ -234,7 +317,7 @@ export default function PaymentsPage() {
                       )}
                       
                       {/* Card content container with glassmorphism */}
-                      <div className="relative z-10 h-full">
+                      <div className="relative z-10 h-full flex flex-col"> 
                         {/* Metallic shine effect overlay */}
                         <motion.div 
                           className="absolute inset-0 bg-gradient-to-br from-white/5 via-white/40 to-transparent pointer-events-none" 
@@ -251,15 +334,55 @@ export default function PaymentsPage() {
                         
                         <h3 className="text-xl font-bold mb-2">{pkg.name}</h3>
                         {pkg.description && (
-                          <p className="text-gray-500 mb-4">{pkg.description}</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{pkg.description}</p>
                         )}
                         <div className="text-3xl font-bold mb-2">${pkg.price_usd}</div>
-                        <p className="text-primary mb-3">{pkg.credits} credits</p>
-                        <p className="text-gray-500 dark:text-gray-400 mb-6">
-                          {pkg.credits * 3} tweet suggestions
+                        
+                        {/* Credits line with potential bonus */}
+                        <p className="text-primary mb-1 flex items-center flex-wrap">
+                          <span>{pkg.credits} credits</span>
+                          {(() => {
+                            // Calculate bonus only if code is valid and factor > 1
+                            if (validationStatus === 'valid' && bonusFactor > 1.0) {
+                              const totalCredits = Math.floor(pkg.credits * bonusFactor);
+                              const bonusAmount = totalCredits - pkg.credits;
+                              
+                              // Only show bonus text if bonusAmount > 0
+                              if (bonusAmount > 0) {
+                                return (
+                                  <motion.span
+                                    className="ml-2 font-semibold text-transparent bg-clip-text"
+                                    style={{
+                                      backgroundImage: 'linear-gradient(90deg, #ff0000, #ff9a00, #d0de21, #4fdc4a, #3fdad8, #2fc9e2, #1c7fee, #5f15f2, #ba0cf8, #fb07d9, #ff0000)',
+                                      backgroundSize: '300% 100%', // Control size for animation
+                                    }}
+                                    animate={{
+                                      // Animate background position horizontally
+                                      backgroundPosition: ['0% 50%', '150% 50%', '300% 50%'] 
+                                    }}
+                                    transition={{
+                                      duration: 3, // Speed of animation
+                                      repeat: Infinity,
+                                      ease: "linear"
+                                    }}
+                                  >
+                                    + {bonusAmount} free
+                                  </motion.span>
+                                );
+                              }
+                            }
+                            return null; // Return null if no bonus text needed
+                          })()}
                         </p>
+
+                        {/* Updated suggestions text to reflect potential bonus */}
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                          {Math.floor(pkg.credits * (validationStatus === 'valid' ? bonusFactor : 1.0)) * 3} total tweet suggestions
+                        </p>
+                        
+                        {/* Added mt-auto to push button to bottom of flex container */}
                         <Button
-                          className={`w-full cursor-pointer ${
+                          className={`w-full cursor-pointer mt-auto ${ 
                             isPremium 
                               ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 hover:text-yellow-300 hover:border hover:border-yellow-300 dark:hover:border-yellow-600' 
                               : ''

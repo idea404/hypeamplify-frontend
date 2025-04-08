@@ -200,8 +200,11 @@ export const api = {
       const response = await apiClient.get('/payments/packages');
       return response.data;
     },
-    checkout: async (packageId: string) => {
-      const response = await apiClient.post('/payments/checkout', { package_id: packageId });
+    checkout: async (packageId: string, referralCode?: string) => {
+      const response = await apiClient.post('/payments/checkout', { 
+        package_id: packageId,
+        referral_code: referralCode // Add referral code if provided
+      });
       return response.data;
     },
     getHistory: async () => {
@@ -234,14 +237,26 @@ export const api = {
       requestCache.set(cacheKey, request);
       return request;
     },
-    createPaymentIntent: async (packageId: string) => {
-      const response = await apiClient.post('/payments/create-intent', { package_id: packageId });
+    createPaymentIntent: async (packageId: string, referralCode?: string) => {
+      const response = await apiClient.post('/payments/create-intent', { 
+        package_id: packageId,
+        referral_code: referralCode // Add referral code if provided
+      });
       return response.data;
     },
     // Function to explicitly clear the credits cache
     clearCreditsCache: () => {
         console.log("Clearing credits cache.");
         requestCache.delete(CREDITS_CACHE_KEY);
+    },
+    // New function to validate referral code
+    validateReferralCode: async (referralCode: string) => {
+        if (!referralCode) {
+            // Optionally handle empty code validation client-side or let backend handle
+            return { valid: false, message: "Please enter a code.", bonus_credits_factor: 1.0 };
+        }
+        const response = await apiClient.post('/payments/validate-referral', { referral_code: referralCode });
+        return response.data; // Expects { valid: bool, message: str, bonus_credits_factor: float }
     },
   },
 };
