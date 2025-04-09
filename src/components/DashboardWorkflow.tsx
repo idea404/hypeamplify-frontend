@@ -551,17 +551,6 @@ export function DashboardWorkflow({
                 <div 
                   className="h-[calc(100vh-320px)] overflow-hidden relative"
                 >
-                  {/* Top fade overlay - only visible when scrolling */}
-                  <motion.div 
-                    className="absolute top-0 left-0 right-4 h-20 z-10 pointer-events-none"
-                    style={{ 
-                      background: 'linear-gradient(to bottom, var(--bg-color) 0%, transparent 100%)',
-                      opacity: 0,
-                    }}
-                    animate={{ opacity: scrolled ? 1 : 0 }}
-                    transition={{ duration: 0.2 }}
-                  />
-
                   <motion.div 
                     ref={tweetsContainerRef}
                     className="space-y-3 w-full h-full pr-4 pt-0 overflow-y-scroll scrollbar-hide"
@@ -728,17 +717,6 @@ export function DashboardWorkflow({
                 <div 
                   className="h-[calc(100vh-320px)] overflow-hidden relative"
                 >
-                  {/* Top fade overlay - only visible when scrolling */}
-                  <motion.div 
-                    className="absolute top-0 left-0 right-4 h-20 z-10 pointer-events-none"
-                    style={{ 
-                      background: 'linear-gradient(to bottom, var(--bg-color) 0%, transparent 100%)',
-                      opacity: 0,
-                    }}
-                    animate={{ opacity: scrolled ? 1 : 0 }}
-                    transition={{ duration: 0.2 }}
-                  />
-
                   <motion.div 
                     ref={tweetsContainerRef}
                     className="space-y-3 w-full h-full pr-4 pt-0 overflow-y-scroll scrollbar-hide"
