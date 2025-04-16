@@ -9,7 +9,6 @@ import ProfileButton from "@/components/ui/profile-button"
 import { LoadingAnimation } from "@/components/ui/loading-animation"
 import { TwitterCard } from "@/components/ui/twitter-card"
 import { useRouter } from 'next/navigation'
-import { api } from '@/lib/api/client'
 import { useAuthContext } from '@/lib/auth/AuthContext'
 import { Navbar, NavbarItemProps } from '@/components/ui/navbar'
 import { CreditCard, LogOut, User } from 'lucide-react'
@@ -262,8 +261,11 @@ export default function Home() {
               HypeAmplify analyzes your content and generates high-performing tweets.
             </p>
             <div>
-              <Button asChild size="lg">
+              <Button asChild size="lg" className="mr-2">
                 <Link href="/auth/register">Get Started</Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <Link href="/about">About</Link>
               </Button>
             </div>
           </div>
