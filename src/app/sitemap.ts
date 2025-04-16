@@ -5,51 +5,47 @@ const URL = 'https://hypeamplify.com'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
-    // Core public pages
     {
-      url: `${URL}/`, // Homepage
+      url: `${URL}/`,
       lastModified: new Date(),
-      changeFrequency: 'weekly', // Adjust if your homepage content changes more/less often
-      priority: 1.0, // Highest priority
+      changeFrequency: 'weekly',
+      priority: 1.0,
     },
     {
-      url: `${URL}/payments`, // Payments page
+      url: `${URL}/payments`,
       lastModified: new Date(),
-      changeFrequency: 'monthly', // Adjust if packages change often
-      priority: 0.8, // High priority
+      changeFrequency: 'monthly',
+      priority: 0.8,
     },
     {
-      url: `${URL}/auth/login`, // Login page
+      url: `${URL}/auth/login`,
       lastModified: new Date(),
-      changeFrequency: 'monthly', // Unlikely to change often
-      priority: 0.7, // Medium priority
+      changeFrequency: 'monthly',
+      priority: 0.7,
     },
     {
-      url: `${URL}/auth/register`, // Register page
+      url: `${URL}/auth/register`,
       lastModified: new Date(),
-      changeFrequency: 'monthly', // Unlikely to change often
-      priority: 0.7, // Medium priority
-    },
-    // Payment result pages (lower priority, less important for SEO)
-    {
-      url: `${URL}/payment/success`, // Payment success page
-      lastModified: new Date(),
-      changeFrequency: 'yearly', // Very unlikely to change
-      priority: 0.5, // Low priority
+      changeFrequency: 'monthly',
+      priority: 0.7,
     },
     {
-      url: `${URL}/payment/cancel`, // Payment cancel page
+      url: `${URL}/payment/success`,
       lastModified: new Date(),
-      changeFrequency: 'yearly', // Very unlikely to change
-      priority: 0.5, // Low priority
+      changeFrequency: 'yearly',
+      priority: 0.5,
     },
-    // --- Add any other PUBLIC static pages here ---
-    // Example:
-    // {
-    //   url: `${URL}/about`,
-    //   lastModified: new Date(),
-    //   changeFrequency: 'yearly',
-    //   priority: 0.6,
-    // },
+    {
+      url: `${URL}/payment/cancel`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.5,
+    },
+    {
+      url: `${URL}/about`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.6,
+    },
   ]
 }
