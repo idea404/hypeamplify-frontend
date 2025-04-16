@@ -25,12 +25,18 @@
 - [X] formatting of tweet texts in db
 
 # v1.2
-- [ ] sometimes loading animation ends while backend is still processing
-- [ ] page auto-refreshes on dashboard and we are back at step 1 instead of staying on the same step
-- [ ] add scroll list mode for several profiles on dashboard
-- [ ] backend should filter ecosystem tweets by high engagement scores
+- [X] sitemap
+- [X] icon is missing in Google Search card result
+- [ ] add how it works page
 
 # 1.3
+- [ ] add subscription options
+- [ ] sometimes loading animation ends while backend is still processing
+- [ ] page auto-refreshes on dashboard and we are back at step 1 instead of staying on the same step
+
+# v1.4
+- [ ] backend should filter ecosystem tweets by high engagement scores
+- [ ] add scroll list mode for several profiles on dashboard
 - [ ] het zijn wel een beetje rehashed tweets van wat ik al had gepost, misschien iets van een 'novelty' factor erin, combineren met trending hashtags of zo
 - [ ] en slimme accounts die je kan taggen? USP kan zijn tweets that maximize new followers of zo
 - [ ] en/of een 'trending' tabblad waar je kan zien wat voor soort tweets trending zijn bij je followers
