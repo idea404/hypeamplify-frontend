@@ -159,11 +159,6 @@ export default function Home() {
   const handleLogout = () => {
     logout()
   }
-  
-  // Handle navigation to dashboard
-  const goToDashboard = () => {
-    router.push('/dashboard')
-  }
 
   // Handle profile selection
   const handleProfileSelect = (profile: string) => {
