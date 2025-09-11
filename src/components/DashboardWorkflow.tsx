@@ -507,13 +507,13 @@ export function DashboardWorkflow({
         {/* Step 4: Generate Suggestions */}
         {currentStep === 4 && (
           <div key="step4" className="w-full">
-            {/* Flex container with proper 50/50 split */}
+            {/* Mobile-first responsive layout */}
             <div className="flex flex-col lg:flex-row w-full">
-              {/* Left Side: 50% width */}
-              <div className="w-full lg:w-1/2 lg:pr-8 flex flex-col min-w-0">
+              {/* Header and controls section */}
+              <div className="w-full lg:w-1/2 lg:pr-8 mb-8 lg:mb-0 flex flex-col min-w-0">
                 <div className="space-y-2 text-start mb-5 flex flex-col justify-start">
                   <motion.h1 
-                    className="text-3xl lg:text-4xl font-bold tracking-tighter leading-tight h-12"
+                    className="text-3xl lg:text-4xl font-bold tracking-tighter leading-tight"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                   >
@@ -528,7 +528,7 @@ export function DashboardWorkflow({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                 >
-                  <div className="w-full sm:w-1/2">
+                  <div className="w-full sm:w-1/2 lg:w-1/2">
                     <ProfileButton 
                       name={selectedProfile || ''} 
                       profileImageUrl={profileData[selectedProfile || '']?.profilePicture}
@@ -545,11 +545,11 @@ export function DashboardWorkflow({
                 </motion.div>
               </div>
               
-              {/* Right Side: Tweets column - 50% width */}
-              <div className="w-full lg:w-1/2 lg:pl-8 relative mt-8 lg:mt-0">
-                {/* Fixed height container with overflow */}
+              {/* Suggestions section - below on mobile, side-by-side on desktop */}
+              <div className="w-full lg:w-1/2 lg:pl-8 relative">
+                {/* Responsive height container with overflow */}
                 <div 
-                  className="h-[calc(100vh-320px)] overflow-hidden relative"
+                  className="h-[calc(100vh-400px)] lg:h-[calc(100vh-320px)] overflow-hidden relative"
                 >
                   <motion.div 
                     ref={tweetsContainerRef}
@@ -588,7 +588,7 @@ export function DashboardWorkflow({
             {/* Scroll indicator - appears when there are 4+ tweets */}
             {suggestions.length >= 4 && (
               <motion.div 
-                className="absolute bottom-4 right-4 flex justify-center items-center pointer-events-none"
+                className="absolute bottom-4 right-4 justify-center items-center pointer-events-none hidden lg:flex"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: scrolled ? 0 : 0.7 }}
                 transition={{ duration: 0.3 }}
@@ -627,20 +627,20 @@ export function DashboardWorkflow({
         {/* Step 5: Generating */}
         {currentStep === 5 && (
           <div key="step5" className="w-full">
-            {/* Split-screen layout with fixed heights */}
-            <div className="flex flex-col lg:flex-row w-full">
-              {/* Left Half - Header and buttons - with fixed height */}
-              <div className="w-full lg:w-1/2 lg:pr-8 h-[300px] flex flex-col">
+            {/* Mobile-first layout that stacks vertically on small screens */}
+            <div className="flex flex-col w-full">
+              {/* Header and buttons section */}
+              <div className="w-full mb-8">
                 <motion.div 
                   className="space-y-8"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                 >
                   {/* Header section */}
-                  <div className="space-y-2 text-start mb-5 min-h-[80px] flex flex-col justify-start">
+                  <div className="space-y-2 text-start mb-5 flex flex-col justify-start">
                     <motion.h1 
                       layoutId="header" 
-                      className="text-3xl lg:text-4xl font-bold tracking-tighter leading-tight h-12"
+                      className="text-3xl lg:text-4xl font-bold tracking-tighter leading-tight"
                     >
                       Generating...
                     </motion.h1>
@@ -650,7 +650,7 @@ export function DashboardWorkflow({
                   </div>
                   {/* Buttons section */}
                   <div className="flex flex-col sm:flex-row justify-left gap-4">
-                    <div className="w-full sm:w-1/2">
+                    <div className="w-full sm:w-1/2 lg:w-1/2">
                       <ProfileButton 
                         name={selectedProfile || ''} 
                         profileImageUrl={profileData[selectedProfile || '']?.profilePicture}
@@ -667,9 +667,9 @@ export function DashboardWorkflow({
                 </motion.div>
               </div>
               
-              {/* Right Half - AI thinking animation - align top with left header */}
-              <div className="w-full lg:w-1/2 lg:pl-8 flex flex-col mt-8 lg:mt-0">
-                <div className="pt-[0.75rem]">
+              {/* Loading animation section - directly below on mobile, side-by-side on desktop */}
+              <div className="w-full lg:w-1/2 lg:absolute lg:right-0 lg:top-0 lg:pr-8 flex flex-col">
+                <div className="lg:pt-[0.75rem]">
                   <LoadingAnimation 
                     onComplete={handleAnimationComplete}
                     isComplete={isComplete}
@@ -683,13 +683,13 @@ export function DashboardWorkflow({
         {/* Step 6: Generated Suggestions */}
         {currentStep === 6 && (
           <div key="step6" className="w-full">
-            {/* Flex container with proper 50/50 split */}
-            <div className="flex w-full">
-              {/* Left Side: 50% width */}
-              <div className="w-1/2 pr-8 flex flex-col">
+            {/* Mobile-first responsive layout */}
+            <div className="flex flex-col lg:flex-row w-full">
+              {/* Header and controls section */}
+              <div className="w-full lg:w-1/2 lg:pr-8 mb-8 lg:mb-0 flex flex-col">
                 <div className="space-y-2 text-start mb-5 flex flex-col justify-start">
                   <motion.h1 
-                    className="text-4xl font-bold tracking-tighter leading-tight h-12"
+                    className="text-3xl lg:text-4xl font-bold tracking-tighter leading-tight"
                   >
                     Generated Suggestions
                   </motion.h1>
@@ -697,25 +697,25 @@ export function DashboardWorkflow({
                     Suggestions for profile @{selectedProfile}
                   </p>
                 </div>
-                <div className="flex justify-left gap-4">
-                  <div className="w-1/2">
+                <div className="flex flex-col sm:flex-row justify-left gap-4">
+                  <div className="w-full sm:w-1/2 lg:w-1/2">
                     <ProfileButton 
                       name={selectedProfile || ''} 
                       profileImageUrl={profileData[selectedProfile || '']?.profilePicture}
                       onClick={() => setCurrentStep(3)} 
                     />
                   </div>
-                  <Button onClick={handleGenerateSuggestions} className="cursor-pointer h-12">
+                  <Button onClick={handleGenerateSuggestions} className="cursor-pointer h-12 w-full sm:w-auto">
                     Generate Again
                   </Button>
                 </div>
               </div>
               
-              {/* Right Side: Tweets column - 50% width */}
-              <div className="w-1/2 pl-8 relative">
-                {/* Fixed height container with overflow */}
+              {/* Suggestions section - below on mobile, side-by-side on desktop */}
+              <div className="w-full lg:w-1/2 lg:pl-8 relative">
+                {/* Responsive height container with overflow */}
                 <div 
-                  className="h-[calc(100vh-320px)] overflow-hidden relative"
+                  className="h-[calc(100vh-400px)] lg:h-[calc(100vh-320px)] overflow-hidden relative"
                 >
                   <motion.div 
                     ref={tweetsContainerRef}
@@ -754,7 +754,7 @@ export function DashboardWorkflow({
             {/* Scroll indicator - appears when there are 4+ tweets */}
             {suggestions.length >= 4 && (
               <motion.div 
-                className="absolute bottom-4 right-4 flex justify-center items-center pointer-events-none"
+                className="absolute bottom-4 right-4 justify-center items-center pointer-events-none hidden lg:flex"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: scrolled ? 0 : 0.7 }}
                 transition={{ duration: 0.3 }}
