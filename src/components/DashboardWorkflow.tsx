@@ -627,10 +627,10 @@ export function DashboardWorkflow({
         {/* Step 5: Generating */}
         {currentStep === 5 && (
           <div key="step5" className="w-full">
-            {/* Mobile-first layout that stacks vertically on small screens */}
-            <div className="flex flex-col w-full">
-              {/* Header and buttons section */}
-              <div className="w-full mb-8">
+            {/* Responsive layout - stacks on mobile, side-by-side on desktop */}
+            <div className="flex flex-col lg:flex-row w-full">
+              {/* Left Half - Header and buttons */}
+              <div className="w-full lg:w-1/2 lg:pr-8 mb-8 lg:mb-0 flex flex-col">
                 <motion.div 
                   className="space-y-8"
                   initial={{ opacity: 0 }}
@@ -667,8 +667,8 @@ export function DashboardWorkflow({
                 </motion.div>
               </div>
               
-              {/* Loading animation section - directly below on mobile, side-by-side on desktop */}
-              <div className="w-full lg:w-1/2 lg:absolute lg:right-0 lg:top-0 lg:pr-8 flex flex-col">
+              {/* Right Half - Loading animation - aligned with left section on desktop */}
+              <div className="w-full lg:w-1/2 lg:pl-8 flex flex-col">
                 <div className="lg:pt-[0.75rem]">
                   <LoadingAnimation 
                     onComplete={handleAnimationComplete}
