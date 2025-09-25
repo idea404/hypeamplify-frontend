@@ -67,27 +67,31 @@ export function TwitterCard({
   
   // Format the date for display
   const formatDate = (date: Date) => {
-    // Convert UTC date string to local time
-    const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
-    
-    // For recent dates (within a day), show relative time
+    // The date from the backend is already in UTC
+    // We need to compare it directly with the current time in UTC
     const now = new Date()
-    const diffMs = now.getTime() - localDate.getTime()
+    const diffMs = now.getTime() - date.getTime()
+    const diffMinutes = Math.floor(diffMs / (1000 * 60))
     const diffHours = diffMs / (1000 * 60 * 60)
     
+    // For very recent tweets (less than 2 minutes), show "now"
+    if (diffMinutes < 2) {
+      return 'now'
+    }
+    
+    // For recent dates (within a day), show relative time
     if (diffHours < 24) {
       if (diffHours < 1) {
-        const diffMinutes = Math.floor(diffMs / (1000 * 60))
         return `${diffMinutes}m ago`
       }
       return `${Math.floor(diffHours)}h ago`
     }
     
-    // For older dates, show the formatted date
-    return localDate.toLocaleDateString('en-US', { 
+    // For older dates, show the formatted date in local time
+    return date.toLocaleDateString('en-US', { 
       month: 'short', 
       day: 'numeric',
-      year: localDate.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+      year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
     })
   }
 
@@ -140,12 +144,13 @@ export function TwitterCard({
             {/* Generated timestamp if available */}
             {tweetDate && (
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                Generated: {new Date(tweetDate.getTime() - (tweetDate.getTimezoneOffset() * 60000)).toLocaleString('en-US', { 
+                Generated: {tweetDate.toLocaleString('en-US', { 
                   month: 'short', 
                   day: 'numeric', 
                   year: 'numeric',
                   hour: 'numeric',
-                  minute: '2-digit'
+                  minute: '2-digit',
+                  timeZoneName: 'short'
                 })}
               </p>
             )}
