@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Trash2, Copy, CheckCircle } from 'lucide-react'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { normalizeServerDate } from '@/lib/utils'
 
 interface TwitterCardProps {
   tweet: string | { text: string; createdAt: string | Date; hidden?: boolean }
@@ -34,7 +35,7 @@ export function TwitterCard({
   // Handle both string tweets and object tweets with timestamp
   const tweetText = typeof tweet === 'string' ? tweet : tweet.text
   const tweetDate = typeof tweet === 'object' && tweet.createdAt ? 
-    (typeof tweet.createdAt === 'string' ? new Date(tweet.createdAt) : tweet.createdAt) : null
+    (typeof tweet.createdAt === 'string' ? normalizeServerDate(tweet.createdAt) : tweet.createdAt) : null
   
   const copyToClipboard = () => {
     navigator.clipboard.writeText(tweetText).then(() => {
@@ -72,14 +73,7 @@ export function TwitterCard({
     const diffMinutes = Math.floor(diffMs / (1000 * 60))
     const diffHours = diffMs / (1000 * 60 * 60)
 
-    console.log('Time comparison:', {
-      serverDate: date.toISOString(),
-      serverLocalTime: date.toLocaleString(),
-      nowUTC: now.toISOString(), 
-      nowLocal: now.toLocaleString(),
-      diffMinutes,
-      diffHours
-    })
+    // console.debug('Time comparison:', { serverDate: date.toISOString(), nowUTC: now.toISOString(), diffMinutes, diffHours })
 
     // For very recent tweets (less than 5 minutes), show "now"
     if (diffMinutes < 5) {

@@ -8,6 +8,7 @@ import ProfileButton from '@/components/ui/profile-button'
 import { LoadingAnimation } from '@/components/ui/loading-animation'
 import { TwitterCard } from '@/components/ui/twitter-card'
 import { api } from '@/lib/api/client'
+import { normalizeServerDate } from '@/lib/utils'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { CreditCard, AlertCircle, Link } from 'lucide-react'
 
@@ -237,19 +238,14 @@ export function DashboardWorkflow({
         try {
           const data = await api.tweets.getSuggestions(selectedProfile);
           if (data.suggestions && data.suggestions.length > 0) {
-            console.log('Historical suggestions data:', {
-              suggestions: data.suggestions,
-              count: data.suggestions.length,
-              attributes: data.suggestions.map((suggestion: any, index: number) => ({
-                index,
-                text: suggestion.text,
-                createdAt: suggestion.createdAt,
-                hidden: suggestion.hidden,
-                allAttributes: Object.keys(suggestion)
-              }))
-            });
+            // Normalize createdAt strings that have microseconds and/or lack timezone
+            const normalized: Suggestion[] = data.suggestions.map((s: any) => ({
+              text: s.text,
+              hidden: s.hidden,
+              createdAt: normalizeServerDate(s.createdAt).toISOString(),
+            }))
             // Sort suggestions by createdAt date, newest first
-            const sortedSuggestions = data.suggestions.sort((a: Suggestion, b: Suggestion) => 
+            const sortedSuggestions = normalized.sort((a: Suggestion, b: Suggestion) => 
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
             );
             setSuggestions(sortedSuggestions);
