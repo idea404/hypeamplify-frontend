@@ -142,18 +142,31 @@ export function DashboardWorkflow({
       // Start the API call
       const result = await api.tweets.suggest(selectedProfile)
       
-      // Prepare the new suggestions
-      const newSuggestions = result.suggestions || []
+      // Prepare the new suggestions and tag them with the client's current time
+      const clientNow = new Date()
+      const rawSuggestions = result.suggestions || []
+      const newSuggestions: Suggestion[] = rawSuggestions.map((item: any) => {
+        if (typeof item === 'string') {
+          return { text: item, createdAt: clientNow.toISOString() }
+        }
+        // Ensure we have text and override createdAt to reflect this generation moment
+        return {
+          text: item.text || String(item),
+          hidden: item.hidden,
+          createdAt: clientNow.toISOString(),
+        }
+      })
       
       // Create a small artificial delay to ensure UI shows a satisfying loading animation
       // This gives the backend a moment to finish any remaining processing
       setTimeout(() => {
-        // Update suggestions state
+        // Update suggestions state (place newest on top)
         setSuggestions(prevSuggestions => [...newSuggestions, ...prevSuggestions])
         
         // Call parent's callback for credits update
         if (onSuggestionGenerated) {
-          onSuggestionGenerated(newSuggestions)
+          const texts = newSuggestions.map(s => s.text)
+          onSuggestionGenerated(texts)
         }
         
         // Signal completion to the animation

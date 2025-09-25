@@ -67,31 +67,16 @@ export function TwitterCard({
   
   // Format the date for display
   const formatDate = (date: Date) => {
-    // Convert the UTC date from server to local time
-    // The server sends UTC time, but Date constructor creates it correctly
-    // We just need to compare it properly with current local time
     const now = new Date()
-    
-    // Calculate the difference in milliseconds
     const diffMs = now.getTime() - date.getTime()
     const diffMinutes = Math.floor(diffMs / (1000 * 60))
     const diffHours = diffMs / (1000 * 60 * 60)
-    
-    // Debug: log the actual times to understand what's happening
-    console.log('Time comparison:', {
-      serverDate: date.toISOString(),
-      serverLocalTime: date.toLocaleString(),
-      nowUTC: now.toISOString(), 
-      nowLocal: now.toLocaleString(),
-      diffMinutes,
-      diffHours
-    })
-    
+
     // For very recent tweets (less than 5 minutes), show "now"
     if (diffMinutes < 5) {
       return 'now'
     }
-    
+
     // For recent dates (within a day), show relative time
     if (diffHours < 24) {
       if (diffHours < 1) {
@@ -99,10 +84,10 @@ export function TwitterCard({
       }
       return `${Math.floor(diffHours)}h ago`
     }
-    
+
     // For older dates, show the formatted date in local time
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
       day: 'numeric',
       year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
     })
@@ -157,9 +142,9 @@ export function TwitterCard({
             {/* Generated timestamp if available */}
             {tweetDate && (
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                Generated: {tweetDate.toLocaleString('en-US', { 
-                  month: 'short', 
-                  day: 'numeric', 
+                Generated: {new Date(tweetDate).toLocaleString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
                   year: 'numeric',
                   hour: 'numeric',
                   minute: '2-digit'
