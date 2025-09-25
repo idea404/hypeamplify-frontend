@@ -72,6 +72,15 @@ export function TwitterCard({
     const diffMinutes = Math.floor(diffMs / (1000 * 60))
     const diffHours = diffMs / (1000 * 60 * 60)
 
+    console.log('Time comparison:', {
+      serverDate: date.toISOString(),
+      serverLocalTime: date.toLocaleString(),
+      nowUTC: now.toISOString(), 
+      nowLocal: now.toLocaleString(),
+      diffMinutes,
+      diffHours
+    })
+
     // For very recent tweets (less than 5 minutes), show "now"
     if (diffMinutes < 5) {
       return 'now'
