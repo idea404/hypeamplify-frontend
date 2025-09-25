@@ -67,10 +67,25 @@ export function TwitterCard({
   
   // Format the date for display
   const formatDate = (date: Date) => {
+    // Convert the UTC date from server to local time
+    // The server sends UTC time, but Date constructor creates it correctly
+    // We just need to compare it properly with current local time
     const now = new Date()
+    
+    // Calculate the difference in milliseconds
     const diffMs = now.getTime() - date.getTime()
     const diffMinutes = Math.floor(diffMs / (1000 * 60))
     const diffHours = diffMs / (1000 * 60 * 60)
+    
+    // Debug: log the actual times to understand what's happening
+    console.log('Time comparison:', {
+      serverDate: date.toISOString(),
+      serverLocalTime: date.toLocaleString(),
+      nowUTC: now.toISOString(), 
+      nowLocal: now.toLocaleString(),
+      diffMinutes,
+      diffHours
+    })
     
     // For very recent tweets (less than 5 minutes), show "now"
     if (diffMinutes < 5) {
