@@ -237,6 +237,7 @@ export function DashboardWorkflow({
         try {
           const data = await api.tweets.getSuggestions(selectedProfile);
           if (data.suggestions && data.suggestions.length > 0) {
+            console.dir("data suggestions", data.suggestions)
             // Sort suggestions by createdAt date, newest first
             const sortedSuggestions = data.suggestions.sort((a: Suggestion, b: Suggestion) => 
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
