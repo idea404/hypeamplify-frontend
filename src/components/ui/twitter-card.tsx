@@ -67,15 +67,13 @@ export function TwitterCard({
   
   // Format the date for display
   const formatDate = (date: Date) => {
-    // The date from the backend is already in UTC
-    // We need to compare it directly with the current time in UTC
     const now = new Date()
     const diffMs = now.getTime() - date.getTime()
     const diffMinutes = Math.floor(diffMs / (1000 * 60))
     const diffHours = diffMs / (1000 * 60 * 60)
     
-    // For very recent tweets (less than 2 minutes), show "now"
-    if (diffMinutes < 2) {
+    // For very recent tweets (less than 5 minutes), show "now"
+    if (diffMinutes < 5) {
       return 'now'
     }
     
@@ -149,8 +147,7 @@ export function TwitterCard({
                   day: 'numeric', 
                   year: 'numeric',
                   hour: 'numeric',
-                  minute: '2-digit',
-                  timeZoneName: 'short'
+                  minute: '2-digit'
                 })}
               </p>
             )}
